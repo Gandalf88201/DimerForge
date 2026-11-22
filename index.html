@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DimerForge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* VOICE: a precise lab instrument, calm and exact.
+   IDEA: a molecular viewer bench, where the stack is set the way you set up a calculation.
+   PICTURE: a large live ball-and-stick view of the dimer with A's plane and its frame axes drawn on it.
+   COLOUR and TYPE: CPK atom colours on a graphite viewer, white bench, teal for copy B, coral for clashes; IBM Plex Sans + Mono for coordinates.
+   LAYOUT: viewer left and controls right, then the readouts, then the .xyz output; stacks below 860px. */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#0e1214);--ink:light-dark(#101618,#e7eeee);--mute:light-dark(#5a6669,#97a6a8);
+--line:light-dark(#dde3e3,#253033);--panel:light-dark(#f3f6f6,#151b1e);--view:#12181b;
+--teal:#2fb5a3;--coral:#ff6f59;--focus:light-dark(#0b7d70,#5fd8c7)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,16px);max-width:1320px;margin:0 auto}
+h1{font-size:clamp(26px,3.4vw,36px);line-height:1.08;margin:0 0 6px;font-weight:600;text-wrap:balance}
+h2{font-size:20px;margin:0 0 12px;font-weight:600}
+.lede{color:var(--mute);margin:0;max-width:72ch}
+.bench{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:20px;margin-top:20px}
+.fig{position:relative;min-height:460px;background:var(--view);border-radius:10px;overflow:hidden;touch-action:none;cursor:grab}
+.fig.drag{cursor:grabbing}.fig.over{outline:3px dashed var(--teal);outline-offset:-6px}
+.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
+.vbar{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.vbar button{background:#ffffff14;color:#dfe8e8;border:1px solid #ffffff26;min-height:36px;padding:0 12px;font-size:14px}
+.vbar button:hover{background:#ffffff26}
+.legend{position:absolute;left:12px;top:10px;color:#b9c6c7;font-size:13px;display:flex;gap:14px;flex-wrap:wrap;pointer-events:none}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.ctrl{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:4px 10px;align-items:center;margin-bottom:12px}
+.row label{font-size:15px;font-weight:500}.row small{grid-column:1/-1;color:var(--mute);font-size:13px;margin-top:-2px}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--teal);height:28px}
+.num{display:flex;align-items:center;gap:4px}.num input{width:100%;text-align:right}
+.num span{color:var(--mute);font-size:14px;width:14px}
+input[type=number],textarea{font:16px "IBM Plex Mono",monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+button,.file{font:500 15px "IBM Plex Sans",sans-serif;min-height:44px;padding:0 14px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center}
+button.pri{background:var(--teal);border-color:var(--teal);color:#05211d}
+button:focus-visible,input:focus-visible,textarea:focus-visible,.file:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.chips button{min-height:36px;font-size:14px;padding:0 10px}
+.opts{display:grid;gap:8px;margin-top:6px;font-size:15px}.opts label{display:flex;gap:8px;align-items:center;min-height:32px}
+.opts input{width:18px;height:18px;accent-color:var(--teal)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border-top:2px solid var(--ink);margin-top:22px}
+.stat{padding:12px 14px 12px 0;border-bottom:1px solid var(--line)}
+.stat b{display:block;font:500 clamp(20px,2.2vw,26px)/1.15 "IBM Plex Mono",monospace;white-space:nowrap}
+.stat span{color:var(--mute);font-size:14px}
+.warn b{color:var(--coral)}
+.out{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:20px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+pre{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;font:14px/1.5 "IBM Plex Mono",monospace;max-height:420px;overflow:auto}
+textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
+.msg{font-size:14px;color:var(--mute);min-height:20px}.msg.err{color:var(--coral)}
+.note{color:var(--mute);font-size:14px;margin:10px 0 0}
+.file input{position:absolute;opacity:0;width:1px;height:1px}
+@media(max-width:600px){.vbar button{min-height:32px;padding:0 8px;font-size:13px}}
+@media(max-width:860px){.bench,.out{grid-template-columns:minmax(0,1fr)}.fig{min-height:360px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="band">
+  <h1>DimerForge</h1>
+  <p class="lede">Build stacked dimers from a single .xyz structure. Set the interplanar distance, slip, tilt and twist in the molecule's own frame, check the contacts, and export a two-molecule .xyz ready for a calculation. Drag to rotate the view, scroll to zoom, or drop an .xyz file onto the viewer.</p>
+
+  <div class="bench">
+    <div>
+      <div class="fig" id="fig">
+        <canvas id="cv"></canvas>
+        <div class="legend"><span><i style="background:#d8dee0"></i>A (reference)</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>B (copy)</span><span style="color:#ff8a78">long</span><span style="color:#c8e86a">short</span><span style="color:#8fc7ff">n</span></div>
+        <div class="vbar">
+          <button data-view="obl">Oblique</button><button data-view="top">Along n</button><button data-view="long">Along long axis</button><button data-view="short">Along short axis</button><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="ctrl">
+      <h2>Placement of copy B</h2>
+      <div class="chips" id="presets"></div>
+      <div id="params"></div>
+      <div class="opts">
+        <label><input type="checkbox" id="optFrame" checked> Write output in the molecular frame (A in the xy-plane)</label>
+        <label><input type="checkbox" id="optHeavy" checked> Fit the plane on heavy atoms only</label>
+        <label><input type="checkbox" id="optSwap"> Swap the long and short axes</label>
+      </div>
+      <p class="note">B is rotated about A's centroid (twist, then tilt about long, then tilt about short), then shifted by slip and d. d is the height of B's centroid above A's plane.</p>
+    </div>
+  </div>
+</div>
+
+<div class="band">
+  <div class="out">
+    <div>
+      <h2>Dimer .xyz</h2>
+      <div class="acts"><button class="pri" id="copy">Copy .xyz</button><button id="dl" hidden>Download .xyz</button><span class="msg" id="outmsg"></span></div>
+      <pre id="out"></pre>
+    </div>
+    <div>
+      <h2>Input structure</h2>
+      <div class="acts"><label class="file">Open .xyz file<input type="file" id="file" accept=".xyz,.txt,text/plain"></label><button id="apply">Use pasted text</button></div>
+      <textarea id="src" spellcheck="false" aria-label="Input .xyz text"></textarea>
+      <div class="msg" id="inmsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+{
+const ALLOXAN = `12
+Alloxan
+O 3.554360 -4.975852 -0.378228
+C 3.166910 -3.807615 -0.262027
+N 4.039296 -2.752319 -0.258859
+C 3.782046 -1.414011 -0.141279
+O 4.628875 -0.521717 -0.147692
+C 2.270078 -1.103492 0.006949
+O 1.885161 0.057108 0.122393
+C 1.247770 -2.269393 0.008318
+O 0.039165 -2.070859 0.123235
+N 1.840658 -3.494415 -0.129075
+H 5.064932 -3.039984 -0.364942
+H 1.193128 -4.346815 -0.136392`;
+
+const COV={H:.31,C:.76,N:.71,O:.66,F:.57,S:1.05,P:1.07,Cl:1.02,Br:1.20,I:1.39,B:.84,Si:1.11,Se:1.20};
+const VDW={H:1.20,C:1.70,N:1.55,O:1.52,F:1.47,S:1.80,P:1.80,Cl:1.75,Br:1.85,I:1.98,B:1.92,Si:2.10,Se:1.90};
+const CPK={H:'#eef2f3',C:'#8a9599',N:'#3f6cf0',O:'#e8412f',F:'#8fe05a',S:'#f2c94c',P:'#f08a24',Cl:'#38c15a',Br:'#a5322a',I:'#7a3fb0',B:'#f5a3a3',Si:'#c9b48a',Se:'#ffa21a'};
+const DR={H:.24,C:.34,N:.33,O:.32,S:.42,Cl:.4,Br:.44,I:.48};
+const PARAMS=[
+ {id:'d',label:'Interplanar distance',unit:'Å',min:0,max:10,step:.01,v:3.4,hint:'Along the plane normal n'},
+ {id:'sl',label:'Slip along long axis',unit:'Å',min:-8,max:8,step:.01,v:0},
+ {id:'ss',label:'Slip along short axis',unit:'Å',min:-8,max:8,step:.01,v:0},
+ {id:'tl',label:'Tilt about long axis',unit:'°',min:-180,max:180,step:.5,v:0},
+ {id:'ts',label:'Tilt about short axis',unit:'°',min:-180,max:180,step:.5,v:0},
+ {id:'tw',label:'Twist about normal',unit:'°',min:-180,max:180,step:.5,v:0,hint:'Rotation within the plane, e.g. 180 for antiparallel'}];
+const PRESETS=[['Eclipsed',{d:3.4}],['Parallel-displaced',{d:3.4,sl:1.5}],['Antiparallel',{d:3.4,tw:180}],['Flipped face',{d:3.4,tl:180}],['T-shaped',{d:5,tl:90}]];
+
+const $=id=>document.getElementById(id);
+const el=s=>s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
+const fmt=(x,n=2)=>(Math.abs(x)<5e-13?0:x).toFixed(n);
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const mv=(M,v)=>[dot(M[0],v),dot(M[1],v),dot(M[2],v)];
+const mm=(A,B)=>A.map(r=>[0,1,2].map(j=>r[0]*B[0][j]+r[1]*B[1][j]+r[2]*B[2][j]));
+const rad=x=>x*Math.PI/180;
+const Rx=a=>{const c=Math.cos(rad(a)),s=Math.sin(rad(a));return[[1,0,0],[0,c,-s],[0,s,c]]};
+const Ry=a=>{const c=Math.cos(rad(a)),s=Math.sin(rad(a));return[[c,0,s],[0,1,0],[-s,0,c]]};
+const Rz=a=>{const c=Math.cos(rad(a)),s=Math.sin(rad(a));return[[c,-s,0],[s,c,0],[0,0,1]]};
+const axisRot=(u,a)=>{const c=Math.cos(a),s=Math.sin(a),t=1-c,[x,y,z]=u;return[[t*x*x+c,t*x*y-s*z,t*x*z+s*y],[t*x*y+s*z,t*y*y+c,t*y*z-s*x],[t*x*z-s*y,t*y*z+s*x,t*z*z+c]]};
+
+function eig3(A){
+  const a=A.map(r=>r.slice()),V=[[1,0,0],[0,1,0],[0,0,1]];
+  for(let sw=0;sw<60;sw++){
+    if(a[0][1]**2+a[0][2]**2+a[1][2]**2<1e-22)break;
+    for(const [p,q] of [[0,1],[0,2],[1,2]]){
+      if(Math.abs(a[p][q])<1e-15)continue;
+      const th=(a[q][q]-a[p][p])/(2*a[p][q]);
+      const t=(th>=0?1:-1)/(Math.abs(th)+Math.sqrt(th*th+1)),c=1/Math.sqrt(t*t+1),s=t*c;
+      for(let k=0;k<3;k++){const x=a[k][p],y=a[k][q];a[k][p]=c*x-s*y;a[k][q]=s*x+c*y}
+      for(let k=0;k<3;k++){const x=a[p][k],y=a[q][k];a[p][k]=c*x-s*y;a[q][k]=s*x+c*y}
+      for(let k=0;k<3;k++){const x=V[k][p],y=V[k][q];V[k][p]=c*x-s*y;V[k][q]=s*x+c*y}
+    }
+  }
+  return [0,1,2].map(i=>({val:a[i][i],vec:[V[0][i],V[1][i],V[2][i]]})).sort((x,y)=>y.val-x.val);
+}
+
+function parseXYZ(txt){
+  const lines=txt.replace(/\r/g,'').split('\n');
+  let i=0;while(i<lines.length&&!lines[i].trim())i++;
+  let title='';const first=lines[i]?.trim().split(/\s+/)||[];
+  if(first.length===1&&/^\d+$/.test(first[0])){title=(lines[i+1]||'').trim();i+=2}
+  const atoms=[];
+  for(;i<lines.length;i++){
+    const t=lines[i].trim().split(/\s+/);if(t.length<4||!t[0])continue;
+    const xyz=t.slice(1,4).map(Number);if(xyz.some(Number.isNaN))continue;
+    let e=t[0].replace(/[^A-Za-z]/g,'');if(!e)e=t[0];atoms.push({e:el(e.slice(0,2).length===2&&!COV[el(e.slice(0,2))]?e.slice(0,1):e.slice(0,2)),p:xyz});
+  }
+  if(atoms.length<3)throw new Error('Found '+atoms.length+' atoms; need at least 3 lines of "Element x y z".');
+  return{title,atoms};
+}
+
+let mol=null,frame=null,name='structure';
+const state={};PARAMS.forEach(p=>state[p.id]=p.v);
+let view=null,zoom=1;
+
+function buildFrame(){
+  const heavy=$('optHeavy').checked?mol.atoms.filter(a=>a.e!=='H'):mol.atoms;
+  const set=heavy.length>=3?heavy:mol.atoms;
+  const c=[0,1,2].map(k=>set.reduce((s,a)=>s+a.p[k],0)/set.length);
+  const C=[[0,0,0],[0,0,0],[0,0,0]];
+  for(const a of set){const d=sub(a.p,c);for(let i=0;i<3;i++)for(let j=0;j<3;j++)C[i][j]+=d[i]*d[j]/set.length}
+  const E=eig3(C);
+  const fix=v=>{let m=0;for(let k=1;k<3;k++)if(Math.abs(v[k])>Math.abs(v[m]))m=k;return v[m]<0?v.map(x=>-x):v};
+  let e1=fix(E[0].vec),e2=fix(E[1].vec);
+  if($('optSwap').checked)[e1,e2]=[e2,e1];
+  const e3=cross(e1,e2);
+  const rms=Math.sqrt(Math.max(E[2].val,0));
+  frame={c,F:[e1,e2,e3],rms,local:mol.atoms.map(a=>mv([e1,e2,e3],sub(a.p,c)))};
+  const n=mol.atoms.length;mol.bonds=[];
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    const a=mol.atoms[i],b=mol.atoms[j],r=Math.hypot(...sub(a.p,b.p));
+    if(r>.4&&r<((COV[a.e]||.8)+(COV[b.e]||.8))*1.18)mol.bonds.push([i,j]);
+  }
+}
+
+function placeB(){
+  const M=mm(Ry(state.ts),mm(Rx(state.tl),Rz(state.tw)));
+  const t=[state.sl,state.ss,state.d];
+  return{M,pts:frame.local.map(p=>{const q=mv(M,p);return[q[0]+t[0],q[1]+t[1],q[2]+t[2]]})};
+}
+const toGlobal=p=>{const[e1,e2,e3]=frame.F;return[0,1,2].map(k=>frame.c[k]+p[0]*e1[k]+p[1]*e2[k]+p[2]*e3[k])};
+
+function compute(){
+  const A=frame.local,{M,pts:B}=placeB();
+  const nB=mv(M,[0,0,1]);
+  const ang=Math.acos(Math.min(1,Math.abs(nB[2])))*180/Math.PI;
+  let best={r:1e9},bestH={r:1e9},worst={q:1e9};
+  A.forEach((a,i)=>B.forEach((b,j)=>{
+    const r=Math.hypot(...sub(a,b)),ea=mol.atoms[i].e,eb=mol.atoms[j].e;
+    if(r<best.r)best={r,ea,eb};
+    if(ea!=='H'&&eb!=='H'&&r<bestH.r)bestH={r,ea,eb};
+    const q=r/((VDW[ea]||1.8)+(VDW[eb]||1.8));if(q<worst.q)worst={q,r,ea,eb};
+  }));
+  const zs=B.map(p=>p[2]);
+  return{A,B,ang,best,bestH,worst,zmin:Math.min(...zs),zmax:Math.max(...zs),cc:Math.hypot(state.sl,state.ss,state.d),lat:Math.hypot(state.sl,state.ss)};
+}
+
+function render(){
+  if(!mol)return;
+  const R=compute();
+  const clash=R.worst.q<.75;
+  const S=[
+    [fmt(R.cc)+' Å','Centroid to centroid'],
+    [fmt(R.lat)+' Å','Lateral offset (total slip)'],
+    [fmt(R.ang,1)+'°','Angle between planes'],
+    [fmt(R.zmin)+'–'+fmt(R.zmax)+' Å','Height of B atoms above plane A'],
+    [fmt(R.best.r)+' Å','Closest contact, '+R.best.ea+'···'+R.best.eb],
+    [bestOr(R.bestH),'Closest heavy-atom contact'+(R.bestH.ea?', '+R.bestH.ea+'···'+R.bestH.eb:'')],
+    [fmt(R.worst.q*100,0)+'%',clash?'Clash: a contact under 75% of the vdW sum':'Tightest contact as % of the vdW sum',clash]];
+  $('stats').innerHTML=S.map(([b,s,w])=>`<div class="stat${w?' warn':''}"><b>${b}</b><span>${s}</span></div>`).join('');
+  writeOut(R);draw(R);save();
+}
+const bestOr=b=>b.r<1e8?fmt(b.r)+' Å':'—';
+
+function writeOut(R){
+  const inFrame=$('optFrame').checked;
+  const conv=inFrame?(p=>p):toGlobal;
+  const line=(e,p)=>e.padEnd(3)+p.map(x=>fmt(x,6).padStart(14)).join('');
+  const n=mol.atoms.length;
+  const tag=`d=${fmt(state.d,3)} slip_long=${fmt(state.sl,3)} slip_short=${fmt(state.ss,3)} tilt_long=${fmt(state.tl,1)} tilt_short=${fmt(state.ts,1)} twist=${fmt(state.tw,1)}`;
+  const txt=[2*n,`${name} dimer | ${tag} | ${inFrame?'molecular frame':'input frame'} | A=1-${n} B=${n+1}-${2*n}`,
+    ...R.A.map((p,i)=>line(mol.atoms[i].e,conv(p))),...R.B.map((p,i)=>line(mol.atoms[i].e,conv(p)))].join('\n')+'\n';
+  $('out').textContent=txt;outText=txt;
+}
+let outText='';
+const fileName=()=>`${name}_dimer_d${fmt(state.d)}_sl${fmt(state.sl)}_ss${fmt(state.ss)}_tl${fmt(state.tl,0)}_ts${fmt(state.ts,0)}_tw${fmt(state.tw,0)}.xyz`;
+
+/* ---------- viewer ---------- */
+const cv=$('cv'),fig=$('fig'),ctx=cv.getContext('2d');
+const VIEWS={top:[[1,0,0],[0,1,0],[0,0,1]],long:[[0,1,0],[0,0,1],[1,0,0]],short:[[1,0,0],[0,0,1],[0,-1,0]],obl:mm(Rx(-62),Rz(-25))};
+view=VIEWS.obl;
+let lastR=null;
+function draw(R){
+  R=R||lastR;if(!R)return;lastR=R;
+  const dpr=window.devicePixelRatio||1,W=fig.clientWidth,H=fig.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  const all=R.A.concat(R.B);
+  const cen=[0,1,2].map(k=>all.reduce((s,p)=>s+p[k],0)/all.length);
+  const ext=Math.max(...all.map(p=>Math.hypot(...sub(p,cen))))+1;
+  const sc=Math.min(W,H-50)/(2*ext)*zoom;
+  const P=p=>{const q=mv(view,sub(p,cen));return[W/2+q[0]*sc,(H-40)/2-q[1]*sc,q[2]]};
+  // planes
+  const xs=R.A.map(p=>p[0]),ys=R.A.map(p=>p[1]);
+  const x0=Math.min(...xs)-.7,x1=Math.max(...xs)+.7,y0=Math.min(...ys)-.7,y1=Math.max(...ys)+.7;
+  const rect=[[x0,y0,0],[x1,y0,0],[x1,y1,0],[x0,y1,0]];
+  const {M}=placeB(),t=[state.sl,state.ss,state.d];
+  const poly=(pts,fill,stroke)=>{ctx.beginPath();pts.map(P).forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()};
+  poly(rect,'rgba(210,225,228,.07)','rgba(210,225,228,.3)');
+  poly(rect.map(p=>{const q=mv(M,p);return[q[0]+t[0],q[1]+t[1],q[2]+t[2]]}),'rgba(47,181,163,.07)','rgba(47,181,163,.35)');
+  // items
+  const items=[];
+  [[R.A,0],[R.B,1]].forEach(([pts,m])=>{
+    const pr=pts.map(P);
+    mol.bonds.forEach(([i,j])=>items.push({z:(pr[i][2]+pr[j][2])/2-.01,k:'b',a:pr[i],b:pr[j],ea:mol.atoms[i].e,eb:mol.atoms[j].e,m}));
+    pr.forEach((p,i)=>items.push({z:p[2],k:'a',p,e:mol.atoms[i].e,m}));
+  });
+  items.sort((u,v)=>u.z-v.z);
+  const zr=all.map(p=>mv(view,sub(p,cen))[2]),zmin=Math.min(...zr),zmax=Math.max(...zr);
+  const fog=z=>.55+.45*((z/sc-zmin)/((zmax-zmin)||1));
+  for(const it of items){
+    if(it.k==='b'){
+      const mx=(it.a[0]+it.b[0])/2,my=(it.a[1]+it.b[1])/2;
+      ctx.globalAlpha=fog(it.z*sc);ctx.lineCap='round';ctx.lineWidth=Math.max(2,.16*sc);
+      ctx.strokeStyle=CPK[it.ea]||'#ccc';ctx.beginPath();ctx.moveTo(it.a[0],it.a[1]);ctx.lineTo(mx,my);ctx.stroke();
+      ctx.strokeStyle=CPK[it.eb]||'#ccc';ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(it.b[0],it.b[1]);ctx.stroke();
+    }else{
+      const r=Math.max(3,(DR[it.e]||.38)*sc),[x,y]=it.p,col=CPK[it.e]||'#d06ad8';
+      ctx.globalAlpha=fog(it.z*sc);
+      const g=ctx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);g.addColorStop(0,'#ffffff');g.addColorStop(.28,col);g.addColorStop(1,shade(col));
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+      if(it.m){ctx.lineWidth=2;ctx.strokeStyle='#2fb5a3';ctx.stroke()}
+    }
+  }
+  ctx.globalAlpha=1;
+  // frame axes at A centroid
+  const o=P([0,0,0]),L=Math.max(1.6,(x1-x0)/2);
+  [[[L,0,0],'#ff8a78','long'],[[0,Math.max(1.4,(y1-y0)/2),0],'#c8e86a','short'],[[0,0,1.8],'#8fc7ff','n']].forEach(([v,c,lab])=>{
+    const q=P(v);ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(o[0],o[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(q[0],q[1],3,0,7);ctx.fill();
+    ctx.font='500 13px "IBM Plex Sans",sans-serif';ctx.fillText(lab,q[0]+6,q[1]-6);
+  });
+}
+const shade=h=>{const n=parseInt(h.slice(1),16);const f=x=>Math.round(x*.42).toString(16).padStart(2,'0');return'#'+f(n>>16)+f((n>>8)&255)+f(n&255)};
+const fro=new ResizeObserver(()=>draw());fro.observe(fig);
+
+let drag=null;
+fig.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag=[e.clientX,e.clientY];fig.setPointerCapture(e.pointerId);fig.classList.add('drag')});
+fig.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag[0],dy=e.clientY-drag[1];drag=[e.clientX,e.clientY];
+  view=mm(axisRot([0,1,0],dx*.01),view);view=mm(axisRot([1,0,0],dy*.01),view);draw()});
+const end=()=>{drag=null;fig.classList.remove('drag')};
+fig.addEventListener('pointerup',end);fig.addEventListener('pointercancel',end);
+fig.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.min(6,Math.max(.3,zoom*Math.exp(-e.deltaY*.0015)));draw()},{passive:false});
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=VIEWS[b.dataset.view];zoom=1;draw()}));
+$('zin').onclick=()=>{zoom=Math.min(6,zoom*1.2);draw()};$('zout').onclick=()=>{zoom=Math.max(.3,zoom/1.2);draw()};
+fig.addEventListener('dragover',e=>{e.preventDefault();fig.classList.add('over')});
+fig.addEventListener('dragleave',()=>fig.classList.remove('over'));
+fig.addEventListener('drop',e=>{e.preventDefault();fig.classList.remove('over');const f=e.dataTransfer.files[0];if(f)readFile(f)});
+
+/* ---------- controls ---------- */
+$('params').innerHTML=PARAMS.map(p=>`<div class="row"><label for="n_${p.id}">${p.label}</label><div class="num"><input type="number" id="n_${p.id}" min="${p.min}" max="${p.max}" step="${p.step}"><span>${p.unit}</span></div><input type="range" id="r_${p.id}" min="${p.min}" max="${p.max}" step="${p.step}" aria-label="${p.label}">${p.hint?`<small>${p.hint}</small>`:''}</div>`).join('');
+const sync=()=>PARAMS.forEach(p=>{$('n_'+p.id).value=state[p.id];$('r_'+p.id).value=state[p.id]});
+PARAMS.forEach(p=>{
+  $('r_'+p.id).addEventListener('input',e=>{state[p.id]=+e.target.value;$('n_'+p.id).value=state[p.id];render()});
+  $('n_'+p.id).addEventListener('input',e=>{const v=parseFloat(e.target.value);if(Number.isFinite(v)){state[p.id]=v;$('r_'+p.id).value=v;render()}});
+});
+$('presets').innerHTML=PRESETS.map((p,i)=>`<button data-p="${i}">${p[0]}</button>`).join('')+'<button data-p="-1">Reset</button>';
+$('presets').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const pr=b.dataset.p==='-1'?{}:PRESETS[+b.dataset.p][1];
+  PARAMS.forEach(p=>state[p.id]=pr[p.id]??(p.id==='d'?3.4:0));sync();render()});
+['optFrame'].forEach(id=>$(id).addEventListener('change',render));
+['optHeavy','optSwap'].forEach(id=>$(id).addEventListener('change',()=>{buildFrame();render()}));
+
+function load(txt,nm){
+  try{mol=parseXYZ(txt);name=(nm||mol.title||'structure').replace(/\.xyz$/i,'').replace(/[^\w.-]+/g,'_').slice(0,40)||'structure';
+    buildFrame();$('inmsg').className='msg';$('inmsg').textContent=`${mol.atoms.length} atoms, ${mol.bonds.length} bonds. Plane fit RMS deviation ${fmt(frame.rms,3)} Å.`;render();return true}
+  catch(err){$('inmsg').className='msg err';$('inmsg').textContent=err.message;return false}
+}
+function readFile(f){const r=new FileReader();r.onload=()=>{$('src').value=r.result;load(r.result,f.name)};r.readAsText(f)}
+$('file').addEventListener('change',e=>{const f=e.target.files[0];if(f)readFile(f)});
+$('apply').addEventListener('click',()=>load($('src').value));
+
+$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(outText);$('outmsg').textContent='Copied to clipboard.'}catch{const r=document.createRange();r.selectNodeContents($('out'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('outmsg').textContent='Text selected: press Ctrl+C or Cmd+C.'}});
+let downloads=null;
+const standalone=!(window.claude&&claude.use);
+if(standalone)$('dl').hidden=false;
+else claude.use('downloads').then(d=>{if(d){downloads=d;$('dl').hidden=false}}).catch(()=>{});
+$('dl').addEventListener('click',async()=>{
+  if(standalone){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([outText],{type:'text/plain'}));a.download=fileName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);$('outmsg').textContent='Saved '+fileName();return}
+  if(!downloads)return;try{await downloads.save({filename:fileName(),data:outText});$('outmsg').textContent='Saved '+fileName()}catch(e){$('outmsg').textContent='Download was not completed.'}});
+
+function save(){try{localStorage.setItem('dimer-builder',JSON.stringify({state,src:$('src').value,name}))}catch{}}
+let saved=null;try{saved=JSON.parse(localStorage.getItem('dimer-builder')||'null')}catch{}
+if(saved&&saved.src){Object.assign(state,saved.state||{});$('src').value=saved.src;sync();if(!load(saved.src,saved.name)){$('src').value=ALLOXAN;load(ALLOXAN,'Alloxan')}}
+else{$('src').value=ALLOXAN;sync();load(ALLOXAN,'Alloxan')}
+}
+</script>
+</body>
+</html>
