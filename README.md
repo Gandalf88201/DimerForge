@@ -1,8 +1,8 @@
 # DimerForge
 
-DimerForge builds stacked molecular dimers from a single `.xyz` structure, with control over interplanar distance, slippage and tilt.
+DimerForge builds stacked molecular dimers from a single structure, with control over interplanar distance, slippage and tilt. It reads `.xyz` and `.cif` files. It can take a molecule, or a real neighbouring pair, from a crystal, and it includes a small 3D molecular designer.
 
-It fits the molecular plane to define a frame with long, short and normal axes. You place the copy by setting the interplanar distance, the slip along each in-plane axis, the tilt about each in-plane axis and the twist about the normal. A live 3D view shows the dimer, and the tool reports the centroid distance, the angle between planes and the closest contacts, with a warning when atoms clash. It exports a two-molecule `.xyz` ready for calculations on π-stacking and other dimer interactions.
+It fits the molecular plane to define a frame with long, short and normal axes. You place the copy by setting the interplanar distance, the slip along each in-plane axis, the tilt about each in-plane axis and the twist about the normal. A live 3D view shows the dimer, and the tool reports the centroid distance, the angle between planes and the closest contacts, with a warning when atoms clash. It exports the dimer, or either molecule, as `.xyz`, PDB, MOL/SDF, a Gaussian input or an ORCA input, ready for calculations on π-stacking and other dimer interactions.
 
 ## Usage
 
@@ -13,20 +13,65 @@ DimerForge is a single self-contained HTML file with no install and no build ste
 
 Then:
 
-1. Load a structure: open an `.xyz` file, drop one onto the viewer, or paste the text and press **Use pasted text**. `examples/Alloxan.xyz` is loaded by default.
-2. Place copy B with the sliders, the number fields or a preset (eclipsed, parallel-displaced, antiparallel, flipped face, T-shaped).
-3. Check the readouts and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis.
-4. Copy or download the dimer `.xyz`.
+1. Load a structure: open an `.xyz` or `.cif` file, drop one onto the viewer, or paste the text and press **Use pasted text**. `examples/Alloxan.xyz` is loaded by default. `examples/Benzene_Pbca_COD7238223.cif` is a crystal to try, and the Crystal tab also has a one-click benzene example.
+2. **Dimer tab.** Place copy B with the sliders, the number fields or a preset (eclipsed, parallel-displaced, antiparallel, flipped face, T-shaped).
+3. **Design tab.** Edit molecule A (see below). The dimer follows the edits.
+4. **Crystal tab.** Pick a molecule from a CIF, or a real neighbouring pair, and load it into the dimer builder (see below).
+5. Check the readouts and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis (or along a, b or c in the crystal view).
+6. Choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
+
+All settings, the current molecule and the input text are kept in the browser's local storage, so a reload restores the session.
+
+## Reading `.xyz` files
+
+- Elements are read against the full periodic table (H–Og), so `Na`, `Fe`, `Zn`, `Co`, `Pt` and so on are kept as written. Upper-case symbols (`CL`, `NA`), labelled atoms (`C12`, `H2A`) and atomic numbers (`6`, `26`) are also accepted. `D` and `T` are read as hydrogen. An unknown symbol is an error that names the line. It is never silently shortened to a different element.
+- When the first line is an atom count, exactly that many atom lines are read after the comment line. Too few atom lines, or a line that is not `Element x y z`, is an error with the line number. Extra lines, or later frames of a multi-frame file, are reported and ignored. A missing comment line is tolerated when the count then matches exactly.
+
+## Reading `.cif` files
+
+The CIF needs the cell (`_cell_length_*`, `_cell_angle_*`), the symmetry operations (`_space_group_symop_operation_xyz` or `_symmetry_equiv_pos_as_xyz`) and fractional coordinates (`_atom_site_fract_*`). DimerForge then works as follows.
+
+- It applies every symmetry operation, merges atoms that land on the same site, and rebuilds whole molecules across the cell faces from covalent radii. A bond is accepted when two atoms are closer than the sum of their covalent radii plus 15% or 0.3 Å, whichever is larger, so poorly placed X-ray hydrogens stay bonded.
+- It groups symmetry-equivalent molecules and lists each kind with its count in the cell. Click a molecule in the viewer to select it.
+- For the selected molecule it lists every neighbour with any contact within the van der Waals sum + 0.5 Å. Pairs related by symmetry are merged. Each pair shows the centroid distance, the height above the plane, the lateral offset, the angle between the planes, the closest contact and the symmetry operation that generates the partner. It is labelled stacked, offset stack, edge-to-face, side by side, inclined, or contact (for small or non-planar molecules).
+- **Load pair as dimer** puts the real crystal pair into the builder. When the partner is a symmetry copy of A, the operation is converted into the builder's parameters, so the dimer reproduces the crystal geometry exactly and you can then vary it from there. Inversion and mirror operations use the **Mirror B** option. When the partner is a different molecule (Z′ > 1, co-crystals, salts), it is kept as its own molecule B. The parameters then move it in its own frame, and **Make B a copy of A** returns to a normal homodimer.
+- Only the first data block is used. Disordered structures keep only one disorder group. `dum` sites are skipped. Extended networks (polymeric or ionic solids) are flagged, because they cannot be cut into separate molecules.
+
+## Molecular designer
+
+The Design tab edits molecule A in the 3D viewer.
+
+- **Select.** Click an atom. Shift-click adds an atom to the selection, or removes it. Esc clears.
+- **Elements.** Choose from the palette, or type any symbol under *Other*. **Add atom** bonds a new atom to the selected atom in a free direction. **Set element** changes the selected atoms. **Delete** removes them.
+- **Groups.** Choose CH₃, CF₃, OH, OCH₃, SH, NH₂, NO₂, CN, CHO, COOH, C₆H₅, F, Cl, Br or I. A selected H or halogen is replaced by the group along the same bond. On any other atom the group goes in a free position. Planar groups are laid in the plane of the parent's neighbours.
+- **Measure and set.** With 2, 3 or 4 atoms selected, the panel shows the distance, angle or dihedral, and you can type a new value. The side of the last selected atom moves. A dihedral cannot be set about a bond that is in a ring.
+- **Tidy geometry.** This relaxes the atoms you added or re-elemented, their neighbours, and any atoms you select. It moves them towards typical bond lengths (single-bond covalent radii, shortened for multiple bonds), typical angles (from the coordination number) and away from clashes. All other atoms keep their geometry. Bonds inside a group you attached keep the group's lengths.
+- **Templates.** Benzene, naphthalene, anthracene, tetracene, phenanthrene, pyrene, triphenylene, coronene, pyridine, pyrimidine, pyrazine, 1,3,5-triazine, thiophene, furan, pyrrole, methane, water or a single carbon atom.
+- Undo and Redo (Ctrl+Z, Ctrl+Y) cover every edit.
 
 ## Geometry conventions
 
 - **Frame.** The centroid and the plane are fitted by PCA on the heavy atoms (or on all atoms, if you choose that option). The long axis is the direction of largest variance, the short axis comes next, and the normal is n = long × short. Eigenvector signs are fixed so that each axis's largest component is positive. An option swaps the long and short axes.
-- **Placing copy B.** B starts as a copy of A. It is rotated about A's centroid in the molecular frame, in this order: twist about n, then tilt about the long axis, then tilt about the short axis. That is, M = R<sub>short</sub> · R<sub>long</sub> · R<sub>n</sub>. B is then translated by (slip<sub>long</sub>, slip<sub>short</sub>, d).
-- **Interplanar distance d.** d is the height of B's centroid above A's plane. When B is tilted, the readouts also give the range of heights of B's atoms above plane A.
-- **Clash check.** Contacts are compared with the sum of the Bondi van der Waals radii. A contact under 75% of that sum is flagged.
+- **Placing copy B.** B starts as a copy of A (or as the crystal partner, in its own frame). It is rotated about A's centroid in the molecular frame, in this order: an optional mirror through its own plane, then twist about n, then tilt about the long axis, then tilt about the short axis. That is, M = R<sub>short</sub> · R<sub>long</sub> · R<sub>n</sub> · S, where S = diag(1, 1, −1) when the mirror is on. B is then translated by (slip<sub>long</sub>, slip<sub>short</sub>, d).
+- **Interplanar distance d.** d is the height of B's centroid above A's plane. It may be negative, for example for a crystal partner below A. When B is tilted, the readouts also give the range of heights of B's atoms above plane A.
+- **Clash check.** Contacts are compared with the sum of the van der Waals radii (Bondi, with Mantina et al. for main-group elements that Bondi lacks, and 2.00 Å otherwise). A contact under 75% of that sum is flagged.
 
 ## Output
 
-The output is a standard `.xyz` file with 2N atoms: molecule A (atoms 1…N), then molecule B (atoms N+1…2N). The comment line records all the parameters and the atom ranges. By default the coordinates are written in the molecular frame, with A in the xy-plane and centred at the origin. Untick that option to keep the input frame.
+Choose **Dimer A+B**, **Molecule A** or **Molecule B**, and a format.
 
-The file name encodes the parameters, for example `Alloxan_dimer_d3.40_sl1.50_ss0.00_tl0_ts0_tw0.xyz`.
+- **XYZ.** The dimer has 2N atoms: molecule A (atoms 1…N), then molecule B. The comment line records all the parameters and the atom ranges.
+- **PDB.** HETATM records with A as chain A (residue 1) and B as chain B (residue 2), a TER between them, and CONECT records for every bond.
+- **MOL / SDF.** A V2000 record with bonds. Bond orders are guessed from the geometry: each atom's missing valence is paired with a bonded neighbour's, and nitro-type groups get formal charges. Check the result for unusual bonding.
+- **Gaussian (.gjf).** An editable route line, and the charge and multiplicity of each molecule. For a dimer, counterpoise correction is on by default: atoms are tagged `(Fragment=1)` and `(Fragment=2)`, `counterpoise=2` is added, and the charge line lists the total and each fragment.
+- **ORCA (.inp).** An editable method line, and an `* xyz` block with the charge and multiplicity. For a dimer, atoms can be labelled `C(1)` and `C(2)` for fragment-based methods.
+
+For a dimer, the total charge is the sum of the two fragment charges. The total multiplicity is the high-spin combination, m<sub>A</sub> + m<sub>B</sub> − 1.
+
+By default the coordinates are written in the molecular frame, with A in the xy-plane and centred at the origin. Untick that option to keep the input (or crystal Cartesian) frame.
+
+The dimer file name encodes the parameters, for example `Alloxan_dimer_d3.40_sl1.50_ss0.00_tl0_ts0_tw0.xyz` (with `_m` when B is mirrored).
+
+## Example data
+
+`examples/Benzene_Pbca_COD7238223.cif` is entry 7238223 of the [Crystallography Open Database](https://www.crystallography.net/), whose data are in the public domain.
