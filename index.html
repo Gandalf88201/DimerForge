@@ -4,9 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DimerForge</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
 <style>
+/* IBM Plex (SIL Open Font License 1.1, see fonts/), served from this repository: no requests to other sites. */
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2")}
 /* VOICE: a precise lab instrument, calm and exact.
    IDEA: a molecular viewer bench, where the stack is set the way you set up a calculation.
    PICTURE: a large live ball-and-stick view of the dimer with A's plane and its frame axes drawn on it.
@@ -1070,6 +1075,7 @@ function draw(){
 }
 const shade=h=>{const n=parseInt(h.slice(1),16);const f=x=>Math.round(x*.42).toString(16).padStart(2,'0');return'#'+f(n>>16)+f((n>>8)&255)+f(n&255)};
 new ResizeObserver(()=>draw()).observe(fig);
+if(document.fonts)document.fonts.ready.then(()=>draw()); // canvas labels use IBM Plex
 
 function legend(){
   const L={dimer:'<span><i style="background:#d8dee0"></i>A (reference)</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>B (copy)</span><span style="color:#ff8a78">long</span><span style="color:#c8e86a">short</span><span style="color:#8fc7ff">n</span>',
