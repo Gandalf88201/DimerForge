@@ -34,6 +34,16 @@ h3{font-size:15px;margin:16px 0 8px;font-weight:600}
 .fig.drag{cursor:grabbing}.fig.over{outline:3px dashed var(--teal);outline-offset:-6px}
 .fig.pick{cursor:crosshair}
 .fig:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.scrow{border:1px solid var(--line);border-radius:8px;padding:4px 10px 8px;margin:0 0 8px}
+.scrow legend{padding:0 4px;font-size:15px;font-weight:500}.scrow legend label{display:flex;gap:8px;align-items:center;min-height:32px}
+.scrow legend input{width:18px;height:18px;accent-color:var(--teal)}
+.sc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.scrow[data-on="0"] .scon,.scrow[data-on="1"] .scoff{display:none}
+.scrow input[type=number]{width:100%}
+.scn{display:block;color:var(--mute);font-size:13px;margin-top:4px}
+#scMap{display:block;width:100%;height:300px;cursor:crosshair;touch-action:none;color:var(--ink)}
+#scMap:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.mapkey{font-size:13px;color:var(--mute);margin:6px 0 0}.mapkey b{color:var(--coral);font-weight:600}
 pre:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .fig>canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -109,6 +119,7 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
         <button role="tab" id="t_dimer" aria-controls="tab-dimer" aria-selected="true">Dimer</button>
         <button role="tab" id="t_design" aria-controls="tab-design" aria-selected="false">Design</button>
         <button role="tab" id="t_crystal" aria-controls="tab-crystal" aria-selected="false">Crystal</button>
+        <button role="tab" id="t_scan" aria-controls="tab-scan" aria-selected="false">Scan</button>
       </div>
 
       <section id="tab-dimer" role="tabpanel" aria-labelledby="t_dimer">
@@ -172,6 +183,37 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
           <div class="list" id="cxPairs"></div>
           <div class="acts"><button id="cxLoad" class="pri" disabled>Load pair as dimer</button></div>
         </div>
+      </section>
+
+      <section id="tab-scan" role="tabpanel" aria-labelledby="t_scan" hidden>
+        <h2>Parameter scan</h2>
+        <p class="note" style="margin-top:0">Generate a grid of dimers for structural correlation maps. Tick the parameters to scan and give each a minimum, maximum and step. The others stay at their fixed value, and every combination is generated.</p>
+        <div class="acts" style="margin-top:10px"><button id="scUseCur">Fixed values from the current dimer</button></div>
+        <div id="scRows"></div>
+        <div class="opts" style="margin:0 0 6px"><label><input type="checkbox" id="scMir"> Mirror B in every dimer</label></div>
+        <div class="msg" id="scCount" aria-live="polite"></div>
+        <h3>Preview map</h3>
+        <div class="grid2">
+          <label class="field wide">Horizontal axis<select id="scX"></select></label>
+          <label class="field wide">Vertical axis<select id="scY"></select></label>
+          <label class="field wide">Colour<select id="scMetric"></select></label>
+        </div>
+        <div class="grid2" id="scSlices"></div>
+        <canvas id="scMap" tabindex="0" role="application" aria-roledescription="heat map" aria-label="Scan preview map" aria-describedby="scMapHelp"></canvas>
+        <p class="sr-only" id="scMapHelp">Arrow keys move between cells and show that dimer in the viewer. Enter keeps it in the Dimer tab. Escape returns to the previous dimer.</p>
+        <p class="mapkey"><span id="scKey">Darker blue means a larger value.</span> <b>×</b> marks a clash (a contact under 75% of the vdW sum). Hover or use the arrow keys to preview a dimer; click or press Enter to keep it.</p>
+        <div class="msg" id="scTip" aria-live="polite"></div>
+        <h3>Generate</h3>
+        <div class="seg" id="scQm" role="group" aria-label="Quantum-chemistry input"><button data-q="gjf">Gaussian</button><button data-q="orca">ORCA</button></div>
+        <p class="note" style="margin:-4px 0 10px">Each dimer gets its own folder with an .xyz file and this input. The method line, charges, multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export panel below.</p>
+        <div class="grid2">
+          <label class="field wide">Main folder name<input type="text" id="scName" spellcheck="false" autocomplete="off"></label>
+          <label class="field">Plot script view<select id="scMode"><option value="2d">2D map</option><option value="3d">3D</option></select></label>
+          <label class="field">3D third axis<select id="scZ"></select></label>
+        </div>
+        <div class="opts" style="margin:0 0 10px"><label><input type="checkbox" id="scSkip"> Leave out dimers that clash (they stay listed in the index)</label></div>
+        <div class="acts"><button class="pri" id="scGo">Generate scan (.zip)</button><button id="scStop" hidden>Cancel</button></div>
+        <div class="msg" id="scProg" aria-live="polite"></div>
       </section>
     </div>
   </div>
@@ -643,16 +685,17 @@ const toGlobal=p=>add(frame.c,mv(tr(frame.F),p));
 const Batoms=()=>partner?partner.atoms:mol.atoms;
 const Bframe=()=>partner?partner.fr:frame;
 
-function poseM(){const M=mm(Ry(state.ts),mm(Rx(state.tl),Rz(state.tw)));return state.mir?mm(M,SM):M}
-function placeB(){const M=poseM(),t=[state.sl,state.ss,state.d];return{M,t,pts:Bframe().local.map(p=>add(mv(M,p),t))}}
+/* All geometry takes a parameter set s (default: the live dimer), so scans can evaluate any point without touching the UI. */
+function poseM(s=state){const M=mm(Ry(s.ts),mm(Rx(s.tl),Rz(s.tw)));return s.mir?mm(M,SM):M}
+function placeB(s=state){const M=poseM(s),t=[s.sl,s.ss,s.d];return{M,t,pts:Bframe().local.map(p=>add(mv(M,p),t))}}
 /* Set the parameters from a rotation M and translation t in A's frame (B_local = M·ref + t). */
 function applyPose(M,t){
   const mir=det3(M)<0,{tw,tl,ts}=euler(mir?mm(M,SM):M);
   Object.assign(state,{tw,tl,ts,sl:t[0],ss:t[1],d:t[2],mir:mir?1:0});sync();
 }
 
-function compute(){
-  const A=frame.local,{M,pts:B}=placeB(),BA=Batoms();
+function compute(s=state){
+  const A=frame.local,{M,pts:B}=placeB(s),BA=Batoms();
   const nB=mv(M,[0,0,1]);
   const ang=deg(Math.acos(Math.min(1,Math.abs(nB[2]))));
   let best={r:1e9},bestH={r:1e9},worst={q:1e9};
@@ -663,13 +706,14 @@ function compute(){
     const q=r/(vdw(ea)+vdw(eb));if(q<worst.q)worst={q,r,ea,eb};
   }));
   const zs=B.map(p=>p[2]);
-  return{A,B,ang,best,bestH,worst,zmin:Math.min(...zs),zmax:Math.max(...zs),cc:Math.hypot(state.sl,state.ss,state.d),lat:Math.hypot(state.sl,state.ss)};
+  return{A,B,ang,best,bestH,worst,zmin:Math.min(...zs),zmax:Math.max(...zs),cc:Math.hypot(s.sl,s.ss,s.d),lat:Math.hypot(s.sl,s.ss)};
 }
 
 function render(){
   if(!mol){draw();return}
   lastR=compute();
   stats(lastR);updateExport(lastR);designPanel();draw();save();
+  if(tab==='scan'){if(geomSig()!==mapSig)scheduleMap();else drawMap()}
 }
 const bestOr=b=>b.r<1e8?fmt(b.r)+' Å':'—';
 function stats(R){
@@ -697,17 +741,17 @@ const EXP={what:'dimer',fmt:'xyz',gm:'#p wB97XD/def2TZVP',om:'! wB97X-D3 def2-TZ
 const FMTS=[['xyz','XYZ','xyz'],['pdb','PDB','pdb'],['sdf','MOL / SDF','sdf'],['gjf','Gaussian','gjf'],['orca','ORCA','inp']];
 const WHATS=[['dimer','Dimer A+B'],['A','Molecule A'],['B','Molecule B']];
 let outText='',outName='structure.xyz';
-const paramTag=()=>`d=${fmt(state.d,3)} slip_long=${fmt(state.sl,3)} slip_short=${fmt(state.ss,3)} tilt_long=${fmt(state.tl,1)} tilt_short=${fmt(state.ts,1)} twist=${fmt(state.tw,1)}${state.mir?' mirror=1':''}`;
-const fileBase=()=>EXP.what==='dimer'?`${name}_dimer_d${fmt(state.d)}_sl${fmt(state.sl)}_ss${fmt(state.ss)}_tl${fmt(state.tl,0)}_ts${fmt(state.ts,0)}_tw${fmt(state.tw,0)}${state.mir?'_m':''}`:`${name}_${EXP.what}`;
+const paramTag=(s=state)=>`d=${fmt(s.d,3)} slip_long=${fmt(s.sl,3)} slip_short=${fmt(s.ss,3)} tilt_long=${fmt(s.tl,1)} tilt_short=${fmt(s.ts,1)} twist=${fmt(s.tw,1)}${s.mir?' mirror=1':''}`;
+const fileBase=(s=state,what=EXP.what)=>what==='dimer'?`${name}_dimer_d${fmt(s.d)}_sl${fmt(s.sl)}_ss${fmt(s.ss)}_tl${fmt(s.tl,0)}_ts${fmt(s.ts,0)}_tw${fmt(s.tw,0)}${s.mir?'_m':''}`:`${name}_${what}`;
 
-function exportSet(R){
+function exportSet(R,s=state,what=EXP.what){
   const inFrame=$('optFrame').checked,conv=inFrame?(p=>p):toGlobal,BA=Batoms();
   const A=R.A.map((p,i)=>({e:mol.atoms[i].e,p:conv(p),f:1})),B=R.B.map((p,j)=>({e:BA[j].e,p:conv(p),f:2}));
   const bA=frame.bonds,bB=Bframe().bonds,fr=inFrame?'molecular frame':'input frame';
-  if(EXP.what==='A')return{atoms:A,bonds:bA,title:`${name} molecule A | ${fr}`,q:EXP.qA,m:EXP.mA};
-  if(EXP.what==='B')return{atoms:B.map(a=>({...a,f:1})),bonds:bB,title:`${name} molecule B | ${paramTag()} | ${fr}`,q:EXP.qB,m:EXP.mB};
+  if(what==='A')return{atoms:A,bonds:bA,title:`${name} molecule A | ${fr}`,q:EXP.qA,m:EXP.mA};
+  if(what==='B')return{atoms:B.map(a=>({...a,f:1})),bonds:bB,title:`${name} molecule B | ${paramTag(s)} | ${fr}`,q:EXP.qB,m:EXP.mB};
   const n=A.length;
-  return{atoms:A.concat(B),bonds:bA.concat(bB.map(([i,j])=>[i+n,j+n])),title:`${name} dimer | ${paramTag()} | ${fr} | A=1-${n} B=${n+1}-${n+B.length}`,q:EXP.qA+EXP.qB,m:EXP.mA+EXP.mB-1,dimer:true};
+  return{atoms:A.concat(B),bonds:bA.concat(bB.map(([i,j])=>[i+n,j+n])),title:`${name} dimer | ${paramTag(s)} | ${fr} | A=1-${n} B=${n+1}-${n+B.length}`,q:EXP.qA+EXP.qB,m:EXP.mA+EXP.mB-1,dimer:true};
 }
 const xyzLine=(e,p)=>e.padEnd(3)+p.map(x=>fmt(x,6).padStart(14)).join('');
 function toXYZ(X){return[X.atoms.length,X.title,...X.atoms.map(a=>xyzLine(a.e,a.p))].join('\n')+'\n'}
@@ -768,10 +812,10 @@ function toSDF(X){
   for(let k=0;k<ch.length;k+=8){const s=ch.slice(k,k+8);L.push('M  CHG'+p3(s.length)+s.map(([i,c])=>' '+p3(i)+' '+p3(c)).join(''))}
   L.push('M  END','$$$$');return L.join('\n')+'\n';
 }
-function toGJF(X){
+function toGJF(X,chk=fileBase()){
   const cp=X.dimer&&EXP.cp;let route=EXP.gm.trim()||'#p';if(cp&&!/counterpoise/i.test(route))route+=' counterpoise=2';
   const qm=cp?`${X.q} ${X.m} ${EXP.qA} ${EXP.mA} ${EXP.qB} ${EXP.mB}`:`${X.q} ${X.m}`;
-  return[`%chk=${fileBase()}.chk`,route,'',X.title.replace(/[@#]/g,' ').trim(),'',qm,...X.atoms.map(a=>(cp?`${a.e}(Fragment=${a.f})`:a.e).padEnd(16)+a.p.map(x=>fmt(x,6).padStart(14)).join('')),'',''].join('\n');
+  return[`%chk=${chk}.chk`,route,'',X.title.replace(/[@#]/g,' ').trim(),'',qm,...X.atoms.map(a=>(cp?`${a.e}(Fragment=${a.f})`:a.e).padEnd(16)+a.p.map(x=>fmt(x,6).padStart(14)).join('')),'',''].join('\n');
 }
 function toORCA(X){
   const tag=X.dimer&&EXP.frag;
@@ -1002,6 +1046,7 @@ function designPanel(){
 const cv=$('cv'),fig=$('fig'),ctx=cv.getContext('2d');
 const VIEWS={top:[[1,0,0],[0,1,0],[0,0,1]],long:[[0,1,0],[0,0,1],[1,0,0]],short:[[1,0,0],[0,0,1],[0,-1,0]],obl:mm(Rx(-62),Rz(-25))};
 const views={dimer:VIEWS.obl,design:VIEWS.obl,crystal:VIEWS.obl},zooms={dimer:1,design:1,crystal:1};
+const vk=()=>tab==='scan'?'dimer':tab; // the Scan tab shows (and shares the view of) the dimer
 let picks=[];
 
 function sceneDimer(R){
@@ -1039,7 +1084,7 @@ function draw(){
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
   const S=scene();picks=[];if(!S||!S.atoms.length)return;
   const pts=S.atoms.map(a=>a.p).concat(S.extra||[]),cen=S.center||mean(S.atoms.map(a=>a.p));
-  const ext=Math.max(...pts.map(p=>dist(p,cen)))+1,sc=Math.min(W,H-50)/(2*ext)*zooms[tab],V=views[tab];
+  const ext=Math.max(...pts.map(p=>dist(p,cen)))+1,sc=Math.min(W,H-50)/(2*ext)*zooms[vk()],V=views[vk()];
   const P=p=>{const q=mv(V,sub(p,cen));return[W/2+q[0]*sc,(H-40)/2-q[1]*sc,q[2]]};
   for(const[pl,fill,stroke]of S.polys){ctx.beginPath();pl.map(P).forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
   const pr=S.atoms.map(a=>P(a.p)),items=[];
@@ -1081,7 +1126,7 @@ function legend(){
   const L={dimer:'<span><i style="background:#d8dee0"></i>A (reference)</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>B (copy)</span><span style="color:#ff8a78">long</span><span style="color:#c8e86a">short</span><span style="color:#8fc7ff">n</span>',
     design:'<span><i style="background:transparent;border:2px solid var(--amber)"></i>selected</span><span>Click an atom to select it · Shift-click for several</span>',
     crystal:cryst?'<span><i style="background:#d8dee0"></i>selected molecule</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>neighbour</span><span style="color:#ff8a78">a</span><span style="color:#c8e86a">b</span><span style="color:#8fc7ff">c</span><span>Click a molecule to select it</span>':'<span>Load a CIF file to see the crystal</span>'};
-  $('legend').innerHTML=L[tab];fig.classList.toggle('pick',tab!=='dimer');
+  $('legend').innerHTML=L[vk()];fig.classList.toggle('pick',tab==='design'||tab==='crystal');
 }
 function vbar(){
   const L=tab==='crystal'?[['obl','Oblique'],['a','Along a'],['b','Along b'],['c','Along c']]:[['obl','Oblique'],['top','Along n'],['long','Along long axis'],['short','Along short axis']];
@@ -1090,20 +1135,20 @@ function vbar(){
 function setView(k){
   if(tab==='crystal'){if(!cryst)return;if(k==='obl')views.crystal=VIEWS.obl;else{const i='abc'.indexOf(k),ax=[0,1,2].map(c=>[0,1,2].map(r=>cryst.Mo[r][c])),Z=unit(ax[i]),Y=perp(ax[i===2?1:2],Z),X=cross(Y,Z);views.crystal=[X,Y,Z]}}
   else if(tab==='design')views.design=mm(VIEWS[k],frame.F);
-  else views.dimer=VIEWS[k];
-  zooms[tab]=1;draw();
+  else views[vk()]=VIEWS[k];
+  zooms[vk()]=1;draw();
 }
-$('vbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.z){zooms[tab]=b.dataset.z==='in'?Math.min(8,zooms[tab]*1.2):Math.max(.25,zooms[tab]/1.2);draw()}else setView(b.dataset.view)});
+$('vbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.z){zooms[vk()]=b.dataset.z==='in'?Math.min(8,zooms[vk()]*1.2):Math.max(.25,zooms[vk()]/1.2);draw()}else setView(b.dataset.view)});
 
 let drag=null;
 fig.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,moved:0,add:e.shiftKey||e.ctrlKey||e.metaKey};fig.setPointerCapture(e.pointerId);fig.classList.add('drag')});
 fig.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;drag.moved+=Math.abs(dx)+Math.abs(dy);
-  if(drag.moved<4)return;views[tab]=mm(axisRot([1,0,0],dy*.01),mm(axisRot([0,1,0],dx*.01),views[tab]));draw()});
+  if(drag.moved<4)return;views[vk()]=mm(axisRot([1,0,0],dy*.01),mm(axisRot([0,1,0],dx*.01),views[vk()]));draw()});
 fig.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;fig.classList.remove('drag');if(d.moved<4){const r=fig.getBoundingClientRect();pick(e.clientX-r.left,e.clientY-r.top,d.add)}});
 fig.addEventListener('pointercancel',()=>{drag=null;fig.classList.remove('drag')});
-fig.addEventListener('wheel',e=>{e.preventDefault();zooms[tab]=Math.min(8,Math.max(.25,zooms[tab]*Math.exp(-e.deltaY*.0015)));draw()},{passive:false});
+fig.addEventListener('wheel',e=>{e.preventDefault();zooms[vk()]=Math.min(8,Math.max(.25,zooms[vk()]*Math.exp(-e.deltaY*.0015)));draw()},{passive:false});
 function pick(x,y,addSel){
-  if(tab==='dimer')return;
+  if(tab==='dimer'||tab==='scan')return;
   let hit=null;for(const p of picks)if(Math.hypot(p.x-x,p.y-y)<=p.r+3&&(!hit||p.z>hit.z))hit=p;
   if(tab==='design'){
     if(!hit){if(!addSel)D.sel=[]}
@@ -1114,9 +1159,9 @@ function pick(x,y,addSel){
 fig.addEventListener('keydown',e=>{
   if(e.target!==fig||e.ctrlKey||e.metaKey||e.altKey)return;
   const st=rad(e.shiftKey?3:15),R={ArrowLeft:axisRot([0,1,0],-st),ArrowRight:axisRot([0,1,0],st),ArrowUp:axisRot([1,0,0],-st),ArrowDown:axisRot([1,0,0],st)}[e.key];
-  if(R){views[tab]=mm(R,views[tab])}
-  else if(e.key==='+'||e.key==='='){zooms[tab]=Math.min(8,zooms[tab]*1.2)}
-  else if(e.key==='-'||e.key==='_'){zooms[tab]=Math.max(.25,zooms[tab]/1.2)}
+  if(R){views[vk()]=mm(R,views[vk()])}
+  else if(e.key==='+'||e.key==='='){zooms[vk()]=Math.min(8,zooms[vk()]*1.2)}
+  else if(e.key==='-'||e.key==='_'){zooms[vk()]=Math.max(.25,zooms[vk()]/1.2)}
   else if(e.key==='0'||e.key==='Home'){setView('obl');e.preventDefault();return}
   else return;
   e.preventDefault();draw();
@@ -1159,13 +1204,14 @@ $('cxLoad').onclick=loadPair;
 $('cxExample').onclick=()=>{$('src').value=BENZENE_CIF;load(BENZENE_CIF,'benzene_Pbca')};
 
 /* ============================== controls ============================== */
-const tabs=['dimer','design','crystal'];
+const tabs=['dimer','design','crystal','scan'];
 function setTab(t){
-  tab=t;tabs.forEach(k=>{$('tab-'+k).hidden=k!==t;$('t_'+k).setAttribute('aria-selected',k===t);$('t_'+k).tabIndex=k===t?0:-1});
+  if(t!=='scan'&&previewBase){Object.assign(state,previewBase);previewBase=null;sync()}
+  mapCursor=null;tab=t;if(t==='scan'){syncScan();scheduleMap()}tabs.forEach(k=>{$('tab-'+k).hidden=k!==t;$('t_'+k).setAttribute('aria-selected',k===t);$('t_'+k).tabIndex=k===t?0:-1});
   $('pairNote').hidden=!pairInfo;$('pairNote').textContent=pairInfo;$('partnerActs').hidden=!partner;
   legend();vbar();crystalPanel();render();
 }
-tabs.forEach((k,i)=>{$('t_'+k).onclick=()=>setTab(k);$('t_'+k).addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(d){const n=tabs[(i+d+3)%3];setTab(n);$('t_'+n).focus()}})});
+tabs.forEach((k,i)=>{$('t_'+k).onclick=()=>setTab(k);$('t_'+k).addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(d){const n=tabs[(i+d+tabs.length)%tabs.length];setTab(n);$('t_'+n).focus()}})});
 
 $('params').innerHTML=PARAMS.map(p=>`<div class="row"><label for="n_${p.id}">${p.label}</label><div class="num"><input type="number" id="n_${p.id}" step="${p.step}"><span>${p.unit}</span></div><input type="range" id="r_${p.id}" min="${p.min}" max="${p.max}" step="${p.step}" aria-label="${p.label}">${p.hint?`<small>${p.hint}</small>`:''}</div>`).join('');
 const sync=()=>{PARAMS.forEach(p=>{$('n_'+p.id).value=+state[p.id].toFixed(p.unit==='Å'?3:2);$('r_'+p.id).value=state[p.id]});$('optMir').checked=!!state.mir};
@@ -1258,6 +1304,504 @@ $('dl').addEventListener('click',async()=>{
   if(standalone){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([outText],{type:'text/plain'}));a.download=outName;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);$('outmsg').textContent='Saved '+outName;return}
   if(!downloads)return;try{await downloads.save({filename:outName,data:outText});$('outmsg').textContent='Saved '+outName}catch(e){$('outmsg').textContent='Download was not completed.'}});
 
+/* ============================== scan ============================== */
+/* A full grid over the ticked parameters. Each point is one dimer (copy B placed by that parameter set). */
+const PL=Object.fromEntries(PARAMS.map(p=>[p.id,p]));
+const SCAN_METRICS=[
+  ['pct','Tightest contact (% of vdW sum)','%',R=>R.worst.q*100,0],
+  ['closest','Closest contact (Å)','Å',R=>R.best.r,2],
+  ['heavy','Closest heavy-atom contact (Å)','Å',R=>R.bestH.r<1e8?R.bestH.r:NaN,2],
+  ['cc','Centroid distance (Å)','Å',R=>R.cc,2],
+  ['ang','Angle between planes (°)','°',R=>R.ang,1]];
+const SCAN_CLASH=.75,SCAN_MAX=20000,SCAN_CONFIRM=5000,MAP_MAX=40000;
+let scanBusy=false,scanCancel=false;
+const SCAN={rows:{},mir:0,x:'sl',y:'d',metric:'pct',slice:{},qm:'gjf',mode:'2d',z:'',skip:false,name:''};
+PARAMS.forEach(p=>{const ang=p.unit==='°';SCAN.rows[p.id]={on:p.id==='d'||p.id==='sl',min:p.id==='d'?3:0,max:p.id==='d'?4:ang?30:3,step:p.id==='d'?.1:ang?10:.5,fix:p.v}});
+/* Blue ramp, light → dark (sequential magnitude). */
+const BLUES=['#cce3fd','#b6d5f8','#9dc8f7','#84b9f3','#6aabf1','#519ced','#338ced','#257de0','#2370cd','#1b64be','#1757ac','#0f4a96','#0e3d7e'];
+
+const decOf=v=>{const t=String(v);return t.includes('e')?6:(t.split('.')[1]||'').length};
+function scanAxis(id){
+  const r=SCAN.rows[id];
+  if(!r.on)return Number.isFinite(r.fix)?{vals:[r.fix],fixed:true,dec:Math.min(6,decOf(r.fix))}:{err:'the fixed value is not a number'};
+  if(![r.min,r.max,r.step].every(Number.isFinite))return{err:'min, max and step must be numbers'};
+  if(!(r.step>0))return{err:'the step must be above 0'};
+  if(r.max<r.min)return{err:'the maximum is below the minimum'};
+  const n=Math.floor((r.max-r.min)/r.step+1e-9)+1;if(n>2000)return{err:'more than 2,000 values'};
+  const dec=Math.min(6,Math.max(decOf(r.min),decOf(r.step)));
+  return{vals:Array.from({length:n},(_,k)=>+(r.min+k*r.step).toFixed(dec)),dec};
+}
+function scanDef(){
+  const ax={},errs=[];let total=1;
+  PARAMS.forEach(p=>{const a=scanAxis(p.id);if(a.err)errs.push(`${p.label}: ${a.err}.`);else{ax[p.id]=a;total*=a.vals.length}});
+  const scanned=PARAMS.map(p=>p.id).filter(id=>SCAN.rows[id].on&&ax[id]);
+  return{ax,errs,total:errs.length?0:total,scanned};
+}
+const fmtv=(v,dec)=>fmt(v,dec);
+const nearest=(vals,v)=>vals.reduce((b,x)=>Math.abs(x-v)<Math.abs(b-v)?x:b,vals[0]);
+const scmsg=(id,t,err)=>{$(id).className='msg'+(err?' err':'');$(id).textContent=t};
+
+/* ---------- panel ---------- */
+$('scRows').innerHTML=PARAMS.map(p=>`<fieldset class="scrow" id="scr_${p.id}" data-on="0"><legend><label><input type="checkbox" id="sc_${p.id}_on"> ${p.label} (${p.unit})</label></legend>
+  <div class="sc3 scon"><label class="field">Min<input type="number" id="sc_${p.id}_min" step="any"></label><label class="field">Max<input type="number" id="sc_${p.id}_max" step="any"></label><label class="field">Step<input type="number" id="sc_${p.id}_step" step="any" min="0"></label></div>
+  <div class="scoff"><label class="field">Fixed value<input type="number" id="sc_${p.id}_fix" step="any"></label></div>
+  <small class="scn" id="sc_${p.id}_n"></small></fieldset>`).join('');
+$('scMetric').innerHTML=SCAN_METRICS.map(([k,l])=>`<option value="${k}">${l}</option>`).join('');
+function syncScan(){
+  PARAMS.forEach(p=>{const r=SCAN.rows[p.id];$('sc_'+p.id+'_on').checked=r.on;$('scr_'+p.id).dataset.on=r.on?'1':'0';
+    ['min','max','step','fix'].forEach(k=>{const el=$(`sc_${p.id}_${k}`);if(document.activeElement!==el)el.value=Number.isFinite(r[k])?+r[k].toFixed(6):''})});
+  $('scMir').checked=!!SCAN.mir;$('scSkip').checked=!!SCAN.skip;$('scMetric').value=SCAN.metric;$('scMode').value=SCAN.mode;
+  if(document.activeElement!==$('scName'))$('scName').value=SCAN.name||`${name}_scan`;
+  [...$('scQm').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===SCAN.qm));
+  scanChanged(false);
+}
+function scanChanged(rebuild=true){
+  const def=scanDef();
+  PARAMS.forEach(p=>{const a=def.ax[p.id],r=SCAN.rows[p.id];$('sc_'+p.id+'_n').textContent=!r.on?'':a?`${a.vals.length} value${a.vals.length>1?'s':''}: ${fmtv(a.vals[0],a.dec)}${a.vals.length>1?` … ${fmtv(a.vals[a.vals.length-1],a.dec)}`:''}`:''});
+  if(def.errs.length)scmsg('scCount',def.errs.join(' '),true);
+  else if(!def.scanned.length)scmsg('scCount','Tick at least one parameter to scan.',true);
+  else if(def.total>SCAN_MAX)scmsg('scCount',`${def.scanned.map(id=>def.ax[id].vals.length).join(' × ')} = ${def.total.toLocaleString('en')} dimers, above the limit of ${SCAN_MAX.toLocaleString('en')}. Use larger steps or fewer parameters.`,true);
+  else scmsg('scCount',`${def.scanned.map(id=>def.ax[id].vals.length).join(' × ')} = ${def.total.toLocaleString('en')} dimer${def.total>1?'s':''}${def.total>SCAN_CONFIRM?' (you will be asked to confirm)':''}.`);
+  $('scGo').disabled=!!(def.errs.length||!def.scanned.length||def.total>SCAN_MAX||scanBusy);
+  // axes: horizontal, vertical and the slices for the other scanned parameters
+  const sc=def.scanned;
+  if(!sc.includes(SCAN.x))SCAN.x=sc[0]||'';
+  if(SCAN.y&&(!sc.includes(SCAN.y)||SCAN.y===SCAN.x))SCAN.y='';
+  if(!SCAN.y&&sc.length>1)SCAN.y=sc.find(id=>id!==SCAN.x);
+  const opt=(id,sel)=>`<option value="${id}"${id===sel?' selected':''}>${PL[id].label} (${PL[id].unit})</option>`;
+  $('scX').innerHTML=sc.map(id=>opt(id,SCAN.x)).join('')||'<option value="">—</option>';
+  $('scY').innerHTML='<option value="">None (one row)</option>'+sc.filter(id=>id!==SCAN.x).map(id=>opt(id,SCAN.y)).join('');
+  const rest=sc.filter(id=>id!==SCAN.x&&id!==SCAN.y);
+  rest.forEach(id=>{const v=def.ax[id].vals;if(!v.some(x=>Math.abs(x-SCAN.slice[id])<1e-9))SCAN.slice[id]=nearest(v,state[id])});
+  $('scSlices').innerHTML=rest.map(id=>`<label class="field">Shown at ${PL[id].label.toLowerCase()}<select data-slice="${id}">${def.ax[id].vals.map(v=>`<option value="${v}"${Math.abs(v-SCAN.slice[id])<1e-9?' selected':''}>${fmtv(v,def.ax[id].dec)}${PL[id].unit==='°'?'°':' '+PL[id].unit}</option>`).join('')}</select></label>`).join('');
+  if(SCAN.z&&!rest.includes(SCAN.z))SCAN.z='';
+  $('scZ').innerHTML='<option value="">The colour measure (surface)</option>'+rest.map(id=>opt(id,SCAN.z)).join('');
+  $('scZ').disabled=SCAN.mode!=='3d';
+  if(rebuild){scheduleMap();save()}
+}
+PARAMS.forEach(p=>{
+  $('sc_'+p.id+'_on').addEventListener('change',e=>{SCAN.rows[p.id].on=e.target.checked;$('scr_'+p.id).dataset.on=e.target.checked?'1':'0';scanChanged()});
+  ['min','max','step','fix'].forEach(k=>$(`sc_${p.id}_${k}`).addEventListener('input',e=>{SCAN.rows[p.id][k]=e.target.value===''?NaN:parseFloat(e.target.value);scanChanged()}));
+});
+$('scMir').addEventListener('change',e=>{SCAN.mir=e.target.checked?1:0;scanChanged()});
+$('scSkip').addEventListener('change',e=>{SCAN.skip=e.target.checked;save()});
+$('scX').addEventListener('change',e=>{SCAN.x=e.target.value;if(SCAN.y===SCAN.x)SCAN.y='';scanChanged()});
+$('scY').addEventListener('change',e=>{SCAN.y=e.target.value;scanChanged()});
+$('scMetric').addEventListener('change',e=>{SCAN.metric=e.target.value;scanChanged()});
+$('scSlices').addEventListener('change',e=>{const id=e.target.dataset.slice;if(id){SCAN.slice[id]=+e.target.value;scanChanged()}});
+$('scMode').addEventListener('change',e=>{SCAN.mode=e.target.value;scanChanged()});
+$('scZ').addEventListener('change',e=>{SCAN.z=e.target.value;save()});
+$('scName').addEventListener('input',e=>{SCAN.name=e.target.value.trim();save()});
+$('scQm').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;SCAN.qm=b.dataset.q;[...$('scQm').children].forEach(x=>x.setAttribute('aria-pressed',x===b));save()});
+$('scUseCur').onclick=()=>{PARAMS.forEach(p=>SCAN.rows[p.id].fix=+state[p.id].toFixed(4));SCAN.mir=state.mir;syncScan();scheduleMap();save()};
+
+/* ---------- preview map ---------- */
+let mapData=null,mapTimer=0,mapSig='',mapCursor=null,previewBase=null;
+const geomSig=()=>mol?JSON.stringify([mol.atoms.length,frame.c,frame.F[0],Bframe().c,Batoms().length]):'';
+function scheduleMap(){clearTimeout(mapTimer);mapTimer=setTimeout(buildMap,120)}
+function buildMap(){
+  mapSig=geomSig();mapData=null;
+  const def=scanDef();
+  if(!mol||def.errs.length||!def.scanned.length||!SCAN.x){drawMap();return}
+  const X=SCAN.x,Y=SCAN.y||null,xs=def.ax[X].vals,ys=Y?def.ax[Y].vals:[null];
+  if(xs.length*ys.length>MAP_MAX){mapData={tooBig:xs.length*ys.length};drawMap();return}
+  const base={mir:SCAN.mir};
+  PARAMS.forEach(p=>{const a=def.ax[p.id];base[p.id]=a.fixed?a.vals[0]:SCAN.slice[p.id]??a.vals[0]});
+  const M=SCAN_METRICS.find(m=>m[0]===SCAN.metric),cells=[];let lo=Infinity,hi=-Infinity;
+  ys.forEach((yv,j)=>{cells.push(xs.map(xv=>{
+    const s={...base,[X]:xv};if(Y)s[Y]=yv;
+    const R=compute(s),v=M[3](R);if(Number.isFinite(v)){lo=Math.min(lo,v);hi=Math.max(hi,v)}
+    return{s,v,clash:R.worst.q<SCAN_CLASH,R:{best:R.best,bestH:R.bestH,q:R.worst.q}};
+  }))});
+  mapData={X,Y,xs,ys,cells,lo,hi,M,dx:def.ax[X].dec,dy:Y?def.ax[Y].dec:0};
+  drawMap();
+}
+const hex2rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function rampColour(t,dark){
+  const R=dark?BLUES.slice().reverse():BLUES,x=Math.max(0,Math.min(1,t))*(R.length-1),i=Math.min(R.length-2,Math.floor(x)),f=x-i,a=hex2rgb(R[i]),b=hex2rgb(R[i+1]);
+  return`rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*f)).join(',')})`;
+}
+let mapGeom=null;
+function drawMap(){
+  const cv2=$('scMap');if(tab!=='scan')return;
+  const dpr=window.devicePixelRatio||1,W=cv2.clientWidth,H=W<380?260:300;cv2.style.height=H+'px';
+  cv2.width=W*dpr;cv2.height=H*dpr;const g=cv2.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  const ink=getComputedStyle(cv2).color,mute=getComputedStyle($('scTip')).color,surf=getComputedStyle(cv2.closest('.ctrl')).backgroundColor;
+  const lum=(surf.match(/\d+/g)||[255,255,255]).slice(0,3).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0)/255,dark=lum<.4;
+  $('scKey').textContent=dark?'Lighter blue means a larger value.':'Darker blue means a larger value.';
+  g.font='12px "IBM Plex Sans",sans-serif';g.fillStyle=mute;g.textBaseline='middle';
+  mapGeom=null;
+  if(!mapData){g.textAlign='center';g.fillText(mol?'Define a valid scan to see the map.':'Load a molecule first.',W/2,H/2);return}
+  if(mapData.tooBig){g.textAlign='center';g.fillText(`${mapData.tooBig.toLocaleString('en')} cells: too many to preview. Use larger steps.`,W/2,H/2);return}
+  const{xs,ys,cells,lo,hi,M,X,Y}=mapData,L=58,Rm=70,T=10,B=44,pw=W-L-Rm,ph=H-T-B,cw=pw/xs.length,ch=ph/ys.length;
+  mapGeom={L,T,pw,ph,cw,ch};
+  const gap=cw>=8&&ch>=8?2:cw>=4&&ch>=4?1:0;
+  cells.forEach((row,j)=>row.forEach((c,i)=>{
+    const x=L+i*cw,y=T+(ys.length-1-j)*ch;
+    g.fillStyle=Number.isFinite(c.v)?rampColour(hi>lo?(c.v-lo)/(hi-lo):.5,dark):surf;
+    g.fillRect(x+gap/2,y+gap/2,Math.max(1,cw-gap),Math.max(1,ch-gap));
+    if(c.clash){const cx=x+cw/2,cy=y+ch/2,r=Math.max(2,Math.min(cw,ch)*.28);
+      if(r<3){g.fillStyle=surf;g.beginPath();g.arc(cx,cy,3,0,7);g.fill();g.fillStyle='#ff6f59';g.beginPath();g.arc(cx,cy,1.8,0,7);g.fill()}
+      else for(const[col,w]of[[surf,4],['#ff6f59',2]]){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(cx-r,cy-r);g.lineTo(cx+r,cy+r);g.moveTo(cx+r,cy-r);g.lineTo(cx-r,cy+r);g.stroke()}}
+  }));
+  // the live dimer's cell, and the cursor
+  const same=(s)=>PARAMS.every(p=>Math.abs(s[p.id]-state[p.id])<1e-9)&&!!s.mir===!!state.mir;
+  cells.forEach((row,j)=>row.forEach((c,i)=>{if(same(c.s)){g.strokeStyle='#2fb5a3';g.lineWidth=2;g.strokeRect(L+i*cw+1,T+(ys.length-1-j)*ch+1,cw-2,ch-2)}}));
+  if(mapCursor){const{i,j}=mapCursor;g.strokeStyle=ink;g.lineWidth=2;g.strokeRect(L+i*cw,T+(ys.length-1-j)*ch,cw,ch)}
+  // axes
+  g.fillStyle=mute;g.strokeStyle=mute;g.lineWidth=1;
+  const ticks=(n,max)=>{const k=Math.max(1,Math.ceil(n/max));const r=[];for(let i=0;i<n;i+=k)r.push(i);if(r[r.length-1]!==n-1&&n-1-r[r.length-1]>=k/2)r.push(n-1);return r};
+  g.textAlign='center';g.textBaseline='top';
+  ticks(xs.length,Math.max(2,Math.floor(pw/48))).forEach(i=>g.fillText(fmtv(xs[i],mapData.dx),L+(i+.5)*cw,T+ph+4));
+  g.fillText(`${PL[X].label} (${PL[X].unit})`,L+pw/2,T+ph+22);
+  g.textAlign='right';g.textBaseline='middle';
+  if(Y){ticks(ys.length,Math.max(2,Math.floor(ph/22))).forEach(j=>g.fillText(fmtv(ys[j],mapData.dy),L-6,T+(ys.length-1-j+.5)*ch));
+    g.save();g.translate(12,T+ph/2);g.rotate(-Math.PI/2);g.textAlign='center';g.fillText(`${PL[Y].label} (${PL[Y].unit})`,0,0);g.restore()}
+  // colour bar
+  const bx=L+pw+14,bw=12;
+  for(let k=0;k<ph;k++){g.fillStyle=rampColour(1-k/ph,dark);g.fillRect(bx,T+k,bw,1.2)}
+  g.fillStyle=mute;g.textAlign='left';g.textBaseline='top';
+  if(Number.isFinite(hi)){g.fillText(fmt(hi,M[4]),bx+bw+4,T);g.textBaseline='bottom';g.fillText(fmt(lo,M[4]),bx+bw+4,T+ph)}
+  g.textBaseline='middle';g.fillText(M[2],bx+bw+4,T+ph/2);
+}
+function cellAt(ev){
+  if(!mapGeom||!mapData||mapData.tooBig)return null;
+  const r=$('scMap').getBoundingClientRect(),x=ev.clientX-r.left-mapGeom.L,y=ev.clientY-r.top-mapGeom.T;
+  if(x<0||y<0||x>=mapGeom.pw||y>=mapGeom.ph)return null;
+  return{i:Math.floor(x/mapGeom.cw),j:mapData.ys.length-1-Math.floor(y/mapGeom.ch)};
+}
+function describeCell(c){
+  const{X,Y,M}=mapData,u=q=>q.unit==='°'?'°':' '+q.unit,p=PARAMS.filter(q=>q.id===X||q.id===Y).map(q=>`${q.label.toLowerCase()} ${fmt(c.s[q.id],q.id===X?mapData.dx:mapData.dy)}${u(q)}`).join(', ');
+  const val=Number.isFinite(c.v)?fmt(c.v,M[4])+(M[2]==='%'?'%':' '+M[2]):'—',extra=[];
+  if(M[0]!=='closest')extra.push(`closest contact ${c.R.best.ea}···${c.R.best.eb} ${fmt(c.R.best.r)} Å`);
+  if(M[0]!=='pct')extra.push(`tightest contact ${fmt(c.R.q*100,0)}% of the vdW sum`);
+  return`${p[0].toUpperCase()+p.slice(1)}. ${M[1].replace(/ \(.*\)$/,'')}: ${val}${M[0]==='pct'?' of the vdW sum':''}${extra.length?'; '+extra.join('; '):''}${c.clash?'. Clash.':'.'}`;
+}
+function previewCell(ij,keep){
+  if(!mapData||mapData.tooBig||!ij)return;
+  mapCursor=ij;const c=mapData.cells[ij.j][ij.i];
+  if(!previewBase)previewBase={...state};
+  Object.assign(state,c.s);sync();
+  if(keep){previewBase=null;pairInfo='';$('scTip').textContent=`Kept in the Dimer tab. ${describeCell(c)}`}
+  else $('scTip').textContent=describeCell(c);
+  render();
+}
+function endPreview(){
+  mapCursor=null;
+  if(previewBase){Object.assign(state,previewBase);previewBase=null;sync();render()}else drawMap();
+}
+const scMap=$('scMap');
+scMap.addEventListener('pointermove',e=>{const ij=cellAt(e);if(!ij){if(mapCursor)endPreview();return}if(!mapCursor||ij.i!==mapCursor.i||ij.j!==mapCursor.j)previewCell(ij)});
+scMap.addEventListener('pointerleave',()=>{if(document.activeElement!==scMap)endPreview()});
+scMap.addEventListener('click',e=>{const ij=cellAt(e);if(ij)previewCell(ij,true)});
+scMap.addEventListener('focus',()=>{if(!mapData||mapData.tooBig||mapCursor)return;
+  let ij={i:0,j:0};mapData.cells.forEach((row,j)=>row.forEach((c,i)=>{if(PARAMS.every(p=>Math.abs(c.s[p.id]-state[p.id])<1e-9))ij={i,j}}));previewCell(ij)});
+scMap.addEventListener('blur',()=>endPreview());
+scMap.addEventListener('keydown',e=>{
+  if(!mapData||mapData.tooBig)return;
+  const c=mapCursor||{i:0,j:0},d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[e.key];
+  if(d){e.preventDefault();previewCell({i:Math.max(0,Math.min(mapData.xs.length-1,c.i+d[0])),j:Math.max(0,Math.min(mapData.ys.length-1,c.j+d[1]))})}
+  else if(e.key==='Enter'||e.key===' '){e.preventDefault();previewCell(c,true)}
+  else if(e.key==='Escape'){e.preventDefault();endPreview();$('scTip').textContent='Back to the previous dimer.'}
+});
+
+/* ---------- ZIP (stored or deflated with the browser's CompressionStream) ---------- */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+async function deflateRaw(u){if(typeof CompressionStream==='undefined')return null;try{return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer())}catch{return null}}
+async function makeZip(files,progress){
+  const enc=new TextEncoder(),parts=[],central=[],now=new Date();let off=0;
+  const tm=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1),dt=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+  for(let n=0;n<files.length;n++){
+    const f=files[n],nm=enc.encode(f.name),raw=typeof f.data==='string'?enc.encode(f.data):f.data,crc=crc32(raw);
+    let body=await deflateRaw(raw),method=8;if(!body||body.length>=raw.length){body=raw;method=0}
+    const h=new DataView(new ArrayBuffer(30));
+    [[0,0x04034b50,4],[4,20,2],[6,0x0800,2],[8,method,2],[10,tm,2],[12,dt,2],[14,crc,4],[18,body.length,4],[22,raw.length,4],[26,nm.length,2],[28,0,2]].forEach(([o,v,b])=>b===4?h.setUint32(o,v,true):h.setUint16(o,v,true));
+    const c=new DataView(new ArrayBuffer(46));
+    [[0,0x02014b50,4],[4,20,2],[6,20,2],[8,0x0800,2],[10,method,2],[12,tm,2],[14,dt,2],[16,crc,4],[20,body.length,4],[24,raw.length,4],[28,nm.length,2],[30,0,2],[32,0,2],[34,0,2],[36,0,2],[38,0,4],[42,off,4]].forEach(([o,v,b])=>b===4?c.setUint32(o,v,true):c.setUint16(o,v,true));
+    parts.push(h,nm,body);central.push(c,nm);off+=30+nm.length+body.length;
+    if(progress&&n%200===0){progress(n,files.length);await new Promise(r=>setTimeout(r));if(scanCancel)throw new Error('cancelled')}
+  }
+  const size=central.reduce((s,x)=>s+x.byteLength,0),e=new DataView(new ArrayBuffer(22));
+  [[0,0x06054b50,4],[4,0,2],[6,0,2],[8,files.length,2],[10,files.length,2],[12,size,4],[16,off,4],[20,0,2]].forEach(([o,v,b])=>b===4?e.setUint32(o,v,true):e.setUint16(o,v,true));
+  return new Blob([...parts,...central,e],{type:'application/zip'});
+}
+
+/* ---------- XLSX (SpreadsheetML, inline strings) ---------- */
+const xmlEsc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'');
+const colName=c=>{let s='';c++;while(c){const m=(c-1)%26;s=String.fromCharCode(65+m)+s;c=(c-m-1)/26}return s};
+function sheetXML(rows,widths,filter){
+  const n=rows.length,w=rows[0].length,ref=`A1:${colName(w-1)}${n}`;
+  const cell=(v,r,c,bold)=>{const a=colName(c)+(r+1),s=bold?' s="1"':'';
+    if(typeof v==='number'&&Number.isFinite(v))return`<c r="${a}"${s}><v>${+v.toFixed(6)}</v></c>`;
+    if(v==null||v===''||(typeof v==='number'))return'';
+    return`<c r="${a}" t="inlineStr"${s}><is><t xml:space="preserve">${xmlEsc(v)}</t></is></c>`};
+  return`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><dimension ref="${ref}"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${widths.map((x,i)=>`<col min="${i+1}" max="${i+1}" width="${x}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.map((row,r)=>`<row r="${r+1}">${row.map((v,c)=>cell(v,r,c,r===0)).join('')}</row>`).join('')}</sheetData>${filter?`<autoFilter ref="${ref}"/>`:''}</worksheet>`;
+}
+async function makeXLSX(sheets){
+  const files=[
+    {name:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`},
+    {name:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {name:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${xmlEsc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets><definedNames>${sheets.map((s,i)=>s.filter?`<definedName name="_xlnm._FilterDatabase" localSheetId="${i}" hidden="1">'${xmlEsc(s.name)}'!$A$1:$${colName(s.rows[0].length-1)}$${s.rows.length}</definedName>`:'').join('')}</definedNames></workbook>`},
+    {name:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+    {name:'xl/styles.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`},
+    ...sheets.map((s,i)=>({name:`xl/worksheets/sheet${i+1}.xml`,data:sheetXML(s.rows,s.widths,s.filter)}))];
+  return new Uint8Array(await (await makeZip(files)).arrayBuffer());
+}
+
+/* ---------- matplotlib script and README ---------- */
+const PY_COLS=['no','d','sl','ss','tl','ts','tw','pct_vdw','closest','closest_heavy','centroid','angle','clash','written'];
+function plotScript(ctx){
+  const r4=v=>Number.isFinite(v)?+v.toFixed(4):null;
+  const data=JSON.stringify(ctx.rows.map(r=>[r.k,...PARAMS.map(p=>r.s[p.id]),r4(r.R.worst.q*100),r4(r.R.best.r),r4(r.R.bestH.r<1e8?r.R.bestH.r:NaN),r4(r.R.cc),r4(r.R.ang),r.clash?1:0,r.folder?1:0]));
+  const pyStr=t=>JSON.stringify(String(t));
+  const SHORT={d:'d',sl:'slip long',ss:'slip short',tl:'tilt long',ts:'tilt short',tw:'twist'};
+  const params=PARAMS.map(p=>`    ${pyStr(p.id)}: (${pyStr(SHORT[p.id])}, ${pyStr(`${p.label} (${p.unit})`)}),`).join('\n');
+  const fixed=PARAMS.filter(p=>!ctx.def.scanned.includes(p.id)).map(p=>`${pyStr(p.id)}: ${ctx.def.ax[p.id].vals[0]}`).join(', ');
+  const fix=Object.entries(ctx.slice).map(([k,v])=>`${pyStr(k)}: ${v}`).join(', ');
+  const ax=ctx.axes;
+  return`#!/usr/bin/env python3
+"""DimerForge scan plot for ${ctx.title.replace(/"/g,"'")}: ${ctx.rows.length} dimers.
+
+The scan data are embedded in this file, so it runs on its own; it needs numpy
+and matplotlib. Scanned parameters: ${ctx.def.scanned.join(', ')}.
+
+  python plot_scan.py                        default plot, saved as scan_plot.png and shown
+  python plot_scan.py --metric closest       colour by another measure (see METRICS)
+  python plot_scan.py --mode 3d              3D view
+  python plot_scan.py --x sl --y d --z tw    choose the axes (scanned parameters only)
+  python plot_scan.py --fix tl=10            value of a scanned parameter that is not on an axis
+  python plot_scan.py --save map.pdf --no-show
+"""
+import argparse
+import json
+import sys
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+
+TITLE = ${pyStr(ctx.title)}
+PARAMS = {
+${params}
+}
+METRICS = {
+    "pct_vdw": "Tightest contact (% of vdW sum)",
+    "closest": "Closest contact (Å)",
+    "closest_heavy": "Closest heavy-atom contact (Å)",
+    "centroid": "Centroid distance (Å)",
+    "angle": "Angle between planes (°)",
+}
+SCANNED = ${JSON.stringify(ctx.def.scanned)}
+FIXED = {${fixed}}  # parameters held constant in this scan
+DEFAULTS = {"metric": ${pyStr(ctx.metric)}, "mode": ${pyStr(ctx.mode)}, "x": ${pyStr(ax[0]||'')}, "y": ${pyStr(ax[1]||'')}, "z": ${pyStr(ax[2]||'')}, "fix": {${fix}}}
+CLASH_PCT = ${SCAN_CLASH*100}  # a contact under this % of the vdW sum is a clash
+BLUES = ${JSON.stringify(BLUES)}
+CLASH_COLOUR = "#e4472d"
+COLUMNS = ${JSON.stringify(PY_COLS)}
+DATA = json.loads(r"""${data}""")
+
+
+def parse_fix(items):
+    out = {}
+    for item in items or []:
+        key, _, value = item.partition("=")
+        if key not in SCANNED or not value:
+            sys.exit(f"--fix expects NAME=VALUE with NAME one of: {', '.join(SCANNED)}")
+        out[key] = float(value)
+    return out
+
+
+def grid(points, xk, yk, metric):
+    xs = sorted({r[xk] for r in points})
+    ys = sorted({r[yk] for r in points})
+    z = np.full((len(ys), len(xs)), np.nan)
+    for r in points:
+        z[ys.index(r[yk]), xs.index(r[xk])] = r[metric]
+    return xs, ys, z
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Plot a DimerForge scan.")
+    ap.add_argument("--metric", choices=list(METRICS), default=DEFAULTS["metric"])
+    ap.add_argument("--mode", choices=["2d", "3d"], default=DEFAULTS["mode"])
+    ap.add_argument("--x", default=DEFAULTS["x"])
+    ap.add_argument("--y", default=DEFAULTS["y"])
+    ap.add_argument("--z", default=None, help="third axis (3D only); default: the one chosen in DimerForge")
+    ap.add_argument("--fix", action="append", metavar="NAME=VALUE")
+    ap.add_argument("--save", default="scan_plot.png")
+    ap.add_argument("--no-show", action="store_true")
+    a = ap.parse_args()
+    if a.z is None:
+        a.z = DEFAULTS["z"] if a.mode == "3d" else ""
+    if not a.y:
+        a.z = ""
+
+    axes = [p for p in (a.x, a.y, a.z) if p]
+    for p in axes:
+        if p not in SCANNED:
+            sys.exit(f"{p} was not scanned; choose from: {', '.join(SCANNED)}")
+    if len(set(axes)) != len(axes):
+        sys.exit("Each axis needs a different parameter.")
+    if a.mode == "2d" and len(axes) == 3:
+        sys.exit("A 2D map has two axes: drop --z, or use --mode 3d.")
+
+    rows = [dict(zip(COLUMNS, r)) for r in DATA]
+    fix = dict(DEFAULTS["fix"])
+    fix.update(parse_fix(a.fix))
+    others = [p for p in SCANNED if p not in axes]
+    for p in others:
+        values = sorted({r[p] for r in rows})
+        fix.setdefault(p, values[0])
+        if not any(abs(v - fix[p]) < 1e-6 for v in values):
+            sys.exit(f"{p} = {fix[p]:g} is not a scan value; choose from: {', '.join(f'{v:g}' for v in values)}")
+    points = [r for r in rows if r[a.metric] is not None and all(abs(r[p] - fix[p]) < 1e-6 for p in others)]
+    if not points:
+        sys.exit("No scan points have this measure.")
+
+    cmap = LinearSegmentedColormap.from_list("dimerforge_blues", BLUES)
+    label = METRICS[a.metric]
+    held = {**FIXED, **{p: fix[p] for p in others}}
+    note = ", ".join(f"{PARAMS[p][0]} = {v:g}" for p, v in held.items())
+    clash = [r for r in points if r["clash"]]
+    clash_label = f"clash (contact under {CLASH_PCT:g}% of the vdW sum)"
+    fig = plt.figure(figsize=(8, 6.2))
+
+    if len(axes) == 1:
+        ax = fig.add_subplot()
+        points.sort(key=lambda r: r[a.x])
+        ax.plot([r[a.x] for r in points], [r[a.metric] for r in points], color=BLUES[9], lw=2, marker="o", ms=4)
+        if clash:
+            ax.plot([r[a.x] for r in clash], [r[a.metric] for r in clash], ls="none", marker="x", color=CLASH_COLOUR, ms=9, mew=2, label=clash_label)
+        ax.set_xlabel(PARAMS[a.x][1])
+        ax.set_ylabel(label)
+        ax.grid(alpha=0.25)
+    elif a.mode == "2d":
+        ax = fig.add_subplot()
+        xs, ys, z = grid(points, a.x, a.y, a.metric)
+        mesh = ax.pcolormesh(xs, ys, z, shading="nearest", cmap=cmap)
+        fig.colorbar(mesh, ax=ax, label=label)
+        if a.metric == "pct_vdw" and len(xs) > 1 and len(ys) > 1 and np.nanmin(z) < CLASH_PCT < np.nanmax(z):
+            ax.contour(xs, ys, z, levels=[CLASH_PCT], colors=CLASH_COLOUR, linestyles="--", linewidths=1.5)
+        if clash:
+            ax.scatter([r[a.x] for r in clash], [r[a.y] for r in clash], marker="x", color=CLASH_COLOUR, s=36, linewidths=1.8, label=clash_label)
+        ax.set_xlabel(PARAMS[a.x][1])
+        ax.set_ylabel(PARAMS[a.y][1])
+    else:
+        ax = fig.add_subplot(projection="3d")
+        if len(axes) == 3:
+            dots = ax.scatter([r[a.x] for r in points], [r[a.y] for r in points], [r[a.z] for r in points],
+                              c=[r[a.metric] for r in points], cmap=cmap, s=36, depthshade=False, edgecolors="white", linewidths=0.4)
+            fig.colorbar(dots, ax=ax, label=label, shrink=0.7, pad=0.12)
+            if clash:
+                ax.scatter([r[a.x] for r in clash], [r[a.y] for r in clash], [r[a.z] for r in clash], marker="x", color=CLASH_COLOUR, s=50, depthshade=False, label=clash_label)
+            ax.set_zlabel(PARAMS[a.z][1])
+        else:
+            xs, ys, z = grid(points, a.x, a.y, a.metric)
+            gx, gy = np.meshgrid(xs, ys)
+            surf = ax.plot_surface(gx, gy, z, cmap=cmap, vmin=np.nanmin(z), vmax=np.nanmax(z), edgecolor="none")
+            fig.colorbar(surf, ax=ax, label=label, shrink=0.7, pad=0.12)
+            if clash:
+                ax.scatter([r[a.x] for r in clash], [r[a.y] for r in clash], [r[a.metric] for r in clash], marker="x", color=CLASH_COLOUR, s=50, depthshade=False, label=clash_label)
+            ax.set_zlabel(label)
+        ax.set_xlabel(PARAMS[a.x][1])
+        ax.set_ylabel(PARAMS[a.y][1])
+
+    if clash:
+        ax.legend(loc="lower left", bbox_to_anchor=(0, 1.01), frameon=False, fontsize=9)
+    fig.suptitle(f"{TITLE}: {label}", fontsize=12)
+    fig.text(0.5, 0.005, note, ha="center", va="bottom", fontsize=8, color="#5a6669", wrap=True)
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.savefig(a.save, dpi=200, bbox_inches="tight")
+    print(f"Saved {a.save}")
+    if not a.no_show:
+        plt.show()
+
+
+if __name__ == "__main__":
+    main()
+`;
+}
+function scanReadme(ctx){
+  const lines=[`DimerForge scan: ${ctx.title}`,`Generated ${ctx.when}`,'',
+    `${ctx.rows.length} grid points; ${ctx.written} dimers written${ctx.skipped?`, ${ctx.skipped} left out because they clash`:''}; ${ctx.clashes} point${ctx.clashes===1?'':'s'} clash (a contact under ${SCAN_CLASH*100}% of the vdW sum).`,'',
+    'Scanned parameters',...ctx.def.scanned.map(id=>{const a=ctx.def.ax[id],r=SCAN.rows[id];return`  ${PL[id].label}: ${fmtv(r.min,a.dec)} to ${fmtv(r.max,a.dec)} ${PL[id].unit} in steps of ${fmtv(r.step,a.dec)} (${a.vals.length} values)`}),
+    'Fixed parameters',...PARAMS.filter(p=>!ctx.def.scanned.includes(p.id)).map(p=>`  ${p.label}: ${ctx.def.ax[p.id].vals[0]} ${p.unit}`),
+    `  Mirror B: ${SCAN.mir?'yes':'no'}`,'',
+    'Contents',
+    '  index.xlsx      one row per grid point: parameters, geometric readouts, clash flag and folder (sheet "Scan"); settings (sheet "Settings")',
+    '  plot_scan.py    self-contained matplotlib plot (python plot_scan.py --help)',
+    '  all_dimers.xyz  every written dimer as one multi-frame .xyz (for VMD, Jmol, ASE)',
+    `  ${'0'.repeat(String(ctx.rows.length).length-1)}1_.../${' '.repeat(Math.max(1,12-String(ctx.rows.length).length))}one folder per dimer, numbered and named after its scanned values: the .xyz and a ${ctx.qm==='orca'?'ORCA (.inp)':'Gaussian (.gjf)'} input`,'',
+    'Conventions',
+    "  The frame of molecule A is fitted by PCA: long axis, short axis and normal n = long x short.",
+    "  B is rotated about A's centroid (mirror, then twist about n, then tilt about long, then tilt about short),",
+    "  then shifted by (slip long, slip short, d). d is the height of B's centroid above A's plane.",
+    `  Coordinates: ${$('optFrame').checked?'molecular frame (A in the xy-plane, centred at the origin)':'input frame'}. Atoms 1-${mol.atoms.length} are A, the rest are B.`,
+    '  Folder names hold the run number and the scanned values, e.g. d3.40 = d of 3.40 A, sl = slip long, ss = slip short,',
+    '  tl = tilt long, ts = tilt short, tw = twist; _m means B is mirrored.'];
+  return lines.join('\r\n')+'\r\n';
+}
+
+/* ---------- generation ---------- */
+async function generateScan(opts={}){
+  const def=scanDef();
+  if(def.errs.length||!def.scanned.length||def.total>SCAN_MAX){scanChanged(false);return null}
+  if(!opts.noConfirm&&def.total>SCAN_CONFIRM&&!confirm(`This scan has ${def.total.toLocaleString('en')} dimers. Generate them all?`))return null;
+  scanBusy=true;scanCancel=false;$('scGo').disabled=true;$('scStop').hidden=false;
+  const prog=t=>scmsg('scProg',t);
+  try{
+    const ids=PARAMS.map(p=>p.id),base=(SCAN.name||`${name}_scan`).replace(/[^\w.-]+/g,'_').replace(/^[._]+/,'').slice(0,60)||'scan';
+    const width=String(def.total).length,ext=SCAN.qm==='orca'?'inp':'gjf',idx=ids.map(()=>0),files=[],rows=[],frames=[];
+    let k=0,written=0,skipped=0,clashes=0;
+    const tag=s=>def.scanned.map(id=>id+fmtv(s[id],def.ax[id].dec)).join('_')+(SCAN.mir?'_m':'');
+    for(;;){
+      const s={mir:SCAN.mir};ids.forEach((id,t)=>s[id]=def.ax[id].vals[idx[t]]);
+      k++;const R=compute(s),clash=R.worst.q<SCAN_CLASH;if(clash)clashes++;
+      const row={k,s,R,clash,folder:null};
+      if(clash&&SCAN.skip)skipped++;
+      else{
+        const folder=`${String(k).padStart(width,'0')}_${tag(s)}`,X=exportSet(R,s,'dimer'),xyz=toXYZ(X);
+        files.push({name:`${base}/${folder}/${folder}.xyz`,data:xyz},{name:`${base}/${folder}/${folder}.${ext}`,data:SCAN.qm==='orca'?toORCA(X):toGJF(X,folder)});
+        frames.push(xyz);row.folder=folder;written++;
+      }
+      rows.push(row);
+      let t=ids.length-1;while(t>=0){idx[t]++;if(idx[t]<def.ax[ids[t]].vals.length)break;idx[t]=0;t--}
+      if(t<0)break;
+      if(k%100===0){prog(`Building dimer ${k.toLocaleString('en')} of ${def.total.toLocaleString('en')}…`);await new Promise(r=>setTimeout(r));if(scanCancel)throw new Error('cancelled')}
+    }
+    const when=new Date().toISOString().replace('T',' ').slice(0,16)+' UTC',title=`${name} (${formula(mol.atoms.map(a=>a.e))}${partner?' + '+formula(partner.atoms.map(a=>a.e)):''})`;
+    const ctx={def,rows,written,skipped,clashes,when,title,qm:SCAN.qm,metric:{pct:'pct_vdw',closest:'closest',heavy:'closest_heavy',cc:'centroid',ang:'angle'}[SCAN.metric],
+      mode:SCAN.mode,axes:[SCAN.x,SCAN.y,SCAN.mode==='3d'&&SCAN.y?SCAN.z:''].filter(Boolean),slice:Object.fromEntries(def.scanned.filter(id=>id!==SCAN.x&&id!==SCAN.y&&!(SCAN.mode==='3d'&&id===SCAN.z)).map(id=>[id,SCAN.slice[id]??def.ax[id].vals[0]]))};
+    prog('Writing the index…');
+    const head=['No.','Folder','d (Å)','Slip long (Å)','Slip short (Å)','Tilt long (°)','Tilt short (°)','Twist (°)','Mirror B','Centroid distance (Å)','Lateral offset (Å)','Angle between planes (°)','Lowest B atom above A (Å)','Highest B atom above A (Å)','Closest contact (Å)','Closest pair','Closest heavy-atom contact (Å)','Heavy-atom pair','Tightest contact (% of vdW sum)','Tightest pair','Clash','Status'];
+    const scanRows=[head,...rows.map(r=>{const R=r.R,h=R.bestH.r<1e8;return[r.k,r.folder||'',...PARAMS.map(p=>r.s[p.id]),r.s.mir?'yes':'no',R.cc,R.lat,R.ang,R.zmin,R.zmax,R.best.r,`${R.best.ea}···${R.best.eb}`,h?R.bestH.r:'',h?`${R.bestH.ea}···${R.bestH.eb}`:'',R.worst.q*100,`${R.worst.ea}···${R.worst.eb}`,r.clash?'yes':'no',r.folder?'written':'left out (clash)']})];
+    const settings=[['Setting','Value'],['Molecule',name],['Formula A',formula(mol.atoms.map(a=>a.e))],['Formula B',formula(Batoms().map(a=>a.e))],['Atoms A',mol.atoms.length],['Atoms B',Batoms().length],
+      ...def.scanned.map(id=>{const a=def.ax[id],r=SCAN.rows[id];return[`Scan: ${PL[id].label} (${PL[id].unit})`,`${fmtv(r.min,a.dec)} to ${fmtv(r.max,a.dec)}, step ${fmtv(r.step,a.dec)}, ${a.vals.length} values`]}),
+      ...PARAMS.filter(p=>!def.scanned.includes(p.id)).map(p=>[`Fixed: ${p.label} (${p.unit})`,def.ax[p.id].vals[0]]),
+      ['Mirror B',SCAN.mir?'yes':'no'],['Grid points',rows.length],['Dimers written',written],['Left out (clash)',skipped],['Clashing points',clashes],[`Clash threshold (% of vdW sum)`,SCAN_CLASH*100],
+      ['Coordinates',$('optFrame').checked?'molecular frame (A in the xy-plane)':'input frame'],['Plane fit',$('optHeavy').checked?'heavy atoms':'all atoms'],['Long and short axes swapped',$('optSwap').checked?'yes':'no'],
+      ['Input files',SCAN.qm==='orca'?'ORCA (.inp)':'Gaussian (.gjf)'],[SCAN.qm==='orca'?'Method line':'Route line',SCAN.qm==='orca'?EXP.om:EXP.gm],['Charge / multiplicity A',`${EXP.qA} / ${EXP.mA}`],['Charge / multiplicity B',`${EXP.qB} / ${EXP.mB}`],
+      [SCAN.qm==='orca'?'Fragment labels':'Counterpoise',(SCAN.qm==='orca'?EXP.frag:EXP.cp)?'yes':'no'],['Generated',when],['Program','DimerForge']];
+    const xlsx=await makeXLSX([{name:'Scan',rows:scanRows,widths:[6,34,8,12,12,12,12,10,9,12,12,12,12,12,12,10,14,12,14,10,7,16],filter:true},{name:'Settings',rows:settings,widths:[34,60],filter:false}]);
+    files.unshift({name:`${base}/README.txt`,data:scanReadme(ctx)},{name:`${base}/index.xlsx`,data:xlsx},{name:`${base}/plot_scan.py`,data:plotScript(ctx)},{name:`${base}/all_dimers.xyz`,data:frames.join('')});
+    const blob=await makeZip(files,(n,N)=>prog(`Packing file ${n.toLocaleString('en')} of ${N.toLocaleString('en')}…`));
+    const zipName=base+'.zip';
+    if(opts.download!==false){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=zipName;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+    prog(`Saved ${zipName}: ${written.toLocaleString('en')} dimer${written===1?'':'s'}${skipped?`, ${skipped} left out`:''}, ${clashes} clashing point${clashes===1?'':'s'}, ${(blob.size/1048576).toFixed(1)} MB.`);
+    return{blob,zipName,written,skipped,clashes};
+  }catch(err){scmsg('scProg',err.message==='cancelled'?'Cancelled.':`The scan failed: ${err.message}`,err.message!=='cancelled');return null}
+  finally{scanBusy=false;$('scStop').hidden=true;scanChanged(false)}
+}
+$('scGo').onclick=()=>generateScan();
+$('scStop').onclick=()=>{scanCancel=true};
+
 /* ============================== persistence ============================== */
 const molXYZ=atoms=>[atoms.length,'',...atoms.map(a=>xyzLine(a.e,a.p))].join('\n');
 let ready=false;
@@ -1265,7 +1809,7 @@ function save(){
   if(!ready)return;
   try{localStorage.setItem('dimer-builder',JSON.stringify({v:2,state,src:$('src').value,name,tab,pairInfo,
     opts:{frame:$('optFrame').checked,heavy:$('optHeavy').checked,swap:$('optSwap').checked,labels:$('optLabels').checked},
-    exp:EXP,mol:molXYZ(mol.atoms),partner:partner?molXYZ(partner.atoms):null}))}catch{}
+    exp:EXP,scan:SCAN,mol:molXYZ(mol.atoms),partner:partner?molXYZ(partner.atoms):null}))}catch{}
 }
 function restore(){
   let s=null;try{s=JSON.parse(localStorage.getItem('dimer-builder')||'null')}catch{}
@@ -1273,6 +1817,7 @@ function restore(){
   try{
     if(s.opts){$('optFrame').checked=s.opts.frame!==false;$('optHeavy').checked=s.opts.heavy!==false;$('optSwap').checked=!!s.opts.swap;$('optLabels').checked=s.opts.labels!==false}
     if(s.exp)Object.assign(EXP,s.exp);
+    if(s.scan){const{rows,...rest}=s.scan;Object.assign(SCAN,rest);if(rows)PARAMS.forEach(p=>{if(rows[p.id])Object.assign(SCAN.rows[p.id],rows[p.id])})}
     $('src').value=s.src;
     if(!s.mol){if(!load(s.src,s.name))return false}
     else{
@@ -1291,7 +1836,8 @@ syncExp();ready=true;render();
 /* Small scripting hook, used by the tests. */
 window.dimerforge={parseXYZ,parseCIF,elementOf,euler,neighbours,load,setTab,tidy,attach,placeB,poseM,toPDB,toSDF,toGJF,toORCA,exportSet,bondOrders,TEMPLATES,
   get picks(){return picks},get mol(){return mol},get frame(){return frame},get cryst(){return cryst},get partner(){return partner},state,EXP,D,render,select:ids=>{D.sel=ids.map(i=>mol.atoms[i].id);render()},
-  loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText}};
+  loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText},
+  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData}};
 }
 </script>
 </body>

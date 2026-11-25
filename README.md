@@ -17,8 +17,9 @@ Then:
 2. **Dimer tab.** Place copy B with the sliders, the number fields or a preset (eclipsed, parallel-displaced, antiparallel, flipped face, T-shaped).
 3. **Design tab.** Edit molecule A (see below). The dimer follows the edits.
 4. **Crystal tab.** Pick a molecule from a CIF, or a real neighbouring pair, and load it into the dimer builder (see below).
-5. Check the readouts and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis (or along a, b or c in the crystal view).
-6. Choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
+5. **Scan tab.** Generate a whole grid of dimers over ranges of the parameters, for structural correlation maps (see below).
+6. Check the readouts and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis (or along a, b or c in the crystal view).
+7. Choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
 
 All settings, the current molecule and the input text are kept in the browser's local storage, so a reload restores the session.
 
@@ -28,6 +29,7 @@ All settings, the current molecule and the input text are kept in the browser's 
 - The 3D viewer takes focus too. Arrow keys rotate the view (hold Shift for small steps), `+` and `−` zoom, and `0` resets it.
 - In the Design tab, **Select atoms by number** accepts numbers and ranges, such as `3, 7-9`, in the order you want them measured. It stays in sync with clicks in the viewer. Delete, Ctrl+Z, Ctrl+Y and Esc work while the viewer or the page has focus.
 - In the Crystal tab, the molecule and pair lists do everything that clicking in the viewer does.
+- In the Scan tab, the preview map takes focus: arrow keys move between cells and show each dimer in the viewer (its values are announced), Enter keeps it, and Escape returns to the previous dimer.
 - The readouts under the viewer describe the structure in text, and status messages are announced.
 
 ## Reading `.xyz` files
@@ -56,6 +58,37 @@ The Design tab edits molecule A in the 3D viewer.
 - **Tidy geometry.** This relaxes the atoms you added or re-elemented, their neighbours, and any atoms you select. It moves them towards typical bond lengths (single-bond covalent radii, shortened for multiple bonds), typical angles (from the coordination number) and away from clashes. All other atoms keep their geometry. Bonds inside a group you attached keep the group's lengths.
 - **Templates.** Benzene, naphthalene, anthracene, tetracene, phenanthrene, pyrene, triphenylene, coronene, pyridine, pyrimidine, pyrazine, 1,3,5-triazine, thiophene, furan, pyrrole, methane, water or a single carbon atom.
 - Undo and Redo (Ctrl+Z, Ctrl+Y) cover every edit.
+
+## Parameter scans
+
+The Scan tab builds the first step of a structural correlation map: a set of dimers on a regular grid of the placement parameters, ready for single-point or interaction-energy calculations.
+
+1. **Define the grid.** For each parameter (d, slip along long, slip along short, tilt about long, tilt about short, twist), either tick it and give a minimum, maximum and step, or leave it at a fixed value. **Fixed values from the current dimer** copies the Dimer tab's values. Every combination is generated, with the last parameter varying fastest. The panel shows the count live (for example 21 × 13 = 273), allows up to 20,000 dimers, and asks before building more than 5,000.
+2. **Preview.** The heat map shows two scanned parameters against each other, coloured by a measure: tightest contact as % of the vdW sum, closest contact, closest heavy-atom contact, centroid distance or angle between planes. Any other scanned parameter is shown at a value you pick. Clashing points (a contact under 75% of the vdW sum) are marked ×. Hovering a cell, or moving to it with the arrow keys, shows that dimer in the viewer; a click or Enter keeps it.
+3. **Generate.** Choose Gaussian or ORCA, a folder name, and whether to leave out clashing dimers. The method line, charges and multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export panel.
+
+The result is one `.zip` that unpacks into a main folder:
+
+```
+Alloxan_scan/
+├── README.txt        what was scanned, the conventions and the contents
+├── index.xlsx        sheet "Scan": one row per grid point (parameters, readouts, clash flag, folder, status)
+│                     sheet "Settings": molecule, grid, fixed values, frame, QM settings, date
+├── plot_scan.py      self-contained matplotlib plot (the data are embedded; needs numpy and matplotlib)
+├── all_dimers.xyz    every written dimer as one multi-frame .xyz
+├── 001_d3.2_sl0.0/
+│   ├── 001_d3.2_sl0.0.xyz
+│   └── 001_d3.2_sl0.0.gjf   (or .inp for ORCA)
+└── …
+```
+
+Folder names are the run number and the scanned values (`d`, `sl` slip long, `ss` slip short, `tl` tilt long, `ts` tilt short, `tw` twist; `_m` when B is mirrored). Dimers left out because they clash keep their row in `index.xlsx`, marked *left out (clash)*.
+
+`plot_scan.py` draws a 1D line, a 2D map (with the 75% clash contour when colouring by % of the vdW sum), a 3D surface of the measure over two parameters, or a 3D scatter over three. It starts with the axes, measure and view chosen in the app, and everything can be changed from the command line:
+
+```bash
+python plot_scan.py --mode 3d --x sl --y d --z tw --metric closest --fix tl=10 --save map.pdf
+```
 
 ## Geometry conventions
 

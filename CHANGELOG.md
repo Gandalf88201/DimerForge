@@ -4,6 +4,11 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 ## [Unreleased]
 
+### Added
+- **Scan tab** for structural correlation maps: a full grid over any of d, slip long, slip short, tilt long, tilt short and twist (minimum, maximum and step each; the rest fixed), up to 20,000 dimers.
+- Live preview heat map of any two scanned parameters, coloured by tightest contact (% of vdW sum), closest contact, closest heavy-atom contact, centroid distance or angle between planes, with clashes marked. Hover, or use the arrow keys, to see each dimer in the viewer.
+- One `.zip` per scan: a main folder with one subfolder per dimer (`.xyz` plus a Gaussian or ORCA input), `index.xlsx` (every grid point with its readouts and clash flag, plus the settings), a self-contained matplotlib script `plot_scan.py` (1D, 2D or 3D), `all_dimers.xyz` and a README. Clashing dimers can be left out; they stay listed in the index.
+
 ## [2.1.0] - 2026-11-25
 
 ### Added
