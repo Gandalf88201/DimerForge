@@ -4,6 +4,8 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-25
+
 ### Added
 - **Start over** button (top right): after you confirm, it clears the molecule, dimer, designer history, crystal, scan and every setting, empties the saved session and leaves an empty workspace. The empty workspace survives a reload.
 - **Load example: alloxan** button in Input structure, and an empty-workspace message in the viewer, readouts and export panel.
@@ -46,7 +48,8 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 - First release: interactive `.xyz` dimer builder with interplanar distance, slip, tilt and twist in the molecular frame, contact readouts with a clash warning, and `.xyz` export.
 
-[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Gandalf88201/DimerForge/compare/v1.0.0...v2.0.0
