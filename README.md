@@ -15,12 +15,21 @@ DimerForge is a single HTML file, plus the `fonts/` folder it uses, with no inst
 
 DimerForge fills the browser window like a desktop program:
 
-- **Top bar:** **Open…** a file, **Paste** text, load one of the **Examples** (alloxan, or the benzene crystal), switch the theme (**Auto** follows the system, or force **Light** or **Dark**), and **Start over**.
+- **Top bar:** **Open…** a file, **Paste** text, load one of the **Examples** (alloxan, or the benzene crystal), open the **Help** manual, switch the theme (**Auto** follows the system, or force **Light** or **Dark**), and **Start over**.
 - **Viewer:** the 3D view takes the main area. In light mode it is light grey, with outlined atoms; in dark mode, near-black.
 - **Bottom dock:** three tabs under the viewer: **Readouts** (distances, angles, contacts, clash warning and a summary of the molecules), **Export** (format, options and a live preview, with Copy and Download next to the tabs) and **Input** (paste .xyz or .cif text). Drag the divider above it, or focus it and use the arrow keys, to make it taller or shorter.
 - **Side panel:** the Dimer, Design, Crystal and Scan tools. It scrolls on its own, so the viewer and the readouts stay in sight.
 
 The theme, the dock's height and its open tab are remembered in the browser. On windows narrower than 980 px or shorter than 620 px, the panels stack and the page scrolls instead.
+
+### Built-in manual
+
+**Help** in the top bar (or <kbd>F1</kbd>, or <kbd>?</kbd> outside a text field) opens the manual over the workspace, with a contents list and a search box that highlights matches. Each tool tab, and the dock, has a **?** button that opens the manual at its own section. The manual has two parts:
+
+- **Using DimerForge:** getting started, the workspace, loading structures, the Dimer, Design, Crystal and Scan tabs, the readouts, export and input, and the keyboard.
+- **Science and conventions:** the molecular frame, how copy B is placed, contacts and clashes, bonds and element recognition, crystal handling, how Tidy works, the file formats, the scan conventions, and references.
+
+Diagrams of the workspace, the molecular frame and the placement of B follow the light and dark themes. The manual is part of `index.html`, so it works offline.
 
 ### Steps
 

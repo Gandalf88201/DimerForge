@@ -175,6 +175,66 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
 .mapkey{font-size:11.5px;color:var(--mute);margin:6px 0 0}.mapkey b{color:var(--danger);font-weight:600}
 
 /* ---------- narrow or short windows: stack and scroll the page ---------- */
+
+/* ---------- manual ---------- */
+dialog#help{width:min(1120px,94vw);height:min(88vh,920px);max-width:none;max-height:none;padding:0;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 18px 60px rgba(0,0,0,.35);overflow:hidden}
+dialog#help[open]{display:grid;grid-template-rows:auto minmax(0,1fr)}
+dialog#help::backdrop{background:rgba(8,12,16,.45)}
+.hhead{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.hhead h2{margin:0;font-size:15px;flex:none}
+.hhead input{flex:1 1 220px;max-width:380px;font-family:"IBM Plex Sans",sans-serif;font-size:13px}
+.hhead .msg{min-height:0;flex:1 1 auto}
+kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:var(--surface-2);color:var(--ink);white-space:nowrap}
+.hbody{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:0}
+#helpToc{overflow:auto;border-right:1px solid var(--line);padding:10px 8px;background:var(--surface-2)}
+#helpToc .tg{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;margin:12px 8px 4px}
+#helpToc .tg:first-child{margin-top:2px}
+#helpToc a{display:block;padding:4px 8px;border-radius:4px;color:var(--ink);text-decoration:none;font-size:13px}
+#helpToc a:hover{background:var(--surface)}
+#helpToc a[aria-current=true]{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent);font-weight:600}
+#helpToc a:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+#helpToc .n{float:right;color:var(--mute);font-size:11px}
+.doc{overflow:auto;padding:4px 28px 40px;font-size:14px;line-height:1.6;scroll-padding-top:12px}
+.doc:focus{outline:none}
+.doc>*{max-width:78ch}
+.doc .hgroup{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);margin:26px 0 0;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.doc .hgroup:first-child{margin-top:16px}
+.doc h3{all:unset;display:block;font-size:17px;font-weight:600;margin:22px 0 8px;color:var(--ink)}
+.doc h3:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.doc p,.doc ul,.doc ol{margin:0 0 10px}.doc li{margin:3px 0}
+.doc a{color:var(--accent);text-underline-offset:2px}
+.doc code{font:12.5px "IBM Plex Mono",monospace;background:var(--sunken);border:1px solid var(--line);border-radius:3px;padding:0 4px;overflow-wrap:anywhere}
+.doc .eq{font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:8px 12px;overflow-x:auto}
+.doc mark{background:#ffe08a;color:#1d1a10;border-radius:2px;padding:0 1px}
+.ht{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0 12px}
+.ht th,.ht td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+.ht th{background:var(--surface-2);font-weight:600}
+.ht td:first-child{white-space:nowrap}
+.refs li{font-size:13px}
+.hfig{margin:6px 0 14px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--view-bg);max-width:78ch}
+.hfig svg{display:block;width:100%;height:auto;max-height:260px}
+.hfig figcaption{font-size:12px;color:var(--mute);margin-top:6px}
+.hfig text{font-family:"IBM Plex Sans",sans-serif}
+.f-t{font-size:13px;fill:var(--view-ink);font-weight:500}.f-s{font-size:11.5px;fill:var(--view-mute)}
+.f-box{fill:var(--surface);stroke:var(--line-2)}.f-view{fill:var(--view-bg);stroke:var(--line-2);stroke-width:1.5}.f-split{fill:var(--line-2)}
+.f-plane{fill:var(--v-plane);stroke:var(--v-plane-line)}.f-mol{fill:none;stroke:var(--view-ink);stroke-width:2}
+.f-dot{fill:var(--view-ink)}.f-bdot{fill:var(--ring-b)}
+.f-arrow{stroke-width:2.2;fill:none}
+.f-l{stroke:var(--ax-l)}.f-lf{fill:var(--ax-l)}.f-lt{fill:var(--ax-l);font-size:13px;font-weight:600}
+.f-s2{stroke:var(--ax-s)}.f-sf{fill:var(--ax-s)}.f-st{fill:var(--ax-s);font-size:13px;font-weight:600}
+.f-n{stroke:var(--ax-n)}.f-nf{fill:var(--ax-n)}.f-nt{fill:var(--ax-n);font-size:13px;font-weight:600}
+.f-a{stroke:var(--view-ink);stroke-width:5;stroke-linecap:round}.f-b{stroke:var(--ring-b);stroke-width:5;stroke-linecap:round}
+.f-dim{stroke:var(--view-mute);stroke-width:1.3}.f-dimf{fill:var(--view-mute)}.f-thin{stroke:var(--view-mute);stroke-width:1;stroke-dasharray:3 3}
+.qhelp{min-height:22px;width:22px;padding:0;border-radius:50%;font-size:12px;font-weight:600;color:var(--mute);margin-left:auto;flex:none}
+.qhelp:hover{color:var(--ink)}
+.side h2{display:flex;align-items:center;gap:8px}
+@media (max-width:720px){
+  dialog#help{width:100vw;height:100dvh;max-height:none;border-radius:0}
+  .hbody{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  #helpToc{border-right:0;border-bottom:1px solid var(--line);max-height:30vh}
+  .doc{padding:4px 16px 32px}
+  .ht td:first-child{white-space:normal}
+}
 @media (max-width:980px),(max-height:620px){
   .app{height:auto;min-height:100vh}
   .work{grid-template-columns:minmax(0,1fr)}
@@ -206,6 +266,7 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
     <select id="tbExample" aria-label="Load an example"><option value="">Examples…</option><option value="allox">Alloxan (.xyz)</option><option value="benz">Benzene crystal, Pbca (.cif)</option></select>
   </div>
   <div class="spacer"></div>
+  <div class="tb"><button id="tbHelp" aria-haspopup="dialog" title="Manual (F1)">Help</button></div>
   <div class="tb">
     <div class="seg joined" id="theme" role="group" aria-label="Theme" style="margin:0"><button data-theme="auto" title="Follow the system">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div>
   </div>
@@ -229,7 +290,8 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
           <button role="tab" id="d_exp" aria-controls="dock-exp" aria-selected="false">Export</button>
           <button role="tab" id="d_in" aria-controls="dock-in" aria-selected="false">Input</button>
         </div>
-        <div class="tabacts" id="expActs" hidden><span class="msg" id="outmsg" aria-live="polite"></span><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button></div>
+        <button class="qhelp" id="dockHelp" aria-label="Help: this panel" style="margin:0 6px 0 auto">?</button>
+        <div class="tabacts" id="expActs" hidden style="margin-left:0"><span class="msg" id="outmsg" aria-live="polite"></span><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button></div>
       </div>
       <div class="dockbody">
         <div id="dock-read" role="tabpanel" aria-labelledby="d_read"><div class="stats" id="stats"></div></div>
@@ -278,7 +340,7 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
     </div>
     <div class="panes">
       <section id="tab-dimer" role="tabpanel" aria-labelledby="t_dimer">
-        <h2>Placement of copy B</h2>
+        <h2>Placement of copy B <button class="qhelp" data-help="h-dimer" aria-label="Help: Dimer tab">?</button></h2>
         <div class="chips" id="presets" role="group" aria-label="Presets"></div>
         <div id="params"></div>
         <div class="opts">
@@ -292,7 +354,7 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
       </section>
 
       <section id="tab-design" role="tabpanel" aria-labelledby="t_design" hidden>
-        <h2>Molecular designer</h2>
+        <h2>Molecular designer <button class="qhelp" data-help="h-design" aria-label="Help: Design tab">?</button></h2>
         <p class="note" style="margin-top:0">Click atoms in the viewer to select them, or type their numbers. Shift-click adds an atom to the selection, or removes it. Edits change molecule A, and the dimer follows.</p>
         <div class="acts" style="margin-top:10px">
           <label class="field" style="flex:1 1 160px">Select atoms by number<input type="text" id="dPick" placeholder="e.g. 3, 7-9" spellcheck="false" autocomplete="off"></label>
@@ -322,7 +384,7 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
       </section>
 
       <section id="tab-crystal" role="tabpanel" aria-labelledby="t_crystal" hidden>
-        <h2>Crystal structure</h2>
+        <h2>Crystal structure <button class="qhelp" data-help="h-crystal" aria-label="Help: Crystal tab">?</button></h2>
         <div id="cxEmpty">
           <p class="note" style="margin-top:0">Open or paste a CIF file to pick a molecule, or a real neighbouring pair, from the crystal. The file needs the cell, the symmetry operations and the fractional coordinates.</p>
           <div class="acts" style="margin-top:12px"><button id="cxExample">Load example: benzene (Pbca)</button></div>
@@ -341,7 +403,7 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
       </section>
 
       <section id="tab-scan" role="tabpanel" aria-labelledby="t_scan" hidden>
-        <h2>Parameter scan</h2>
+        <h2>Parameter scan <button class="qhelp" data-help="h-scan" aria-label="Help: Scan tab">?</button></h2>
         <p class="note" style="margin-top:0">Generate a grid of dimers for structural correlation maps. Tick the parameters to scan and give each a minimum, maximum and step. The others stay at their fixed value, and every combination is generated.</p>
         <div class="acts" style="margin-top:10px"><button id="scUseCur">Fixed values from the current dimer</button></div>
         <div id="scRows"></div>
@@ -374,6 +436,304 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
   </aside>
 </main>
 </div>
+
+<dialog id="help" aria-labelledby="helpTitle">
+  <div class="hhead">
+    <h2 id="helpTitle">DimerForge manual</h2>
+    <input type="search" id="helpQ" placeholder="Search the manual" aria-label="Search the manual" autocomplete="off" spellcheck="false">
+    <span class="msg" id="helpCount" aria-live="polite"></span>
+    <button id="helpClose" class="ghost" aria-label="Close the manual">Close <kbd>Esc</kbd></button>
+  </div>
+  <div class="hbody">
+    <nav id="helpToc" aria-label="Manual contents"></nav>
+    <div id="helpDoc" class="doc">
+
+<h2 class="hgroup">Using DimerForge</h2>
+
+<section class="hs" id="h-start" data-title="Getting started">
+<h3 tabindex="-1">Getting started</h3>
+<p>DimerForge builds molecular dimers for quantum-chemistry calculations. You load one molecule (A), place a copy of it (B) with six geometric parameters, check the contacts, and export the pair, or a whole grid of pairs, as input files. It can also take a molecule, or a real neighbouring pair, from a crystal structure, and edit the molecule in a small 3D designer.</p>
+<p>Everything runs in your browser. Nothing is uploaded: the structures you load, your settings and the files you export stay on your computer.</p>
+<ol>
+  <li><b>Load a structure</b>: <b>Open…</b> an <code>.xyz</code> or <code>.cif</code> file, drop one on the viewer, <b>Paste</b> its text, or pick one of the <b>Examples</b>.</li>
+  <li><b>Place copy B</b> in the <b>Dimer</b> tab with a preset or the six sliders.</li>
+  <li><b>Check</b> the <b>Readouts</b> under the viewer: distances, angle between the planes, closest contacts and the clash warning.</li>
+  <li><b>Export</b> the dimer (or either molecule) from the <b>Export</b> tab, or generate a whole grid in the <b>Scan</b> tab.</li>
+</ol>
+</section>
+
+<section class="hs" id="h-workspace" data-title="The workspace">
+<h3 tabindex="-1">The workspace</h3>
+<figure class="hfig">
+<svg viewBox="0 0 520 250" role="img" aria-labelledby="figWsT"><title id="figWsT">Layout: top bar across the top; viewer on the left with the dock under it; side panel on the right.</title>
+  <rect class="f-box" x="2" y="2" width="516" height="26" rx="3"/><text class="f-t" x="12" y="20">Top bar · Open… · Paste · Examples · Help · theme · Start over</text>
+  <rect class="f-view" x="2" y="34" width="356" height="134" rx="3"/><text class="f-t" x="150" y="98">3D viewer</text><text class="f-s" x="112" y="116">drag to rotate · scroll to zoom</text>
+  <rect class="f-split" x="2" y="171" width="356" height="5"/>
+  <rect class="f-box" x="2" y="179" width="356" height="69" rx="3"/><text class="f-t" x="12" y="198">Dock: Readouts · Export · Input</text><text class="f-s" x="12" y="216">drag the divider above to resize</text>
+  <rect class="f-box" x="364" y="34" width="154" height="214" rx="3"/><text class="f-t" x="374" y="54">Side panel</text><text class="f-s" x="374" y="74">Dimer · Design</text><text class="f-s" x="374" y="90">Crystal · Scan</text><text class="f-s" x="374" y="110">scrolls on its own</text>
+</svg>
+<figcaption>The window is divided into the top bar, the viewer, the dock under it and the tools on the right.</figcaption>
+</figure>
+<ul>
+  <li><b>Top bar.</b> <b>Open…</b> reads an <code>.xyz</code>, <code>.cif</code> or <code>.txt</code> file. <b>Paste</b> opens the Input tab. <b>Examples</b> loads alloxan or a benzene crystal. <b>Help</b> opens this manual (also <kbd>F1</kbd> or <kbd>?</kbd>). The theme switch offers <b>Auto</b> (follow the system), <b>Light</b> and <b>Dark</b>. <b>Start over</b> clears everything after asking you to confirm.</li>
+  <li><b>Viewer.</b> Drag to rotate, scroll to zoom, or use the buttons to look along the frame axes (or along a, b and c in the crystal view). Drop a file here to load it.</li>
+  <li><b>Dock.</b> <b>Readouts</b> describe the current structure in numbers. <b>Export</b> holds the format, its options and a live preview, with <b>Copy</b> and <b>Download</b> beside the tabs. <b>Input</b> takes pasted text. Drag the divider above the dock, or focus it and press the arrow keys, to resize it.</li>
+  <li><b>Side panel.</b> The four tools. Each has a <b>?</b> button that opens its part of this manual.</li>
+</ul>
+<p>On windows narrower than 980&nbsp;px or shorter than 620&nbsp;px the panels stack and the page scrolls.</p>
+</section>
+
+<section class="hs" id="h-loading" data-title="Loading structures">
+<h3 tabindex="-1">Loading structures</h3>
+<p><b>XYZ files.</b> If the first line is a number, it is taken as the atom count, the second line as a comment, and exactly that many atom lines are read, each <code>Element x y z</code> in ångström. Extra columns are ignored. If the file has fewer atom lines than it says, or a line that is not an atom, you get an error naming the line. Later frames of a multi-frame file are ignored, with a note. Files without a count line are read line by line.</p>
+<p><b>CIF files</b> are recognised by their content (<code>data_</code> and <code>_cell_length_a</code>, or <code>_atom_site_fract_x</code>). The structure is expanded with its symmetry operations and the Crystal tab opens. See <a href="#h-crystal">Crystal tab</a> and <a href="#h-crys">Crystal handling</a>.</p>
+<p><b>What is kept.</b> The molecule, the dimer parameters, every setting and the input text are saved in this browser, so a reload brings your session back. The theme and the dock's size and tab are kept separately, as viewing preferences.</p>
+<p><b>Start over</b> clears the molecule, the dimer, the designer history, the crystal, the scan and every setting, and empties the saved session, after you confirm. It leaves an empty workspace, which stays empty after a reload. The theme and the dock layout are not reset.</p>
+</section>
+
+<section class="hs" id="h-dimer" data-title="Dimer tab">
+<h3 tabindex="-1">Dimer tab</h3>
+<p>Copy B starts as an exact copy of molecule A, on top of it. Six parameters place it, all in A's own <a href="#h-frame">molecular frame</a>:</p>
+<table class="ht">
+<thead><tr><th>Parameter</th><th>Range</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Interplanar distance <i>d</i></td><td>−10 to 10&nbsp;Å</td><td>Height of B's centroid above A's plane, along the normal <i>n</i>.</td></tr>
+<tr><td>Slip along long axis</td><td>−12 to 12&nbsp;Å</td><td>Shifts B along A's long axis.</td></tr>
+<tr><td>Slip along short axis</td><td>−12 to 12&nbsp;Å</td><td>Shifts B along A's short axis.</td></tr>
+<tr><td>Tilt about long axis</td><td>−180° to 180°</td><td>Rotates B about the long axis.</td></tr>
+<tr><td>Tilt about short axis</td><td>−180° to 180°</td><td>Rotates B about the short axis.</td></tr>
+<tr><td>Twist about normal</td><td>−180° to 180°</td><td>Rotates B within the plane; 180° gives an antiparallel pair.</td></tr>
+</tbody></table>
+<p>The sliders cover those ranges. The number fields accept any value, for finer control or larger offsets. The exact order of the operations is given in <a href="#h-place">Placing copy B</a>.</p>
+<ul>
+<li><b>Presets:</b> Eclipsed (<i>d</i> = 3.4&nbsp;Å), Parallel-displaced (<i>d</i> = 3.4, slip long = 1.5&nbsp;Å), Antiparallel (twist 180°), Flipped face (tilt about long 180°), T-shaped (<i>d</i> = 5, tilt about long 90°). <b>Reset</b> sets <i>d</i> = 3.4&nbsp;Å and everything else to zero.</li>
+<li><b>Mirror B through its own plane</b> reflects B before it is rotated. It is needed to reproduce pairs related by an inversion centre or a mirror plane, which no rotation can produce.</li>
+<li><b>Fit the plane on heavy atoms only</b> and <b>Swap the long and short axes</b> change how A's frame is defined (see <a href="#h-frame">The molecular frame</a>). The parameter values stay the same, but they now refer to the new frame, so the dimer can move.</li>
+<li>After a crystal pair is loaded, a note says where B came from. If B is a different molecule from A, <b>Make B a copy of A</b> returns to a normal homodimer.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-readouts" data-title="Readouts">
+<h3 tabindex="-1">Readouts</h3>
+<table class="ht">
+<thead><tr><th>Readout</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Centroid to centroid</td><td>Distance between the two centroids: √(slip long² + slip short² + d²).</td></tr>
+<tr><td>Lateral offset</td><td>Total slip in A's plane: √(slip long² + slip short²).</td></tr>
+<tr><td>Angle between planes</td><td>Angle between the two plane normals, from 0° (parallel) to 90°.</td></tr>
+<tr><td>Height of B atoms above plane A</td><td>Lowest and highest atom of B, measured along A's normal. The two match when B is parallel to A.</td></tr>
+<tr><td>Closest contact</td><td>Shortest distance between an atom of A and an atom of B, with the two elements.</td></tr>
+<tr><td>Closest heavy-atom contact</td><td>The same, ignoring hydrogen atoms.</td></tr>
+<tr><td>Tightest contact (% of vdW sum)</td><td>The smallest ratio of an A–B distance to the sum of the two van der Waals radii. Below 75% it turns red and reads <b>Clash</b>. See <a href="#h-contacts">Contacts and clashes</a>.</td></tr>
+<tr><td>Molecule A / B, plane fit</td><td>Formulas and atom counts, and the RMS deviation of A's atoms from its fitted plane (0 for a perfectly flat molecule).</td></tr>
+</tbody></table>
+<p>In the Design and Crystal tabs the readouts change to the molecule (formula, atoms, bonds, selection) and the crystal (cell, space group, molecules, pairs).</p>
+</section>
+
+<section class="hs" id="h-design" data-title="Design tab">
+<h3 tabindex="-1">Design tab</h3>
+<p>The designer edits molecule A in place, and the dimer follows.</p>
+<ul>
+<li><b>Selecting.</b> Click an atom to select it; <b>Shift</b>-click adds an atom to the selection, or removes it. <b>Select atoms by number</b> takes numbers and ranges such as <code>3, 7-9</code>, in the order you want them measured. Atom numbers are shown in the viewer when <b>Show atom numbers</b> is ticked.</li>
+<li><b>Element.</b> Choose an element from the palette, or type any symbol under <i>Other</i>. <b>Add atom</b> bonds a new atom to the one selected atom, in a free direction. <b>Set element</b> changes every selected atom. <b>Delete</b> removes them.</li>
+<li><b>Groups.</b> Select one atom and pick a group: CH₃, CF₃, OH, OCH₃, SH, NH₂, NO₂, CN, CHO, COOH, C₆H₅, F, Cl, Br or I. If the selected atom is a terminal H or halogen, it is replaced and the group takes its bond direction. Otherwise the group goes in a free position. Planar groups are laid in the plane of the parent atom's neighbours.</li>
+<li><b>Measure and set.</b> With 2, 3 or 4 atoms selected, the panel shows the distance, angle or dihedral, and you can type a new value. The part of the molecule on the side of the last selected atom moves. If the atoms are in a ring, only the last atom moves. A dihedral can't be set about a ring bond.</li>
+<li><b>Tidy geometry</b> relaxes the atoms you added or re-elemented, their neighbours and any selected atoms. See <a href="#h-tidy">How Tidy works</a>.</li>
+<li><b>Templates</b> replace the molecule with benzene, naphthalene, anthracene, tetracene, phenanthrene, pyrene, triphenylene, coronene, pyridine, pyrimidine, pyrazine, 1,3,5-triazine, thiophene, furan, pyrrole, methane, water or a single carbon atom.</li>
+<li><b>Undo</b> and <b>Redo</b> cover every edit (<kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Y</kbd>). <kbd>Delete</kbd> removes the selection and <kbd>Esc</kbd> clears it.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-crystal" data-title="Crystal tab">
+<h3 tabindex="-1">Crystal tab</h3>
+<p>After a CIF is loaded, the viewer shows the unit cell and the molecules whose centres lie in it.</p>
+<ul>
+<li><b>Molecules in the cell</b> lists each kind of molecule, with its formula and how many copies the cell holds. Fragments of an extended network (a polymer, or an ionic solid) are marked <i>network</i>. Click a kind, or a molecule in the viewer, to select it.</li>
+<li><b>Use selected molecule as A</b> takes that molecule, with its crystal coordinates, into the Dimer and Design tabs.</li>
+<li><b>Neighbours of the selected molecule</b> lists every molecule with at least one contact shorter than the van der Waals sum + 0.5&nbsp;Å. For each pair it gives the centroid distance, the height of B's centroid above A's plane, the lateral offset, the angle between the planes, the closest contact and the symmetry operation that generates the partner. Pairs related by symmetry are listed once, with their count (×2, ×4…). The type labels are defined in <a href="#h-crys">Crystal handling</a>.</li>
+<li>Click a pair to show it in the viewer. <b>Load pair as dimer</b> puts it in the Dimer tab, with parameters that reproduce the crystal geometry exactly. You can then vary them from there.</li>
+</ul>
+<p>The example in <b>Examples</b>, and in this tab, is benzene in space group <i>Pbca</i> (Crystallography Open Database entry 7238223).</p>
+</section>
+
+<section class="hs" id="h-scan" data-title="Scan tab">
+<h3 tabindex="-1">Scan tab</h3>
+<p>A scan builds a regular grid of dimers, the first step of a structural correlation map. Each grid point is one dimer, ready for a single-point or interaction-energy calculation.</p>
+<ol>
+<li><b>Define the grid.</b> Tick each parameter to vary and give a minimum, a maximum and a step; the maximum is included when the steps reach it. Unticked parameters keep their fixed value. <b>Fixed values from the current dimer</b> copies them from the Dimer tab. Every combination is generated, and the count is shown as it would be multiplied out (e.g. 21 × 13 = 273). The limits are 2,000 values per parameter and 20,000 dimers in total. Above 5,000 you are asked to confirm.</li>
+<li><b>Preview.</b> The heat map plots two scanned parameters, coloured by one measure: tightest contact (% of the vdW sum), closest contact, closest heavy-atom contact, centroid distance, or angle between planes. Other scanned parameters are shown at the value you choose. A × marks a clash. Hover a cell, or move with the arrow keys, to see that dimer in the viewer; click or press <kbd>Enter</kbd> to keep it, and press <kbd>Esc</kbd> to go back.</li>
+<li><b>Generate.</b> Choose Gaussian or ORCA, a folder name, and whether to leave out dimers that clash. The method line, charges, multiplicities, counterpoise or fragment labels and the coordinate frame come from the <a href="#h-export">Export</a> tab. A clashing dimer that is left out keeps its row in the index.</li>
+</ol>
+<p>The download is one <code>.zip</code> file that unpacks into a main folder:</p>
+<ul>
+<li><code>README.txt</code>: what was scanned, the conventions and the contents.</li>
+<li><code>index.xlsx</code>: the sheet <i>Scan</i> has one row per grid point, with the parameters, every readout, the clash flag, the folder name and whether it was written; the sheet <i>Settings</i> records the settings.</li>
+<li><code>plot_scan.py</code>: a self-contained matplotlib script (it needs numpy and matplotlib). It draws a 1D line, a 2D map with the 75% clash contour, a 3D surface or a 3D scatter. Run <code>python plot_scan.py --help</code> for the options.</li>
+<li><code>all_dimers.xyz</code>: every written dimer, as one multi-frame file.</li>
+<li>One folder per dimer, named after its number and its scanned values, holding its <code>.xyz</code> and its <code>.gjf</code> or <code>.inp</code>.</li>
+</ul>
+<p>The full naming and ordering rules are in <a href="#h-scanrules">Scan conventions</a>.</p>
+</section>
+
+<section class="hs" id="h-export" data-title="Export and Input">
+<h3 tabindex="-1">Export and Input</h3>
+<p>Choose <b>Dimer A+B</b>, <b>Molecule A</b> or <b>Molecule B</b>, and a format. The preview updates as you work. <b>Copy</b> puts the text on the clipboard, and <b>Download</b> saves it, named after the molecule and the parameters (e.g. <code>Alloxan_dimer_d3.40_sl1.50_ss0.00_tl0_ts0_tw0.xyz</code>; <code>_m</code> is added when B is mirrored).</p>
+<ul>
+<li><b>Coordinates in the molecular frame</b> (ticked by default) writes A centred at the origin, in the xy-plane. Untick it to keep the input frame (or the crystal's Cartesian frame).</li>
+<li><b>Gaussian</b> and <b>ORCA</b> add an editable method line and the charge and multiplicity of each molecule. For a dimer, Gaussian can add counterpoise correction, and ORCA can label the fragments. See <a href="#h-formats">File formats</a>.</li>
+</ul>
+<p>In the <b>Input</b> tab, paste an <code>.xyz</code> or <code>.cif</code> text and press <b>Use pasted text</b>. <b>Load example: alloxan</b> restores the default molecule.</p>
+</section>
+
+<section class="hs" id="h-keys" data-title="Keyboard">
+<h3 tabindex="-1">Keyboard</h3>
+<table class="ht">
+<thead><tr><th>Where</th><th>Keys</th></tr></thead>
+<tbody>
+<tr><td>Anywhere outside a text field</td><td><kbd>F1</kbd> or <kbd>?</kbd> opens this manual; <kbd>Esc</kbd> closes it.</td></tr>
+<tr><td>Tabs</td><td><kbd>←</kbd> <kbd>→</kbd> move between the tool tabs, and between the dock tabs.</td></tr>
+<tr><td>Viewer (focused)</td><td>Arrow keys rotate (<kbd>Shift</kbd> for small steps); <kbd>+</kbd> and <kbd>−</kbd> zoom; <kbd>0</kbd> resets the view.</td></tr>
+<tr><td>Dock divider (focused)</td><td><kbd>↑</kbd> <kbd>↓</kbd> resize by 24&nbsp;px; <kbd>Page Up</kbd> and <kbd>Page Down</kbd> by 120&nbsp;px.</td></tr>
+<tr><td>Design tab</td><td><kbd>Delete</kbd> removes the selection; <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo; <kbd>Ctrl</kbd>+<kbd>Y</kbd> redo; <kbd>Esc</kbd> clears the selection; <kbd>Enter</kbd> in the number fields applies them.</td></tr>
+<tr><td>Scan heat map (focused)</td><td>Arrow keys move between cells; <kbd>Enter</kbd> keeps the dimer; <kbd>Esc</kbd> returns to the previous one.</td></tr>
+</tbody></table>
+</section>
+
+<h2 class="hgroup">Science and conventions</h2>
+
+<section class="hs" id="h-frame" data-title="The molecular frame">
+<h3 tabindex="-1">The molecular frame</h3>
+<figure class="hfig">
+<svg viewBox="0 0 520 230" role="img" aria-labelledby="figFrT"><title id="figFrT">Molecule A lies in its fitted plane. The long axis and the short axis lie in the plane; the normal n points up out of it, from the centroid.</title>
+  <polygon class="f-plane" points="40,170 330,170 480,90 190,90"/>
+  <polygon class="f-mol" points="215,150 255,150 290,130 275,108 235,108 200,128"/>
+  <circle class="f-dot" cx="245" cy="129" r="4"/>
+  <line class="f-l f-arrow" x1="245" y1="129" x2="415" y2="129"/><polygon class="f-lf" points="415,124 425,129 415,134"/><text class="f-lt" x="430" y="133">long</text>
+  <line class="f-s2 f-arrow" x1="245" y1="129" x2="300" y2="100"/><polygon class="f-sf" points="296,95 306,97 302,105"/><text class="f-st" x="306" y="94">short</text>
+  <line class="f-n f-arrow" x1="245" y1="129" x2="245" y2="30"/><polygon class="f-nf" points="240,32 245,22 250,32"/><text class="f-nt" x="253" y="30">n = long × short</text>
+  <text class="f-s" x="150" y="194">centroid of A (heavy atoms by default)</text><line class="f-thin" x1="245" y1="133" x2="230" y2="182"/>
+</svg>
+<figcaption>A's plane and its axes: long (largest spread), short (next), and the normal n.</figcaption>
+</figure>
+<p>The frame is fitted to molecule A by principal component analysis (PCA):</p>
+<ol>
+<li>The centroid is the mean position of the heavy atoms (all atoms if <b>Fit the plane on heavy atoms only</b> is unticked, or if the molecule has fewer than three heavy atoms).</li>
+<li>The covariance matrix of those atoms about the centroid is diagonalised. The <b>long axis</b> is the direction of largest variance, the <b>short axis</b> the next, and the normal is <i>n</i> = long × short, so the frame is right-handed.</li>
+<li>Each eigenvector's sign is fixed so that its largest component is positive. This makes the frame reproducible for a given input orientation.</li>
+<li><b>Swap the long and short axes</b> exchanges the first two axes; <i>n</i> is then recomputed and points the other way.</li>
+</ol>
+<p>The plane fit RMS in the readouts is the square root of the smallest eigenvalue: the RMS distance of the fitted atoms from the plane.</p>
+</section>
+
+<section class="hs" id="h-place" data-title="Placing copy B">
+<h3 tabindex="-1">Placing copy B</h3>
+<figure class="hfig">
+<svg viewBox="0 0 520 210" role="img" aria-labelledby="figPlT"><title id="figPlT">Side view along the short axis: A lies flat; B's centroid is d above A's plane and shifted by the slip along the long axis.</title>
+  <line class="f-a" x1="60" y1="160" x2="300" y2="160"/><circle class="f-dot" cx="180" cy="160" r="4"/><text class="f-t" x="62" y="182">molecule A (plane)</text>
+  <line class="f-b" x1="200" y1="70" x2="440" y2="70"/><circle class="f-bdot" cx="320" cy="70" r="4"/><text class="f-t" x="330" y="58">copy B</text>
+  <line class="f-n f-arrow" x1="180" y1="160" x2="180" y2="30"/><polygon class="f-nf" points="175,32 180,22 185,32"/><text class="f-nt" x="160" y="22">n</text>
+  <line class="f-dim" x1="335" y1="160" x2="335" y2="74"/><polygon class="f-dimf" points="331,80 335,72 339,80"/><polygon class="f-dimf" points="331,154 335,162 339,154"/><text class="f-t" x="342" y="122">d</text>
+  <line class="f-thin" x1="300" y1="160" x2="350" y2="160"/>
+  <line class="f-dim" x1="184" y1="190" x2="316" y2="190"/><polygon class="f-dimf" points="190,186 182,190 190,194"/><polygon class="f-dimf" points="310,186 318,190 310,194"/><text class="f-t" x="210" y="205">slip along long axis</text>
+  <line class="f-thin" x1="180" y1="164" x2="180" y2="194"/><line class="f-thin" x1="320" y1="74" x2="320" y2="194"/>
+  <line class="f-l" x1="60" y1="160" x2="40" y2="160"/><text class="f-lt" x="20" y="150">long →</text>
+</svg>
+<figcaption>Side view: <i>d</i> is measured along A's normal from A's plane to B's centroid; the slips move B within A's plane.</figcaption>
+</figure>
+<p>B's coordinates are built from A's coordinates in A's frame, <b>r</b> (A centred at the origin, in the xy-plane):</p>
+<p class="eq"><b>r</b><sub>B</sub> = M · <b>r</b> + (slip<sub>long</sub>, slip<sub>short</sub>, <i>d</i>),&nbsp;&nbsp; M = R<sub>short</sub>(tilt<sub>short</sub>) · R<sub>long</sub>(tilt<sub>long</sub>) · R<sub>n</sub>(twist) · S</p>
+<p>Read from right to left, the operations are: the optional <b>mirror</b> S = diag(1, 1, −1) through B's own plane; the <b>twist</b> about <i>n</i>; the <b>tilt about the long axis</b>; and the <b>tilt about the short axis</b>. All rotations are about A's centroid, and positive angles turn anticlockwise when you look down the axis towards the origin. Finally B is <b>shifted</b> by the slips and by <i>d</i>.</p>
+<p>So <i>d</i> is exactly the height of B's centroid above A's plane, and it can be negative (B below A). When B is tilted, its atoms are at different heights; the readouts give their range.</p>
+<p>When B is a crystal partner that is a different molecule, its own frame takes the place of <b>r</b>: the parameters move it about its own centroid.</p>
+</section>
+
+<section class="hs" id="h-contacts" data-title="Contacts and clashes">
+<h3 tabindex="-1">Contacts and clashes</h3>
+<p>Every A–B atom pair is checked. The <b>tightest contact</b> is the pair with the smallest ratio <i>r</i> / (<i>r</i><sub>vdW,1</sub> + <i>r</i><sub>vdW,2</sub>). Below <b>75%</b> it is reported as a <b>clash</b>, in the readouts, on the scan map and in the scan index. Around 100% the two atoms just touch; typical π-stacked contacts are 95–110%.</p>
+<p><b>Van der Waals radii</b> are those of Bondi (1964), with Mantina et al. (2009) for the main-group elements Bondi lacks, and 2.00&nbsp;Å for the rest. For example: H 1.20, C 1.70, N 1.55, O 1.52, F 1.47, S 1.80, Cl 1.75, Br 1.85, I 1.98&nbsp;Å.</p>
+</section>
+
+<section class="hs" id="h-bonds" data-title="Bonds and elements">
+<h3 tabindex="-1">Bonds and elements</h3>
+<p><b>Bonds</b> are drawn and used wherever two atoms are closer than the sum of their covalent radii plus 15% or plus 0.3&nbsp;Å, whichever is larger (H–H: closer than 0.95&nbsp;Å). Covalent radii are those of Cordero et al. (2008). The extra margin keeps poorly placed X-ray hydrogen atoms bonded.</p>
+<p><b>Element symbols</b> are checked against the full periodic table, H to Og:</p>
+<ul>
+<li>Case-insensitive two-letter symbols are recognised (<code>Cl</code>, <code>CL</code>, <code>Fe</code>), as are labels with digits (<code>C12</code>, <code>H2A</code>), charges (<code>Fe3+</code>, <code>O2-</code>) and atomic numbers (<code>6</code>, <code>26</code>).</li>
+<li><code>D</code> and <code>T</code> are read as hydrogen.</li>
+<li>An unknown symbol is an error naming its line; it is never silently changed into another element.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-crys" data-title="Crystal handling">
+<h3 tabindex="-1">Crystal handling</h3>
+<ul>
+<li><b>What a CIF needs:</b> the cell (<code>_cell_length_*</code>, <code>_cell_angle_*</code>), the symmetry operations (<code>_space_group_symop_operation_xyz</code> or <code>_symmetry_equiv_pos_as_xyz</code>) and the fractional coordinates (<code>_atom_site_fract_*</code>). Without symmetry operations the cell is treated as P1, with a warning. Only the first data block with atom sites is used.</li>
+<li><b>Filling the cell:</b> every operation is applied to every site; atoms of the same element closer than 0.35&nbsp;Å are merged (atoms on special positions).</li>
+<li><b>Molecules</b> are rebuilt by following bonds across the cell faces. A fragment that bonds to its own periodic image is an extended network and is marked as such.</li>
+<li><b>Disorder:</b> only one disorder group is kept: the lowest-numbered one, positive groups first. Sites marked as dummy atoms are skipped. Partially occupied sites without a group are all kept, with a warning.</li>
+<li><b>Neighbours</b> are every molecule, in any cell, with an atom closer than the vdW sum + 0.5&nbsp;Å to an atom of the selected molecule. Pairs with the same partner kind, centroid distance and closest contact (to 0.01&nbsp;Å) and plane angle (to 1°) are counted as one.</li>
+<li><b>Pair types</b> use the plane angle, the height <i>h</i> of B's centroid above A's plane and the lateral offset (both molecules need three or more heavy atoms, or the pair is just a <i>Contact</i>):
+<table class="ht"><tbody>
+<tr><td>Stacked</td><td>angle &lt; 30°, <i>h</i> ≥ 2.8&nbsp;Å, offset &lt; 4.5&nbsp;Å</td></tr>
+<tr><td>Offset stack</td><td>angle &lt; 30°, <i>h</i> ≥ 2.8&nbsp;Å, offset ≥ 4.5&nbsp;Å</td></tr>
+<tr><td>Edge-to-face</td><td>angle ≥ 60°</td></tr>
+<tr><td>Side by side</td><td><i>h</i> &lt; 2&nbsp;Å (otherwise)</td></tr>
+<tr><td>Inclined</td><td>everything else</td></tr>
+</tbody></table></li>
+<li><b>Exact reproduction:</b> when the partner is a symmetry copy of the selected molecule, the symmetry operation (rotation part and translation) is converted into the parameters above, so the dimer matches the crystal coordinates to numerical precision. An operation with a determinant of −1 (inversion, mirror, glide) switches on the mirror.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-tidy" data-title="How Tidy works">
+<h3 tabindex="-1">How Tidy works</h3>
+<p>Tidy is a quick clean-up, not a geometry optimisation. Use your quantum-chemistry program for that.</p>
+<ul>
+<li><b>Which atoms move:</b> the atoms you added or re-elemented, their neighbours, any selected atoms, and the hydrogens on those atoms. If nothing qualifies, every atom may move, but only to remove clashes.</li>
+<li><b>Bond targets:</b> bonds inside an attached group keep the group's lengths. New bonds aim for the sum of the single-bond radii of Pyykkö and Atsumi (2009), shortened by 7.5% where both atoms can form a double bond, 14% for a double bond to a terminal atom, and 21% for a triple bond. Bonds you haven't touched keep their current length.</li>
+<li><b>Angle targets:</b> 109.47° at four-coordinate atoms; 120° at three-coordinate C and B; 120° (conjugated) or 108° at three-coordinate N; 100° at P, As, Sb, S and Se with three neighbours; 106° at two-coordinate O and 98° at S, Se and Te; 180° at sp carbon. Angles you haven't touched keep their current value.</li>
+<li><b>Clashes:</b> atoms that are neither bonded nor share a neighbour are pushed apart when closer than 75% of their vdW sum.</li>
+<li><b>The method:</b> the springs are relaxed by steepest descent, for at most 600 steps.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-formats" data-title="File formats">
+<h3 tabindex="-1">File formats</h3>
+<ul>
+<li><b>XYZ:</b> atom count, a comment line with every parameter and the atom ranges (A = 1…N, B = N+1…2N), then <code>Element x y z</code> in ångström.</li>
+<li><b>PDB:</b> HETATM records, molecule A as chain A (residue 1) and B as chain B (residue 2), a TER between them, and CONECT records for every bond.</li>
+<li><b>MOL / SDF:</b> a V2000 record with bonds. Bond orders are guessed: each atom's missing valence (C 4, N 3, O 2, …) is paired with a bonded neighbour's, shortest bonds first, by a backtracking search that falls back to a greedy pairing. Terminal O, S and Se on P, As, S and Se receive double bonds as needed. Nitro groups get N⁺ and O⁻ formal charges. Check the result for unusual bonding.</li>
+<li><b>Gaussian (.gjf):</b> <code>%chk</code>, the route line, a title, the charge and multiplicity, and the atoms. With counterpoise for a dimer, <code>counterpoise=2</code> is added to the route, atoms are tagged <code>(Fragment=1)</code> or <code>(Fragment=2)</code>, and the charge line lists the total and then each fragment.</li>
+<li><b>ORCA (.inp):</b> the method line, a comment, and an <code>* xyz charge multiplicity</code> block. With fragment labels for a dimer, atoms are written <code>C(1)</code> or <code>C(2)</code>.</li>
+<li><b>Charge and multiplicity of a dimer:</b> the total charge is the sum of the two; the total multiplicity is the high-spin combination, <i>m</i><sub>A</sub> + <i>m</i><sub>B</sub> − 1.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-scanrules" data-title="Scan conventions">
+<h3 tabindex="-1">Scan conventions</h3>
+<ul>
+<li><b>Grid values:</b> min, min + step, … up to the last value not above max, rounded to the decimals of min and step.</li>
+<li><b>Order:</b> dimers are numbered with the last parameter (twist) varying fastest, in the order d, slip long, slip short, tilt long, tilt short, twist.</li>
+<li><b>Folder names:</b> the run number, zero-padded, then each scanned parameter and its value: <code>d</code>, <code>sl</code> (slip long), <code>ss</code> (slip short), <code>tl</code> (tilt long), <code>ts</code> (tilt short), <code>tw</code> (twist); <code>_m</code> when B is mirrored. For example <code>017_d3.4_sl1.5</code>.</li>
+<li><b>Measures</b> are those of the <a href="#h-readouts">readouts</a>. The clash threshold is 75% of the vdW sum. The preview map draws at most 40,000 cells.</li>
+<li><b>Coordinates</b> follow the Export tab's frame option. Atoms 1…N are A, and the rest are B.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-refs" data-title="References">
+<h3 tabindex="-1">References</h3>
+<ul class="refs">
+<li>A. Bondi, “van der Waals Volumes and Radii”, <i>J. Phys. Chem.</i> <b>68</b>, 441 (1964).</li>
+<li>M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar, “Consistent van der Waals Radii for the Whole Main Group”, <i>J. Phys. Chem. A</i> <b>113</b>, 5806 (2009).</li>
+<li>B. Cordero et al., “Covalent radii revisited”, <i>Dalton Trans.</i> 2832 (2008).</li>
+<li>P. Pyykkö, M. Atsumi, “Molecular Single-Bond Covalent Radii for Elements 1–118”, <i>Chem. Eur. J.</i> <b>15</b>, 186 (2009).</li>
+<li>S. F. Boys, F. Bernardi, “The calculation of small molecular interactions by the differences of separate total energies”, <i>Mol. Phys.</i> <b>19</b>, 553 (1970): the counterpoise correction.</li>
+<li>Crystallography Open Database, <i>crystallography.net</i>: the benzene example, entry 7238223.</li>
+</ul>
+</section>
+
+    </div>
+  </div>
+</dialog>
 
 <script>
 {
@@ -2009,6 +2369,57 @@ $('tbExample').addEventListener('change',e=>{
   [...$('theme').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===(t==='light'||t==='dark'?t:'auto')));
   setDock(docks.includes(d)?d:'read');requestAnimationFrame(()=>{if(h)setDockH(h);else split.setAttribute('aria-valuenow',Math.round(dockEl.getBoundingClientRect().height))})})();
 
+/* ============================== manual ============================== */
+const helpDlg=$('help'),helpDoc=$('helpDoc'),helpToc=$('helpToc'),helpSecs=[...helpDoc.querySelectorAll('section.hs')];
+helpToc.innerHTML=[...helpDoc.children].map(n=>n.classList.contains('hgroup')?`<div class="tg">${esc(n.textContent)}</div>`:n.classList.contains('hs')?`<a href="#${n.id}" data-sec="${n.id}">${esc(n.dataset.title)}<span class="n"></span></a>`:'').join('');
+function helpGo(id,focus){
+  const sec=$(id);if(!sec)return;
+  if(sec.hidden){$('helpQ').value='';helpSearch('')}
+  helpDoc.scrollTop=sec.offsetTop-helpDoc.offsetTop-8;
+  [...helpToc.querySelectorAll('a')].forEach(a=>a.setAttribute('aria-current',a.dataset.sec===id));
+  if(focus)sec.querySelector('h3').focus({preventScroll:true});
+}
+function openHelp(id){
+  if(!helpDlg.open){try{helpDlg.showModal()}catch{helpDlg.setAttribute('open','')}}
+  if(id)requestAnimationFrame(()=>helpGo(id,true));else $('helpQ').focus();
+}
+function helpSearch(q){
+  helpDoc.querySelectorAll('mark').forEach(m=>m.replaceWith(m.textContent));helpDoc.normalize();
+  const terms=q.toLowerCase().split(/\s+/).filter(t=>t.length>1);let shown=0;
+  helpSecs.forEach(sec=>{
+    const ok=!terms.length||terms.every(t=>sec.textContent.toLowerCase().includes(t));sec.hidden=!ok;if(ok)shown++;
+    const a=helpToc.querySelector(`[data-sec="${sec.id}"]`);a.hidden=!ok;
+    let hits=0;
+    if(ok&&terms.length){
+      const re=new RegExp('('+terms.map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')','gi');
+      const w=document.createTreeWalker(sec,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentNode.closest('svg,mark')?NodeFilter.FILTER_REJECT:re.test(n.nodeValue)?(re.lastIndex=0,NodeFilter.FILTER_ACCEPT):NodeFilter.FILTER_REJECT}),nodes=[];
+      while(w.nextNode())nodes.push(w.currentNode);
+      nodes.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(re).forEach((part,i)=>{if(i%2){const m=document.createElement('mark');m.textContent=part;f.appendChild(m);hits++}else if(part)f.appendChild(document.createTextNode(part))});n.replaceWith(f)});
+    }
+    a.querySelector('.n').textContent=hits?hits:'';
+  });
+  helpDoc.querySelectorAll('.hgroup').forEach(g=>{let n=g.nextElementSibling,any=false;while(n&&!n.classList.contains('hgroup')){if(n.classList.contains('hs')&&!n.hidden)any=true;n=n.nextElementSibling}g.hidden=!any});
+  $('helpCount').textContent=terms.length?(shown?`${shown} section${shown>1?'s':''} match`:'No section matches. Try fewer or shorter words.'):'';
+  if(terms.length)helpDoc.scrollTop=0;
+}
+$('helpQ').addEventListener('input',e=>helpSearch(e.target.value));
+$('helpQ').addEventListener('keydown',e=>{if(e.key==='Enter'){const m=helpDoc.querySelector('mark');if(m){e.preventDefault();m.scrollIntoView({block:'center'})}}});
+helpToc.addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;e.preventDefault();helpGo(a.dataset.sec,true)});
+helpDoc.addEventListener('click',e=>{const a=e.target.closest('a[href^="#h-"]');if(!a)return;e.preventDefault();helpGo(a.getAttribute('href').slice(1),true)});
+helpDoc.addEventListener('scroll',()=>{let cur=null;for(const s of helpSecs){if(s.hidden)continue;if(s.offsetTop-helpDoc.offsetTop-helpDoc.scrollTop<=40)cur=s.id;else break}
+  if(cur)[...helpToc.querySelectorAll('a')].forEach(a=>a.setAttribute('aria-current',a.dataset.sec===cur))},{passive:true});
+$('helpClose').onclick=()=>helpDlg.close();
+helpDlg.addEventListener('click',e=>{if(e.target===helpDlg)helpDlg.close()});
+helpDlg.addEventListener('close',()=>{const f=helpDlg._ret;if(f&&document.contains(f))f.focus()});
+const helpFrom=(id,el)=>{helpDlg._ret=el||document.activeElement;openHelp(id)};
+$('tbHelp').onclick=e=>helpFrom(null,e.currentTarget);
+document.querySelectorAll('.qhelp[data-help]').forEach(b=>b.onclick=()=>helpFrom(b.dataset.help,b));
+$('dockHelp').onclick=e=>{const k=docks.find(d=>!$('dock-'+d).hidden);helpFrom({read:'h-readouts',exp:'h-export',in:'h-loading'}[k],e.currentTarget)};
+document.addEventListener('keydown',e=>{
+  if(helpDlg.open||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==='F1'||(e.key==='?'&&!e.target.closest('input,textarea,select'))){e.preventDefault();helpFrom(tab==='crystal'?'h-crystal':tab==='scan'?'h-scan':tab==='design'?'h-design':'h-dimer')}
+});
+
 /* ============================== start over ============================== */
 function emptyState(){
   $('stats').innerHTML='<div class="stat empty"><span>No molecule loaded. Use Open…, Paste or Examples in the top bar, drop a file on the viewer, or start from a template in the Design tab.</span></div>';
@@ -2072,7 +2483,7 @@ syncExp();ready=true;render();
 window.dimerforge={parseXYZ,parseCIF,elementOf,euler,neighbours,load,setTab,tidy,attach,placeB,poseM,toPDB,toSDF,toGJF,toORCA,exportSet,bondOrders,TEMPLATES,
   get picks(){return picks},get mol(){return mol},get frame(){return frame},get cryst(){return cryst},get partner(){return partner},state,EXP,D,render,select:ids=>{D.sel=ids.map(i=>mol.atoms[i].id);render()},
   loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText},
-  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll,applyTheme,setDock,setDockH};
+  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll,applyTheme,setDock,setDockH,openHelp,helpSearch};
 }
 </script>
 </body>

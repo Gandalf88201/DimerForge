@@ -4,6 +4,9 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 ## [Unreleased]
 
+### Added
+- **Built-in manual** in English: **Help** in the top bar (or <kbd>F1</kbd>, or <kbd>?</kbd>) opens it over the workspace, with a contents list and a search box that highlights matches; a **?** button on each tool tab, and on the dock, opens its own section. It covers how to use every tool and the science and conventions behind them (molecular frame, placement of B, contacts and clashes, bonds and elements, crystal handling, Tidy, file formats, scan conventions, references), with diagrams that follow the light and dark themes.
+
 ## [2.4.0] - 2026-11-25
 
 ### Changed
