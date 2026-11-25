@@ -4,6 +4,14 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 ## [Unreleased]
 
+### Changed
+- **New workspace layout**, like a desktop program: the 3D viewer fills the window; a resizable dock under it holds the Readouts, Export and Input tabs; the tools sit in a side panel that scrolls on its own. No more empty space under the viewer or long page scrolling. On narrow or short windows the panels stack.
+- **Light and dark themes** with a switch in the new top bar (Auto follows the system). The 3D viewer and the scan heat map follow the theme; in light mode atoms and bonds are outlined so hydrogens stay visible.
+- Compact, consistent styling: smaller type, joined button groups, section labels, aligned parameter rows. Readouts gain a row with the molecules' formulas, atom counts and plane fit.
+
+### Added
+- Top bar with **Open…**, **Paste** and **Examples** (alloxan, benzene crystal). The theme, the dock height and its open tab are remembered.
+
 ## [2.3.0] - 2026-11-25
 
 ### Added

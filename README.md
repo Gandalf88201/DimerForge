@@ -11,28 +11,39 @@ DimerForge is a single HTML file, plus the `fonts/` folder it uses, with no inst
 - Open `index.html` in any modern browser, or
 - serve it with GitHub Pages (Settings → Pages → deploy from the `main` branch, root folder).
 
-Then:
+### The workspace
 
-1. Load a structure: open an `.xyz` or `.cif` file, drop one onto the viewer, or paste the text and press **Use pasted text**. `examples/Alloxan.xyz` is loaded by default. `examples/Benzene_Pbca_COD7238223.cif` is a crystal to try, and the Crystal tab also has a one-click benzene example.
+DimerForge fills the browser window like a desktop program:
+
+- **Top bar:** **Open…** a file, **Paste** text, load one of the **Examples** (alloxan, or the benzene crystal), switch the theme (**Auto** follows the system, or force **Light** or **Dark**), and **Start over**.
+- **Viewer:** the 3D view takes the main area. In light mode it is light grey, with outlined atoms; in dark mode, near-black.
+- **Bottom dock:** three tabs under the viewer: **Readouts** (distances, angles, contacts, clash warning and a summary of the molecules), **Export** (format, options and a live preview, with Copy and Download next to the tabs) and **Input** (paste .xyz or .cif text). Drag the divider above it, or focus it and use the arrow keys, to make it taller or shorter.
+- **Side panel:** the Dimer, Design, Crystal and Scan tools. It scrolls on its own, so the viewer and the readouts stay in sight.
+
+The theme, the dock's height and its open tab are remembered in the browser. On windows narrower than 980 px or shorter than 620 px, the panels stack and the page scrolls instead.
+
+### Steps
+
+1. Load a structure: **Open…** an `.xyz` or `.cif` file, drop one onto the viewer, or **Paste** the text and press **Use pasted text**. `examples/Alloxan.xyz` is loaded by default. `examples/Benzene_Pbca_COD7238223.cif` is a crystal to try; **Examples** in the top bar, and the Crystal tab, load it in one click.
 2. **Dimer tab.** Place copy B with the sliders, the number fields or a preset (eclipsed, parallel-displaced, antiparallel, flipped face, T-shaped).
 3. **Design tab.** Edit molecule A (see below). The dimer follows the edits.
 4. **Crystal tab.** Pick a molecule from a CIF, or a real neighbouring pair, and load it into the dimer builder (see below).
 5. **Scan tab.** Generate a whole grid of dimers over ranges of the parameters, for structural correlation maps (see below).
-6. Check the readouts and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis (or along a, b or c in the crystal view).
-7. Choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
+6. Check the **Readouts** tab and the viewer. Drag to rotate, scroll to zoom, and use the buttons to look along n, the long axis or the short axis (or along a, b or c in the crystal view).
+7. In the **Export** tab, choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
 
 All settings, the current molecule and the input text are kept in the browser's local storage, so a reload restores the session.
 
-**Start over** (top right) clears everything after asking you to confirm: the molecule, the dimer, the designer history, the crystal, the scan, every setting and the saved session. It leaves an empty workspace, which stays empty after a reload, ready for your own file or a template. **Load example: alloxan** brings back the default molecule.
+**Start over** (top bar) clears everything after asking you to confirm: the molecule, the dimer, the designer history, the crystal, the scan, every setting and the saved session. It leaves an empty workspace, which stays empty after a reload, ready for your own file or a template. **Examples** in the top bar, or **Load example: alloxan** in the Input tab, bring back the default molecule. The theme and the dock layout are viewing preferences and are kept.
 
 ## Keyboard and screen readers
 
-- Tab reaches every control. The tabs (Dimer, Design, Crystal) switch with the left and right arrow keys.
+- Tab reaches every control. Both tab rows (Dimer, Design, Crystal, Scan, and Readouts, Export, Input) switch with the left and right arrow keys. The divider above the dock is a keyboard-resizable separator.
 - The 3D viewer takes focus too. Arrow keys rotate the view (hold Shift for small steps), `+` and `−` zoom, and `0` resets it.
 - In the Design tab, **Select atoms by number** accepts numbers and ranges, such as `3, 7-9`, in the order you want them measured. It stays in sync with clicks in the viewer. Delete, Ctrl+Z, Ctrl+Y and Esc work while the viewer or the page has focus.
 - In the Crystal tab, the molecule and pair lists do everything that clicking in the viewer does.
 - In the Scan tab, the preview map takes focus: arrow keys move between cells and show each dimer in the viewer (its values are announced), Enter keeps it, and Escape returns to the previous dimer.
-- The readouts under the viewer describe the structure in text, and status messages are announced.
+- The Readouts tab describes the structure in text, and status messages are announced. The layout passes an axe-core audit (WCAG 2.2 AA) in both themes.
 
 ## Reading `.xyz` files
 
@@ -67,7 +78,7 @@ The Scan tab builds the first step of a structural correlation map: a set of dim
 
 1. **Define the grid.** For each parameter (d, slip along long, slip along short, tilt about long, tilt about short, twist), either tick it and give a minimum, maximum and step, or leave it at a fixed value. **Fixed values from the current dimer** copies the Dimer tab's values. Every combination is generated, with the last parameter varying fastest. The panel shows the count live (for example 21 × 13 = 273), allows up to 20,000 dimers, and asks before building more than 5,000.
 2. **Preview.** The heat map shows two scanned parameters against each other, coloured by a measure: tightest contact as % of the vdW sum, closest contact, closest heavy-atom contact, centroid distance or angle between planes. Any other scanned parameter is shown at a value you pick. Clashing points (a contact under 75% of the vdW sum) are marked ×. Hovering a cell, or moving to it with the arrow keys, shows that dimer in the viewer; a click or Enter keeps it.
-3. **Generate.** Choose Gaussian or ORCA, a folder name, and whether to leave out clashing dimers. The method line, charges and multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export panel.
+3. **Generate.** Choose Gaussian or ORCA, a folder name, and whether to leave out clashing dimers. The method line, charges and multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export tab.
 
 The result is one `.zip` that unpacks into a main folder:
 

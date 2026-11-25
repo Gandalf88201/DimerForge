@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DimerForge</title>
+<script>try{const t=localStorage.getItem("dimerforge-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch{}</script>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
 <style>
 /* IBM Plex (SIL Open Font License 1.1, see fonts/), served from this repository: no requests to other sites. */
@@ -13,118 +14,269 @@
 @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2")}
 /* VOICE: a precise lab instrument, calm and exact.
-   IDEA: a molecular viewer bench, where the stack is set the way you set up a calculation.
-   PICTURE: a large live ball-and-stick view of the dimer with A's plane and its frame axes drawn on it.
-   COLOUR and TYPE: CPK atom colours on a graphite viewer, white bench, teal for copy B, coral for clashes, amber for the designer's selection; IBM Plex Sans + Mono for coordinates.
-   LAYOUT: viewer left and the tabbed controls right (Dimer, Design, Crystal), then the readouts, then export and input; stacks below 860px. */
-:root{color-scheme:light dark;
---bg:light-dark(#ffffff,#0e1214);--ink:light-dark(#101618,#e7eeee);--mute:light-dark(#5a6669,#97a6a8);
---line:light-dark(#dde3e3,#253033);--panel:light-dark(#f3f6f6,#151b1e);--view:#12181b;
---teal:#2fb5a3;--coral:#ff6f59;--amber:#ffd166;--focus:light-dark(#0b7d70,#5fd8c7)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+   IDEA: a desktop-style molecular workbench, like the programs chemists already use (Avogadro, Mercury).
+   PICTURE: the live 3D view fills the window; readouts, export and input sit in a dock under it; tools in a side panel.
+   COLOUR and TYPE: neutral greys, one teal accent (also copy B), coral for clashes, amber for selection; IBM Plex Sans + Mono.
+   Light and dark themes are token sets; the viewer and heat map read the same tokens. Auto follows the system.
+   LAYOUT: app shell that fills the viewport above 980px wide and 620px tall; below that it stacks and scrolls. */
+:root{
+  --bg:#eef0f2;--surface:#ffffff;--surface-2:#f5f6f8;--sunken:#f0f2f4;
+  --ink:#151a1e;--mute:#59646d;--faint:#8b959d;--line:#dde2e6;--line-2:#c7ced4;
+  --accent:#0f7f73;--accent-hover:#0b6c62;--accent-ink:#ffffff;--accent-soft:#e1f2ef;
+  --danger:#c2391f;--danger-soft:#fbe9e5;--sel:#a86f00;--focus:#0f7f73;
+  --view-bg:#e8ebee;--view-ink:#1d2329;--view-mute:#55616a;--view-btn:rgba(255,255,255,.9);--view-btn-hover:#ffffff;--view-btn-line:rgba(20,30,40,.16);
+  --v-plane:rgba(40,60,70,.07);--v-plane-line:rgba(40,60,70,.38);--v-planeB:rgba(15,127,115,.09);--v-planeB-line:rgba(15,127,115,.55);
+  --ax-l:#c4361c;--ax-s:#4d7c0f;--ax-n:#1d5fc9;--ring-b:#0f8a7c;--atom-edge:rgba(20,30,40,.42);--v-cell:rgba(30,40,50,.32);
+  --chip-bg:rgba(255,255,255,.92);--chip-ink:#1d2329;--swatch-a:#9aa3aa;
+  --shadow:0 1px 2px rgba(20,30,40,.06),0 1px 1px rgba(20,30,40,.04);
+  color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0c0f12;--surface:#14191d;--surface-2:#191f24;--sunken:#101418;
+  --ink:#e6ebee;--mute:#9ba7af;--faint:#6f7b84;--line:#242c32;--line-2:#323c43;
+  --accent:#2fb5a3;--accent-hover:#45c7b5;--accent-ink:#04201c;--accent-soft:#13302c;
+  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;
+  --view-bg:#0f1316;--view-ink:#dfe8e8;--view-mute:#9fb0b2;--view-btn:rgba(255,255,255,.07);--view-btn-hover:rgba(255,255,255,.14);--view-btn-line:rgba(255,255,255,.16);
+  --v-plane:rgba(210,225,228,.06);--v-plane-line:rgba(210,225,228,.3);--v-planeB:rgba(47,181,163,.08);--v-planeB-line:rgba(47,181,163,.42);
+  --ax-l:#ff8a78;--ax-s:#c8e86a;--ax-n:#8fc7ff;--ring-b:#2fb5a3;--atom-edge:rgba(0,0,0,0);--v-cell:rgba(220,232,234,.32);
+  --chip-bg:rgba(10,14,16,.75);--chip-ink:#e9f1f1;--swatch-a:#d8dee0;
+  --shadow:none;color-scheme:dark}}
+:root[data-theme=dark]{
+  --bg:#0c0f12;--surface:#14191d;--surface-2:#191f24;--sunken:#101418;
+  --ink:#e6ebee;--mute:#9ba7af;--faint:#6f7b84;--line:#242c32;--line-2:#323c43;
+  --accent:#2fb5a3;--accent-hover:#45c7b5;--accent-ink:#04201c;--accent-soft:#13302c;
+  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;
+  --view-bg:#0f1316;--view-ink:#dfe8e8;--view-mute:#9fb0b2;--view-btn:rgba(255,255,255,.07);--view-btn-hover:rgba(255,255,255,.14);--view-btn-line:rgba(255,255,255,.16);
+  --v-plane:rgba(210,225,228,.06);--v-plane-line:rgba(210,225,228,.3);--v-planeB:rgba(47,181,163,.08);--v-planeB-line:rgba(47,181,163,.42);
+  --ax-l:#ff8a78;--ax-s:#c8e86a;--ax-n:#8fc7ff;--ring-b:#2fb5a3;--atom-edge:rgba(0,0,0,0);--v-cell:rgba(220,232,234,.32);
+  --chip-bg:rgba(10,14,16,.75);--chip-ink:#e9f1f1;--swatch-a:#d8dee0;
+  --shadow:none;color-scheme:dark}
+
 *{box-sizing:border-box;min-width:0}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
-.band{padding:clamp(20px,3vw,40px) max(4vw,16px);max-width:1320px;margin:0 auto}
-h1{font-size:clamp(26px,3.4vw,36px);line-height:1.08;margin:0 0 6px;font-weight:600;text-wrap:balance}
-.top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
-.stat.empty{grid-column:1/-1}.stat.empty span{font-size:15px}
-h2{font-size:20px;margin:0 0 12px;font-weight:600}
-h3{font-size:15px;margin:16px 0 8px;font-weight:600}
-.lede{color:var(--mute);margin:0;max-width:72ch}
-.bench{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:20px;margin-top:20px}
-.fig{position:relative;min-height:460px;background:var(--view);border-radius:10px;overflow:hidden;touch-action:none;cursor:grab}
-.fig.drag{cursor:grabbing}.fig.over{outline:3px dashed var(--teal);outline-offset:-6px}
-.fig.pick{cursor:crosshair}
-.fig:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-.scrow{border:1px solid var(--line);border-radius:8px;padding:4px 10px 8px;margin:0 0 8px}
-.scrow legend{padding:0 4px;font-size:15px;font-weight:500}.scrow legend label{display:flex;gap:8px;align-items:center;min-height:32px}
-.scrow legend input{width:18px;height:18px;accent-color:var(--teal)}
-.sc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:13.5px/1.45 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh;height:100dvh}
+.appbar{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;padding:6px 12px;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow);position:relative;z-index:2}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:8px}
+.brand h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em}
+.brand h1::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--accent);box-shadow:5px 0 0 var(--line-2);vertical-align:0}
+.brand small{color:var(--mute);font-size:12px}
+.tb{display:flex;align-items:center;gap:4px}
+.tb+.tb{padding-left:10px;border-left:1px solid var(--line)}
+.spacer{flex:1}
+.work{display:grid;grid-template-columns:minmax(0,1fr) clamp(330px,27vw,420px);min-height:0}
+.stage{display:grid;grid-template-rows:minmax(0,1fr) auto var(--dock-h,clamp(180px,28vh,300px));min-height:0;min-width:0}
+.side{display:flex;flex-direction:column;min-height:0;background:var(--surface);border-left:1px solid var(--line)}
+.panes{flex:1;overflow:auto;padding:12px 14px 16px;scrollbar-gutter:stable}
+
+/* ---------- viewer ---------- */
+.fig{position:relative;background:var(--view-bg);overflow:hidden;touch-action:none;cursor:grab;min-height:0}
+.fig.drag{cursor:grabbing}.fig.over{outline:2px dashed var(--accent);outline-offset:-6px}.fig.pick{cursor:crosshair}
+.fig:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
+.legend{position:absolute;left:10px;top:8px;right:10px;color:var(--view-mute);font-size:12px;display:flex;gap:12px;flex-wrap:wrap;pointer-events:none}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.legend .sw-a{background:var(--swatch-a)}.legend .sw-b{border:2px solid var(--ring-b)}.legend .sw-sel{border:2px solid var(--sel)}
+.legend .ax-l{color:var(--ax-l)}.legend .ax-s{color:var(--ax-s)}.legend .ax-n{color:var(--ax-n)}
+.vbar{position:absolute;left:8px;right:8px;bottom:8px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.vbar button{background:var(--view-btn);color:var(--view-ink);border:1px solid var(--view-btn-line);min-height:28px;padding:0 10px;font-size:12px;backdrop-filter:blur(4px)}
+.vbar button:hover{background:var(--view-btn-hover)}
+
+/* ---------- dock ---------- */
+.split{height:7px;cursor:row-resize;background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;touch-action:none}
+.split::after{content:"";position:absolute;left:50%;top:2px;width:36px;height:1px;margin-left:-18px;background:var(--line-2);box-shadow:0 2px 0 var(--line-2)}
+.split:hover,.split.drag{background:var(--surface-2)}
+.split:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.dock{display:flex;flex-direction:column;min-height:0;background:var(--surface)}
+.dockbody{flex:1;overflow:auto;padding:10px 12px;min-height:0}
+.docktab{display:grid;gap:12px;align-items:start;height:100%}
+.docktab.two{grid-template-columns:minmax(260px,.9fr) minmax(0,1.5fr)}
+.docktab.two>*{min-height:0}
+.docktab.two>pre,.docktab.two>.ta{height:100%;min-height:150px}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 8px;overflow-x:auto;flex:none;background:var(--surface)}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;min-height:34px;padding:0 11px;color:var(--mute);font-weight:500;font-size:13px}
+.tabs button:hover{color:var(--ink);background:none;border-color:transparent}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.dockhead{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);background:var(--surface);flex:none}.dockhead .tabs{border-bottom:0}
+.tabacts{margin-left:auto;display:flex;align-items:center;gap:6px;padding:0 10px}.tabacts .msg{min-height:0;margin-right:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42ch}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 8px;margin-bottom:8px}.grid4 .wide{grid-column:1/-1}
+
+/* ---------- type ---------- */
+h1,h2,h3{font-weight:600}
+h2{font-size:14px;margin:0 0 10px}
+h3{font-size:11px;margin:16px 0 7px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute);font-weight:600;display:flex;align-items:center;gap:8px}
+h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.note{color:var(--mute);font-size:12px;margin:8px 0 0;line-height:1.45}
+.msg{font-size:12px;color:var(--mute);min-height:18px}.msg.err{color:var(--danger)}
+
+/* ---------- controls ---------- */
+input[type=number],input[type=text],select,textarea{font:12.5px "IBM Plex Mono",monospace;background:var(--surface);color:var(--ink);border:1px solid var(--line-2);border-radius:4px;padding:4px 7px;min-height:28px}
+select{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;padding-right:4px}
+input:hover,select:hover,textarea:hover{border-color:var(--faint)}
+button,.file{font:500 12.5px "IBM Plex Sans",sans-serif;min-height:28px;padding:0 10px;border-radius:4px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+button:hover,.file:hover{background:var(--surface-2);border-color:var(--faint)}
+button:disabled,button:disabled:hover{opacity:.45;cursor:not-allowed;background:var(--surface);border-color:var(--line-2)}
+button.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.pri:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+button.ghost{border-color:transparent;background:none}button.ghost:hover{background:var(--surface-2);border-color:var(--line)}
+button.danger:hover{color:var(--danger);border-color:var(--danger);background:var(--danger-soft)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.file:focus-within,pre:focus-visible,#scMap:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.file{position:relative}.file input{position:absolute;opacity:0;width:1px;height:1px}
+.chips,.seg{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 10px}.chips button,.seg button{min-height:26px;font-size:12px;padding:0 9px}
+.seg.joined{gap:0}.seg.joined button{border-radius:0;margin-left:-1px}.seg.joined button:first-child{border-radius:4px 0 0 4px;margin-left:0}.seg.joined button:last-child{border-radius:0 4px 4px 0}
+.seg button[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);position:relative;z-index:1;font-weight:600}
+.seg.el button{min-width:34px;font-family:"IBM Plex Mono",monospace}
+.opts{display:grid;gap:2px;margin-top:6px;font-size:12.5px}.opts label{display:flex;gap:8px;align-items:center;min-height:26px;cursor:pointer}
+.opts input,.scrow legend input{width:15px;height:15px;accent-color:var(--accent);flex:none;margin:0}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px 8px;margin-bottom:8px}
+.field{display:grid;gap:2px;font-size:11.5px;color:var(--mute)}.field input,.field select{width:100%;color:var(--ink)}
+.field.wide{grid-column:1/-1}
+
+/* parameter rows: label · slider · number */
+.row{display:grid;grid-template-columns:minmax(0,1fr) 92px;grid-template-areas:"l n" "r r";gap:0 8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row label{grid-area:l;font-size:12.5px;font-weight:500}.row .num{grid-area:n}
+.row input[type=range]{grid-area:r;width:100%;accent-color:var(--accent);height:20px;margin:2px 0 0}
+.row small{grid-column:1/-1;color:var(--mute);font-size:11px;margin-top:-2px}
+.num{display:flex;align-items:center;gap:3px}.num input{width:100%;text-align:right}
+.num span{color:var(--mute);font-size:12px;width:12px}
+
+/* readouts */
+.stats{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.stat{flex:1 1 150px;padding:8px 10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0}
+.stat.sub{background:var(--surface-2)}.stat.sub b{font-size:14px}
+.stat b{display:block;font:500 17px/1.2 "IBM Plex Mono",monospace;overflow-wrap:break-word;font-variant-numeric:tabular-nums}
+.stat span{color:var(--mute);font-size:11.5px;display:block;margin-top:2px}
+.warn{background:var(--danger-soft)}.warn b,.warn span{color:var(--danger)}
+.stat.empty{grid-column:1/-1}.stat.empty span{font-size:13px}
+
+pre{margin:0;background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font:12px/1.5 "IBM Plex Mono",monospace;overflow:auto}
+textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
+.ta{display:flex}.ta textarea{flex:1;min-height:150px}
+
+/* side-panel lists and scan */
+.list{display:grid;gap:4px;margin:0 0 10px;max-height:300px;overflow:auto;padding:1px}
+.list button{display:block;width:100%;text-align:left;min-height:0;padding:6px 9px;font-size:12.5px;font-weight:400;white-space:normal}
+.list button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent);background:var(--accent-soft)}
+.list b{font-weight:600}.list small{display:block;color:var(--mute);font:11.5px/1.45 "IBM Plex Mono",monospace}
+.meas{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px}.meas .num{width:140px}
+.scrow{border:1px solid var(--line);border-radius:5px;padding:2px 9px 7px;margin:0 0 6px;background:var(--surface-2)}
+.scrow legend{padding:0 4px;font-size:12.5px;font-weight:500}.scrow legend label{display:flex;gap:7px;align-items:center;min-height:24px;cursor:pointer}
+.sc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .scrow[data-on="0"] .scon,.scrow[data-on="1"] .scoff{display:none}
 .scrow input[type=number]{width:100%}
-.scn{display:block;color:var(--mute);font-size:13px;margin-top:4px}
-#scMap{display:block;width:100%;height:300px;cursor:crosshair;touch-action:none;color:var(--ink)}
-#scMap:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.mapkey{font-size:13px;color:var(--mute);margin:6px 0 0}.mapkey b{color:var(--coral);font-weight:600}
-pre:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
-.vbar{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.vbar button{background:#ffffff14;color:#dfe8e8;border:1px solid #ffffff26;min-height:36px;padding:0 12px;font-size:14px}
-.vbar button:hover{background:#ffffff26}
-.legend{position:absolute;left:12px;top:10px;right:12px;color:#b9c6c7;font-size:13px;display:flex;gap:14px;flex-wrap:wrap;pointer-events:none}
-.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-.ctrl{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-6px -4px 16px;overflow-x:auto}
-.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;min-height:44px;padding:0 12px;color:var(--mute);font-weight:600}
-.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--teal)}
-.row{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:4px 10px;align-items:center;margin-bottom:12px}
-.row label{font-size:15px;font-weight:500}.row small{grid-column:1/-1;color:var(--mute);font-size:13px;margin-top:-2px}
-.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--teal);height:28px}
-.num{display:flex;align-items:center;gap:4px}.num input{width:100%;text-align:right}
-.num span{color:var(--mute);font-size:14px;width:14px}
-input[type=number],input[type=text],select,textarea{font:16px "IBM Plex Mono",monospace;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
-input[type=text],select{min-height:40px}
-button,.file{font:500 15px "IBM Plex Sans",sans-serif;min-height:44px;padding:0 14px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
-button:disabled{opacity:.45;cursor:not-allowed}
-button.pri{background:var(--teal);border-color:var(--teal);color:#05211d}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.file:focus-within{outline:3px solid var(--focus);outline-offset:2px}
-.chips,.seg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.chips button,.seg button{min-height:36px;font-size:14px;padding:0 10px}
-.seg button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#05211d}
-.seg.el button{min-width:42px;font-family:"IBM Plex Mono",monospace}
-.opts{display:grid;gap:8px;margin-top:6px;font-size:15px}.opts label{display:flex;gap:8px;align-items:center;min-height:32px}
-.opts input{width:18px;height:18px;accent-color:var(--teal);flex:none}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border-top:2px solid var(--ink);margin-top:22px}
-.stat{padding:12px 14px 12px 0;border-bottom:1px solid var(--line)}
-.stat b{display:block;font:500 clamp(20px,2.2vw,26px)/1.15 "IBM Plex Mono",monospace;overflow-wrap:break-word}
-.stat span{color:var(--mute);font-size:14px}
-.warn b{color:var(--coral)}
-.out{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,1fr);gap:20px}
-.acts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
-pre{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;font:14px/1.5 "IBM Plex Mono",monospace;max-height:420px;overflow:auto}
-textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
-.msg{font-size:14px;color:var(--mute);min-height:20px}.msg.err{color:var(--coral)}
-.note{color:var(--mute);font-size:14px;margin:10px 0 0}
-.file{position:relative}.file input{position:absolute;opacity:0;width:1px;height:1px}
-.list{display:grid;gap:6px;margin:0 0 12px;max-height:320px;overflow:auto;padding:2px}
-.list button{display:block;width:100%;text-align:left;min-height:0;padding:8px 10px;font-size:14px;font-weight:400}
-.list button[aria-pressed=true]{border-color:var(--teal);box-shadow:inset 4px 0 0 var(--teal)}
-.list b{font-weight:600}.list small{display:block;color:var(--mute);font:12.5px/1.45 "IBM Plex Mono",monospace}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
-.field{display:grid;gap:3px;font-size:14px;color:var(--mute)}.field input,.field select{width:100%;color:var(--ink)}
-.field.wide{grid-column:1/-1}
-.meas{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px}.meas .num{width:150px}
-@media(max-width:600px){.vbar button{min-height:32px;padding:0 8px;font-size:13px}}
-@media(max-width:860px){.bench,.out{grid-template-columns:minmax(0,1fr)}.fig{min-height:360px}}
+.scn{display:block;color:var(--mute);font-size:11px;margin-top:3px}
+#scMap{display:block;width:100%;height:280px;cursor:crosshair;touch-action:none;color:var(--ink);border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+.mapkey{font-size:11.5px;color:var(--mute);margin:6px 0 0}.mapkey b{color:var(--danger);font-weight:600}
+
+/* ---------- narrow or short windows: stack and scroll the page ---------- */
+@media (max-width:980px),(max-height:620px){
+  .app{height:auto;min-height:100vh}
+  .work{grid-template-columns:minmax(0,1fr)}
+  .stage{grid-template-rows:auto}
+  .fig{height:clamp(320px,62vh,560px)}
+  .split{display:none}
+  .dock{border-top:1px solid var(--line)}
+  .dockbody{overflow:visible}
+  .side{border-left:0;border-top:1px solid var(--line)}
+  .panes{overflow:visible}
+}
+@media (max-width:720px){
+  .docktab.two{grid-template-columns:minmax(0,1fr)}
+  .docktab.two>pre{max-height:320px}
+  .brand small{display:none}
+  .appbar{padding:6px 10px}
+  .tb+.tb{padding-left:6px}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<main>
-<div class="band">
-  <div class="top"><h1>DimerForge</h1><button id="reset" aria-describedby="resetHelp">Start over</button></div>
+<div class="app">
+<header class="appbar">
+  <div class="brand"><h1>DimerForge</h1><small>Molecular dimer builder</small></div>
+  <div class="tb" role="group" aria-label="Structure">
+    <label class="file">Open…<input type="file" id="file" accept=".xyz,.cif,.txt,text/plain"></label>
+    <button id="tbPaste">Paste</button>
+    <select id="tbExample" aria-label="Load an example"><option value="">Examples…</option><option value="allox">Alloxan (.xyz)</option><option value="benz">Benzene crystal, Pbca (.cif)</option></select>
+  </div>
+  <div class="spacer"></div>
+  <div class="tb">
+    <div class="seg joined" id="theme" role="group" aria-label="Theme" style="margin:0"><button data-theme="auto" title="Follow the system">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div>
+  </div>
+  <div class="tb"><button id="reset" class="danger" aria-describedby="resetHelp">Start over</button></div>
   <p class="sr-only" id="resetHelp">Clears the molecule, dimer, crystal, scan and all settings, after asking you to confirm.</p>
-  <p class="lede">Build stacked dimers from a single .xyz structure, or take molecules and real neighbouring pairs from a crystal (.cif). Set the interplanar distance, slip, tilt and twist in the molecule's own frame, edit the molecule in the designer, check the contacts, and export the monomer or the dimer as .xyz, PDB, MOL/SDF, Gaussian or ORCA input. Drag to rotate the view, scroll to zoom, or drop a file onto the viewer.</p>
+</header>
 
-  <div class="bench">
-    <div>
-      <div class="fig" id="fig" tabindex="0" role="application" aria-roledescription="3D viewer" aria-label="Molecule viewer" aria-describedby="figHelp">
-        <canvas id="cv" aria-hidden="true"></canvas>
-        <p class="sr-only" id="figHelp">Arrow keys rotate the view (hold Shift for small steps), plus and minus zoom, and 0 resets the view. The readouts below the viewer describe the structure. In the Design tab, select atoms by typing their numbers; in the Crystal tab, use the lists.</p>
-        <div class="legend" id="legend"></div>
-        <div class="vbar" id="vbar"></div>
-      </div>
-      <div class="stats" id="stats"></div>
+<main class="work">
+  <section class="stage" aria-label="Viewer and results">
+    <div class="fig" id="fig" tabindex="0" role="application" aria-roledescription="3D viewer" aria-label="Molecule viewer" aria-describedby="figHelp">
+      <canvas id="cv" aria-hidden="true"></canvas>
+      <p class="sr-only" id="figHelp">Arrow keys rotate the view (hold Shift for small steps), plus and minus zoom, and 0 resets the view. The Readouts tab below the viewer describes the structure. In the Design tab, select atoms by typing their numbers; in the Crystal tab, use the lists.</p>
+      <div class="legend" id="legend"></div>
+      <div class="vbar" id="vbar"></div>
     </div>
-
-    <div class="ctrl">
-      <div class="tabs" role="tablist" aria-label="Tools">
-        <button role="tab" id="t_dimer" aria-controls="tab-dimer" aria-selected="true">Dimer</button>
-        <button role="tab" id="t_design" aria-controls="tab-design" aria-selected="false">Design</button>
-        <button role="tab" id="t_crystal" aria-controls="tab-crystal" aria-selected="false">Crystal</button>
-        <button role="tab" id="t_scan" aria-controls="tab-scan" aria-selected="false">Scan</button>
+    <div class="split" id="split" role="separator" aria-orientation="horizontal" aria-label="Resize the bottom panel" tabindex="0" aria-valuemin="120" aria-valuemax="700"></div>
+    <section class="dock" aria-label="Readouts, export and input">
+      <div class="dockhead">
+        <div class="tabs" role="tablist" aria-label="Bottom panel">
+          <button role="tab" id="d_read" aria-controls="dock-read" aria-selected="true">Readouts</button>
+          <button role="tab" id="d_exp" aria-controls="dock-exp" aria-selected="false">Export</button>
+          <button role="tab" id="d_in" aria-controls="dock-in" aria-selected="false">Input</button>
+        </div>
+        <div class="tabacts" id="expActs" hidden><span class="msg" id="outmsg" aria-live="polite"></span><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button></div>
       </div>
+      <div class="dockbody">
+        <div id="dock-read" role="tabpanel" aria-labelledby="d_read"><div class="stats" id="stats"></div></div>
 
+        <div id="dock-exp" role="tabpanel" aria-labelledby="d_exp" hidden>
+          <div class="docktab two">
+            <div>
+              <div class="seg joined" id="expWhat" role="group" aria-label="What to export"></div>
+              <div class="seg joined" id="expFmt" role="group" aria-label="File format"></div>
+              <div class="opts" style="margin:0 0 8px"><label><input type="checkbox" id="optFrame" checked> Coordinates in the molecular frame (A in the xy-plane)</label></div>
+              <div id="qmOpts" hidden>
+                <div class="grid4">
+                  <label class="field wide"><span id="qmMethodLab">Route line</span><input type="text" id="qmMethod" spellcheck="false"></label>
+                  <label class="field"><span>Charge A</span><input type="number" id="qA" step="1"></label>
+                  <label class="field"><span>Multiplicity A</span><input type="number" id="mA" step="1" min="1"></label>
+                  <label class="field"><span>Charge B</span><input type="number" id="qB" step="1"></label>
+                  <label class="field"><span>Multiplicity B</span><input type="number" id="mB" step="1" min="1"></label>
+                </div>
+                <div class="opts" style="margin:0 0 8px"><label><input type="checkbox" id="optFragTag" checked> <span id="fragTagLab">Counterpoise correction (fragments 1 and 2)</span></label></div>
+              </div>
+            </div>
+            <pre id="out" tabindex="0" role="region" aria-label="Export preview"></pre>
+          </div>
+        </div>
+
+        <div id="dock-in" role="tabpanel" aria-labelledby="d_in" hidden>
+          <div class="docktab two">
+            <div>
+              <p class="note" style="margin:0 0 8px">Open a file from the top bar, drop one on the viewer, or paste .xyz or .cif text here and apply it.</p>
+              <div class="acts"><button id="apply" class="pri">Use pasted text</button><button id="exAllox">Load example: alloxan</button></div>
+              <div class="msg" id="inmsg" aria-live="polite"></div>
+            </div>
+            <div class="ta"><textarea id="src" spellcheck="false" aria-label="Input .xyz or .cif text"></textarea></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <aside class="side ctrl" aria-label="Tools">
+    <div class="tabs" role="tablist" aria-label="Tools">
+      <button role="tab" id="t_dimer" aria-controls="tab-dimer" aria-selected="true">Dimer</button>
+      <button role="tab" id="t_design" aria-controls="tab-design" aria-selected="false">Design</button>
+      <button role="tab" id="t_crystal" aria-controls="tab-crystal" aria-selected="false">Crystal</button>
+      <button role="tab" id="t_scan" aria-controls="tab-scan" aria-selected="false">Scan</button>
+    </div>
+    <div class="panes">
       <section id="tab-dimer" role="tabpanel" aria-labelledby="t_dimer">
         <h2>Placement of copy B</h2>
         <div class="chips" id="presets" role="group" aria-label="Presets"></div>
@@ -207,8 +359,8 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
         <p class="mapkey"><span id="scKey">Darker blue means a larger value.</span> <b>×</b> marks a clash (a contact under 75% of the vdW sum). Hover or use the arrow keys to preview a dimer; click or press Enter to keep it.</p>
         <div class="msg" id="scTip" aria-live="polite"></div>
         <h3>Generate</h3>
-        <div class="seg" id="scQm" role="group" aria-label="Quantum-chemistry input"><button data-q="gjf">Gaussian</button><button data-q="orca">ORCA</button></div>
-        <p class="note" style="margin:-4px 0 10px">Each dimer gets its own folder with an .xyz file and this input. The method line, charges, multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export panel below.</p>
+        <div class="seg joined" id="scQm" role="group" aria-label="Quantum-chemistry input"><button data-q="gjf">Gaussian</button><button data-q="orca">ORCA</button></div>
+        <p class="note" style="margin:-4px 0 10px">Each dimer gets its own folder with an .xyz file and this input. The method line, charges, multiplicities, counterpoise or fragment labels and the coordinate frame come from the Export tab under the viewer.</p>
         <div class="grid2">
           <label class="field wide">Main folder name<input type="text" id="scName" spellcheck="false" autocomplete="off"></label>
           <label class="field">Plot script view<select id="scMode"><option value="2d">2D map</option><option value="3d">3D</option></select></label>
@@ -219,38 +371,9 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
         <div class="msg" id="scProg" aria-live="polite"></div>
       </section>
     </div>
-  </div>
-</div>
-
-<div class="band">
-  <div class="out">
-    <div>
-      <h2>Export</h2>
-      <div class="seg" id="expWhat" role="group" aria-label="What to export"></div>
-      <div class="seg" id="expFmt" role="group" aria-label="File format"></div>
-      <div class="opts" style="margin:0 0 10px"><label><input type="checkbox" id="optFrame" checked> Write coordinates in the molecular frame (A in the xy-plane)</label></div>
-      <div id="qmOpts" hidden>
-        <div class="grid2">
-          <label class="field wide"><span id="qmMethodLab">Route line</span><input type="text" id="qmMethod" spellcheck="false"></label>
-          <label class="field"><span>Charge A</span><input type="number" id="qA" step="1"></label>
-          <label class="field"><span>Multiplicity A</span><input type="number" id="mA" step="1" min="1"></label>
-          <label class="field"><span>Charge B</span><input type="number" id="qB" step="1"></label>
-          <label class="field"><span>Multiplicity B</span><input type="number" id="mB" step="1" min="1"></label>
-        </div>
-        <div class="opts" style="margin:0 0 10px"><label><input type="checkbox" id="optFragTag" checked> <span id="fragTagLab">Counterpoise correction (fragments 1 and 2)</span></label></div>
-      </div>
-      <div class="acts"><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button><span class="msg" id="outmsg" aria-live="polite"></span></div>
-      <pre id="out" tabindex="0" role="region" aria-label="Export preview"></pre>
-    </div>
-    <div>
-      <h2>Input structure</h2>
-      <div class="acts"><label class="file">Open .xyz or .cif file<input type="file" id="file" accept=".xyz,.cif,.txt,text/plain"></label><button id="apply">Use pasted text</button><button id="exAllox">Load example: alloxan</button></div>
-      <textarea id="src" spellcheck="false" aria-label="Input .xyz or .cif text"></textarea>
-      <div class="msg" id="inmsg" aria-live="polite"></div>
-    </div>
-  </div>
-</div>
+  </aside>
 </main>
+</div>
 
 <script>
 {
@@ -734,9 +857,12 @@ function stats(R){
     S=[[fmt(R.cc)+' Å','Centroid to centroid'],[fmt(R.lat)+' Å','Lateral offset (total slip)'],[fmt(R.ang,1)+'°','Angle between planes'],
       [fmt(R.zmin)+' to '+fmt(R.zmax)+' Å','Height of B atoms above plane A'],[fmt(R.best.r)+' Å','Closest contact, '+R.best.ea+'···'+R.best.eb],
       [bestOr(R.bestH),'Closest heavy-atom contact'+(R.bestH.ea?', '+R.bestH.ea+'···'+R.bestH.eb:'')],
-      [fmt(R.worst.q*100,0)+'%',clash?'Clash: a contact under 75% of the vdW sum':'Tightest contact as % of the vdW sum',clash]];
+      [fmt(R.worst.q*100,0)+'%',clash?'Clash: a contact under 75% of the vdW sum':'Tightest contact as % of the vdW sum',clash],
+      [formula(mol.atoms.map(a=>a.e)),`Molecule A · ${mol.atoms.length} atoms`,0,1],
+      [partner?formula(partner.atoms.map(a=>a.e)):'copy of A',partner?`Molecule B · ${partner.atoms.length} atoms (crystal partner)`:`Molecule B${state.mir?' · mirrored':''}`,0,1],
+      [fmt(frame.rms,3)+' Å',`Plane fit RMS of A (${$('optHeavy').checked?'heavy atoms':'all atoms'})`,0,1]];
   }
-  $('stats').innerHTML=S.map(([b,s,w])=>`<div class="stat${w?' warn':''}"><b title="${esc(b)}">${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
+  $('stats').innerHTML=S.map(([b,s,w,sub])=>`<div class="stat${w?' warn':''}${sub?' sub':''}"><b title="${esc(b)}">${esc(b)}</b><span>${esc(s)}</span></div>`).join('');
 }
 
 /* ============================== export ============================== */
@@ -1063,18 +1189,18 @@ let picks=[];
 function sceneDimer(R){
   const atoms=[],bonds=[],BA=Batoms(),nA=R.A.length;
   R.A.forEach((p,i)=>atoms.push({p,e:mol.atoms[i].e}));
-  R.B.forEach((p,j)=>atoms.push({p,e:BA[j].e,ring:'#2fb5a3'}));
+  R.B.forEach((p,j)=>atoms.push({p,e:BA[j].e,ring:'B'}));
   frame.bonds.forEach(b=>bonds.push(b));Bframe().bonds.forEach(([i,j])=>bonds.push([i+nA,j+nA]));
   const rect=L=>{const xs=L.map(p=>p[0]),ys=L.map(p=>p[1]),x0=Math.min(...xs)-.7,x1=Math.max(...xs)+.7,y0=Math.min(...ys)-.7,y1=Math.max(...ys)+.7;return[[x0,y0,0],[x1,y0,0],[x1,y1,0],[x0,y1,0]]};
   const rA=rect(R.A),{M,t}=placeB(),rB=rect(Bframe().local).map(p=>add(mv(M,p),t));
   const L=Math.max(1.6,(rA[1][0]-rA[0][0])/2),S2=Math.max(1.4,(rA[2][1]-rA[1][1])/2);
-  return{atoms,bonds,polys:[[rA,'rgba(210,225,228,.07)','rgba(210,225,228,.3)'],[rB,'rgba(47,181,163,.07)','rgba(47,181,163,.35)']],
-    lines:[[[0,0,0],[L,0,0],'#ff8a78','long'],[[0,0,0],[0,S2,0],'#c8e86a','short'],[[0,0,0],[0,0,1.8],'#8fc7ff','n']]};
+  return{atoms,bonds,polys:[[rA,'A'],[rB,'B']],
+    lines:[[[0,0,0],[L,0,0],'l','long'],[[0,0,0],[0,S2,0],'s','short'],[[0,0,0],[0,0,1.8],'n','n']]};
 }
 function sceneDesign(){
   if(!D.center)D.center=mean(mol.atoms.map(a=>a.p));
   const sel=new Set(selIdx()),lab=$('optLabels').checked;
-  return{atoms:mol.atoms.map((a,i)=>({p:a.p,e:a.e,ring:sel.has(i)?'#ffd166':null,label:lab?String(i+1):null,pick:i})),bonds:frame.bonds,center:D.center,polys:[],lines:[]};
+  return{atoms:mol.atoms.map((a,i)=>({p:a.p,e:a.e,ring:sel.has(i)?'sel':null,label:lab?String(i+1):null,pick:i})),bonds:frame.bonds,center:D.center,polys:[],lines:[]};
 }
 function sceneCrystal(){
   const C=cryst,atoms=[],bonds=[],pr=C.pairSel!=null?C.pairs[C.pairSel]:null;
@@ -1083,23 +1209,30 @@ function sceneCrystal(){
     const off=atoms.length,hi=k===C.S;
     m.atoms.forEach(a=>atoms.push({p:a.x,e:a.e,alpha:hi?1:(pr?.16:.32),pick:k}));m.bonds.forEach(([i,j])=>bonds.push([i+off,j+off]));
   });
-  if(pr){const off=atoms.length;pr.B.forEach(a=>atoms.push({p:a.x,e:a.e,ring:'#2fb5a3',pick:-1}));C.mols[pr.k].bonds.forEach(([i,j])=>bonds.push([i+off,j+off]))}
+  if(pr){const off=atoms.length;pr.B.forEach(a=>atoms.push({p:a.x,e:a.e,ring:'B',pick:-1}));C.mols[pr.k].bonds.forEach(([i,j])=>bonds.push([i+off,j+off]))}
   const M=C.Mo,cn=[0,1].flatMap(x=>[0,1].flatMap(y=>[0,1].map(z=>mv(M,[x,y,z])))),E=[[0,4],[0,2],[0,1],[4,6],[4,5],[2,6],[2,3],[1,5],[1,3],[6,7],[5,7],[3,7]];
-  const lines=E.map(([a,b],k)=>[cn[a],cn[b],k<3?['#ff8a78','#c8e86a','#8fc7ff'][k]:'rgba(220,232,234,.35)',k<3?'abc'[k]:null,true]);
+  const lines=E.map(([a,b],k)=>[cn[a],cn[b],k<3?['l','s','n'][k]:'cell',k<3?'abc'[k]:null,true]);
   return{atoms,bonds,polys:[],lines,center:mv(M,[.5,.5,.5]),extra:cn};
 }
 function scene(){if(tab==='crystal'&&cryst)return sceneCrystal();if(!mol||!lastR)return null;return tab==='design'?sceneDesign():sceneDimer(lastR)}
 
+/* Viewer colours come from the theme tokens, so light and dark mode share one drawing code. */
+let VT={};
+function vtheme(){const c=getComputedStyle(document.documentElement),g=n=>c.getPropertyValue(n).trim(),edge=g('--atom-edge');
+  return{ink:g('--view-ink'),mute:g('--view-mute'),planeA:g('--v-plane'),planeLineA:g('--v-plane-line'),planeB:g('--v-planeB'),planeLineB:g('--v-planeB-line'),
+    l:g('--ax-l'),s:g('--ax-s'),n:g('--ax-n'),cell:g('--v-cell'),ringB:g('--ring-b'),sel:g('--sel'),edge,edgeOn:!/^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(edge),
+    chipBg:g('--chip-bg'),chipInk:g('--chip-ink'),danger:g('--danger')}}
 function draw(){
+  VT=vtheme();
   const dpr=window.devicePixelRatio||1,W=fig.clientWidth,H=fig.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
   const S=scene();picks=[];
   if(!S||!S.atoms.length){
     if(!mol&&!(tab==='crystal'&&cryst)){
-      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#dfe8e8';ctx.font='600 17px "IBM Plex Sans",sans-serif';
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=VT.ink;ctx.font='600 16px "IBM Plex Sans",sans-serif';
       ctx.fillText('No molecule loaded',W/2,(H-40)/2-26);
-      ctx.fillStyle='#b9c6c7';ctx.font='14px "IBM Plex Sans",sans-serif';
-      const words='Open or paste an .xyz or .cif file in Input structure, drop one here, load an example, or start from a template in the Design tab.'.split(' '),lines=[''];
+      ctx.fillStyle=VT.mute;ctx.font='13px "IBM Plex Sans",sans-serif';
+      const words='Use Open…, Paste or Examples in the top bar, drop an .xyz or .cif file here, or start from a template in the Design tab.'.split(' '),lines=[''];
       for(const w of words){const t=lines[lines.length-1]?lines[lines.length-1]+' '+w:w;if(ctx.measureText(t).width>Math.min(W-40,440)&&lines[lines.length-1])lines.push(w);else lines[lines.length-1]=t}
       lines.forEach((l,i)=>ctx.fillText(l,W/2,(H-40)/2+4+i*21));ctx.textAlign='start';ctx.textBaseline='alphabetic';
     }
@@ -1108,7 +1241,7 @@ function draw(){
   const pts=S.atoms.map(a=>a.p).concat(S.extra||[]),cen=S.center||mean(S.atoms.map(a=>a.p));
   const ext=Math.max(...pts.map(p=>dist(p,cen)))+1,sc=Math.min(W,H-50)/(2*ext)*zooms[vk()],V=views[vk()];
   const P=p=>{const q=mv(V,sub(p,cen));return[W/2+q[0]*sc,(H-40)/2-q[1]*sc,q[2]]};
-  for(const[pl,fill,stroke]of S.polys){ctx.beginPath();pl.map(P).forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
+  for(const[pl,kind]of S.polys){ctx.beginPath();pl.map(P).forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=VT['plane'+kind];ctx.fill();ctx.strokeStyle=VT['planeLine'+kind];ctx.lineWidth=1;ctx.stroke()}
   const pr=S.atoms.map(a=>P(a.p)),items=[];
   S.bonds.forEach(([i,j])=>items.push({z:(pr[i][2]+pr[j][2])/2-.01,k:'b',i,j}));
   pr.forEach((p,i)=>items.push({z:p[2],k:'a',i}));
@@ -1117,7 +1250,9 @@ function draw(){
   for(const it of items){
     if(it.k==='b'){
       const a=pr[it.i],b=pr[it.j],A=S.atoms[it.i],B=S.atoms[it.j],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
-      ctx.globalAlpha=fog(it.z)*Math.min(A.alpha??1,B.alpha??1);ctx.lineCap='round';ctx.lineWidth=Math.max(2,.16*sc);
+      ctx.globalAlpha=fog(it.z)*Math.min(A.alpha??1,B.alpha??1);ctx.lineCap='round';
+      if(VT.edgeOn){ctx.lineWidth=Math.max(2,.16*sc)+1.6;ctx.strokeStyle=VT.edge;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke()}
+      ctx.lineWidth=Math.max(2,.16*sc);
       ctx.strokeStyle=color(A.e);ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(mx,my);ctx.stroke();
       ctx.strokeStyle=color(B.e);ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(b[0],b[1]);ctx.stroke();
     }else{
@@ -1125,19 +1260,20 @@ function draw(){
       ctx.globalAlpha=fog(it.z)*(A.alpha??1);
       const g=ctx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);g.addColorStop(0,'#ffffff');g.addColorStop(.28,col);g.addColorStop(1,shade(col));
       ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
-      if(A.ring){ctx.lineWidth=A.ring==='#ffd166'?3:2;ctx.strokeStyle=A.ring;ctx.stroke()}
+      if(A.ring){ctx.lineWidth=A.ring==='sel'?3:2;ctx.strokeStyle=A.ring==='sel'?VT.sel:VT.ringB;ctx.stroke()}
+      else if(VT.edgeOn){ctx.lineWidth=1;ctx.strokeStyle=VT.edge;ctx.stroke()}
       if(A.pick!=null)picks.push({x,y,r,z:it.z,pick:A.pick});
     }
   }
   ctx.globalAlpha=1;
   const labs=S.atoms.map((a,i)=>[a,pr[i]]).filter(([a])=>a.label);
   if(labs.length){ctx.font='500 12px "IBM Plex Mono",monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-    for(const[a,[x,y]]of labs){ctx.fillStyle='rgba(10,14,16,.72)';const w=ctx.measureText(a.label).width+6;ctx.fillRect(x-w/2,y-17-8,w,16);ctx.fillStyle='#e9f1f1';ctx.fillText(a.label,x,y-17)}
+    for(const[a,[x,y]]of labs){ctx.fillStyle=VT.chipBg;const w=ctx.measureText(a.label).width+6;ctx.fillRect(x-w/2,y-17-8,w,16);ctx.fillStyle=VT.chipInk;ctx.fillText(a.label,x,y-17)}
     ctx.textAlign='start';ctx.textBaseline='alphabetic'}
   for(const[a,b,c,lab,solid]of S.lines){
-    const p=P(a),q=P(b);ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=solid?1.5:2;ctx.setLineDash(solid?[]:[5,4]);
+    const p=P(a),q=P(b),col=VT[c]||c;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=solid?1.5:2;ctx.setLineDash(solid?[]:[5,4]);
     ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();ctx.setLineDash([]);
-    if(lab){if(!solid){ctx.beginPath();ctx.arc(q[0],q[1],3,0,7);ctx.fill()}ctx.font='500 13px "IBM Plex Sans",sans-serif';ctx.fillText(lab,q[0]+6,q[1]-6)}
+    if(lab){if(!solid){ctx.beginPath();ctx.arc(q[0],q[1],3,0,7);ctx.fill()}ctx.font='500 12px "IBM Plex Sans",sans-serif';ctx.fillText(lab,q[0]+6,q[1]-6)}
   }
 }
 const shade=h=>{const n=parseInt(h.slice(1),16);const f=x=>Math.round(x*.42).toString(16).padStart(2,'0');return'#'+f(n>>16)+f((n>>8)&255)+f(n&255)};
@@ -1145,9 +1281,9 @@ new ResizeObserver(()=>draw()).observe(fig);
 if(document.fonts)document.fonts.ready.then(()=>draw()); // canvas labels use IBM Plex
 
 function legend(){
-  const L={dimer:'<span><i style="background:#d8dee0"></i>A (reference)</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>B (copy)</span><span style="color:#ff8a78">long</span><span style="color:#c8e86a">short</span><span style="color:#8fc7ff">n</span>',
-    design:'<span><i style="background:transparent;border:2px solid var(--amber)"></i>selected</span><span>Click an atom to select it · Shift-click for several</span>',
-    crystal:cryst?'<span><i style="background:#d8dee0"></i>selected molecule</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>neighbour</span><span style="color:#ff8a78">a</span><span style="color:#c8e86a">b</span><span style="color:#8fc7ff">c</span><span>Click a molecule to select it</span>':'<span>Load a CIF file to see the crystal</span>'};
+  const L={dimer:'<span><i class="sw-a"></i>A (reference)</span><span><i class="sw-b"></i>B (copy)</span><span class="ax-l">long</span><span class="ax-s">short</span><span class="ax-n">n</span>',
+    design:'<span><i class="sw-sel"></i>selected</span><span>Click an atom to select it · Shift-click for several</span>',
+    crystal:cryst?'<span><i class="sw-a"></i>selected molecule</span><span><i class="sw-b"></i>neighbour</span><span class="ax-l">a</span><span class="ax-s">b</span><span class="ax-n">c</span><span>Click a molecule to select it</span>':'<span>Load a CIF file to see the crystal</span>'};
   $('legend').innerHTML=L[vk()];fig.classList.toggle('pick',tab==='design'||tab==='crystal');
 }
 function vbar(){
@@ -1448,6 +1584,7 @@ function rampColour(t,dark){
 }
 let mapGeom=null;
 function drawMap(){
+  VT=vtheme();
   const cv2=$('scMap');if(tab!=='scan')return;
   const dpr=window.devicePixelRatio||1,W=cv2.clientWidth,H=W<380?260:300;cv2.style.height=H+'px';
   cv2.width=W*dpr;cv2.height=H*dpr;const g=cv2.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
@@ -1466,12 +1603,12 @@ function drawMap(){
     g.fillStyle=Number.isFinite(c.v)?rampColour(hi>lo?(c.v-lo)/(hi-lo):.5,dark):surf;
     g.fillRect(x+gap/2,y+gap/2,Math.max(1,cw-gap),Math.max(1,ch-gap));
     if(c.clash){const cx=x+cw/2,cy=y+ch/2,r=Math.max(2,Math.min(cw,ch)*.28);
-      if(r<3){g.fillStyle=surf;g.beginPath();g.arc(cx,cy,3,0,7);g.fill();g.fillStyle='#ff6f59';g.beginPath();g.arc(cx,cy,1.8,0,7);g.fill()}
-      else for(const[col,w]of[[surf,4],['#ff6f59',2]]){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(cx-r,cy-r);g.lineTo(cx+r,cy+r);g.moveTo(cx+r,cy-r);g.lineTo(cx-r,cy+r);g.stroke()}}
+      if(r<3){g.fillStyle=surf;g.beginPath();g.arc(cx,cy,3,0,7);g.fill();g.fillStyle=VT.danger;g.beginPath();g.arc(cx,cy,1.8,0,7);g.fill()}
+      else for(const[col,w]of[[surf,4],[VT.danger,2]]){g.strokeStyle=col;g.lineWidth=w;g.lineCap='round';g.beginPath();g.moveTo(cx-r,cy-r);g.lineTo(cx+r,cy+r);g.moveTo(cx+r,cy-r);g.lineTo(cx-r,cy+r);g.stroke()}}
   }));
   // the live dimer's cell, and the cursor
   const same=(s)=>PARAMS.every(p=>Math.abs(s[p.id]-state[p.id])<1e-9)&&!!s.mir===!!state.mir;
-  cells.forEach((row,j)=>row.forEach((c,i)=>{if(same(c.s)){g.strokeStyle='#2fb5a3';g.lineWidth=2;g.strokeRect(L+i*cw+1,T+(ys.length-1-j)*ch+1,cw-2,ch-2)}}));
+  cells.forEach((row,j)=>row.forEach((c,i)=>{if(same(c.s)){g.strokeStyle=VT.ringB;g.lineWidth=2;g.strokeRect(L+i*cw+1,T+(ys.length-1-j)*ch+1,cw-2,ch-2)}}));
   if(mapCursor){const{i,j}=mapCursor;g.strokeStyle=ink;g.lineWidth=2;g.strokeRect(L+i*cw,T+(ys.length-1-j)*ch,cw,ch)}
   // axes
   g.fillStyle=mute;g.strokeStyle=mute;g.lineWidth=1;
@@ -1828,9 +1965,53 @@ async function generateScan(opts={}){
 $('scGo').onclick=()=>generateScan();
 $('scStop').onclick=()=>{scanCancel=true};
 
+/* ============================== app shell ============================== */
+/* Theme: Auto follows the system; Light and Dark override it. Kept in its own key, so Start over leaves it alone. */
+function applyTheme(t){
+  t=t==='light'||t==='dark'?t:'auto';
+  if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;
+  [...$('theme').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===t));
+  try{localStorage.setItem('dimerforge-theme',t)}catch{}
+  draw();if(tab==='scan')drawMap();
+}
+$('theme').addEventListener('click',e=>{const b=e.target.closest('button');if(b)applyTheme(b.dataset.theme)});
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{draw();if(tab==='scan')drawMap()})}catch{}
+/* Bottom dock: Readouts, Export, Input. */
+const docks=['read','exp','in'];
+function setDock(k,focus){
+  docks.forEach(d=>{$('dock-'+d).hidden=d!==k;$('d_'+d).setAttribute('aria-selected',d===k);$('d_'+d).tabIndex=d===k?0:-1});$('expActs').hidden=k!=='exp';
+  if(focus)$('d_'+k).focus();try{localStorage.setItem('dimerforge-dock',k)}catch{}
+}
+docks.forEach((k,i)=>{$('d_'+k).onclick=()=>setDock(k);$('d_'+k).addEventListener('keydown',e=>{const d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(d){e.preventDefault();setDock(docks[(i+d+docks.length)%docks.length],true)}})});
+/* Divider between the viewer and the dock: drag, or arrow keys when focused. */
+const split=$('split'),stage=document.querySelector('.stage'),dockEl=document.querySelector('.dock');
+function setDockH(h,keep){
+  const max=Math.max(160,stage.clientHeight-180);h=Math.round(Math.max(120,Math.min(max,h)));
+  stage.style.setProperty('--dock-h',h+'px');split.setAttribute('aria-valuenow',h);split.setAttribute('aria-valuemax',Math.round(max));
+  if(keep)try{localStorage.setItem('dimerforge-dockh',h)}catch{}
+}
+split.addEventListener('pointerdown',e=>{
+  e.preventDefault();split.setPointerCapture(e.pointerId);split.classList.add('drag');
+  const y0=e.clientY,h0=dockEl.getBoundingClientRect().height;
+  const mv=ev=>setDockH(h0-(ev.clientY-y0));
+  const up=ev=>{split.classList.remove('drag');split.removeEventListener('pointermove',mv);split.removeEventListener('pointerup',up);split.removeEventListener('pointercancel',up);setDockH(h0-(ev.clientY-y0),true)};
+  split.addEventListener('pointermove',mv);split.addEventListener('pointerup',up);split.addEventListener('pointercancel',up);
+});
+split.addEventListener('keydown',e=>{const d={ArrowUp:24,ArrowDown:-24,PageUp:120,PageDown:-120}[e.key];if(d){e.preventDefault();setDockH(dockEl.getBoundingClientRect().height+d,true)}});
+/* Top bar: Paste opens the Input tab; Examples loads a molecule or a crystal. */
+$('tbPaste').onclick=()=>{setDock('in');$('src').focus();$('src').select()};
+$('tbExample').addEventListener('change',e=>{
+  const v=e.target.value;e.target.value='';
+  if(v==='allox'){$('src').value=ALLOXAN;load(ALLOXAN,'Alloxan')}
+  else if(v==='benz'){$('src').value=BENZENE_CIF;load(BENZENE_CIF,'benzene_Pbca')}
+});
+(()=>{let t='auto',d='read',h=0;try{t=localStorage.getItem('dimerforge-theme')||'auto';d=localStorage.getItem('dimerforge-dock')||'read';h=+localStorage.getItem('dimerforge-dockh')||0}catch{}
+  [...$('theme').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===(t==='light'||t==='dark'?t:'auto')));
+  setDock(docks.includes(d)?d:'read');requestAnimationFrame(()=>{if(h)setDockH(h);else split.setAttribute('aria-valuenow',Math.round(dockEl.getBoundingClientRect().height))})})();
+
 /* ============================== start over ============================== */
 function emptyState(){
-  $('stats').innerHTML='<div class="stat empty"><span>No molecule loaded. Open or paste an .xyz or .cif file in Input structure, drop one on the viewer, load an example, or start from a template in the Design tab.</span></div>';
+  $('stats').innerHTML='<div class="stat empty"><span>No molecule loaded. Use Open…, Paste or Examples in the top bar, drop a file on the viewer, or start from a template in the Design tab.</span></div>';
   outText='';outName='structure.xyz';$('out').textContent='Nothing to export yet.';$('copy').disabled=true;$('dl').disabled=true;$('qmOpts').hidden=true;segState();
   if(tab==='design'){$('dsel').textContent='No molecule yet: start from a template below, or load a file.';$('dmeas').hidden=true;$('dUndo').disabled=!D.undo.length;$('dRedo').disabled=!D.redo.length}
 }
@@ -1849,7 +2030,7 @@ function resetAll(opts={}){
   ['dmsg','dsel','scTip','scProg','outmsg','cxWarn','scCount'].forEach(id=>$(id).textContent='');
   try{localStorage.removeItem('dimer-builder')}catch{}
   sync();syncExp();setTab('dimer');
-  $('inmsg').className='msg';$('inmsg').textContent='Started over: everything is cleared. Open or paste an .xyz or .cif file, or start from a template in the Design tab.';
+  $('inmsg').className='msg';$('inmsg').textContent='Started over: everything is cleared. Use Open…, Paste or Examples in the top bar, or start from a template in the Design tab.';
   return true;
 }
 $('reset').onclick=()=>resetAll();
@@ -1891,7 +2072,7 @@ syncExp();ready=true;render();
 window.dimerforge={parseXYZ,parseCIF,elementOf,euler,neighbours,load,setTab,tidy,attach,placeB,poseM,toPDB,toSDF,toGJF,toORCA,exportSet,bondOrders,TEMPLATES,
   get picks(){return picks},get mol(){return mol},get frame(){return frame},get cryst(){return cryst},get partner(){return partner},state,EXP,D,render,select:ids=>{D.sel=ids.map(i=>mol.atoms[i].id);render()},
   loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText},
-  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll};
+  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll,applyTheme,setDock,setDockH};
 }
 </script>
 </body>
