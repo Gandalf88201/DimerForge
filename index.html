@@ -26,6 +26,8 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif;overflow-x:clip}
 .band{padding:clamp(20px,3vw,40px) max(4vw,16px);max-width:1320px;margin:0 auto}
 h1{font-size:clamp(26px,3.4vw,36px);line-height:1.08;margin:0 0 6px;font-weight:600;text-wrap:balance}
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
+.stat.empty{grid-column:1/-1}.stat.empty span{font-size:15px}
 h2{font-size:20px;margin:0 0 12px;font-weight:600}
 h3{font-size:15px;margin:16px 0 8px;font-weight:600}
 .lede{color:var(--mute);margin:0;max-width:72ch}
@@ -100,7 +102,8 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
 <body>
 <main>
 <div class="band">
-  <h1>DimerForge</h1>
+  <div class="top"><h1>DimerForge</h1><button id="reset" aria-describedby="resetHelp">Start over</button></div>
+  <p class="sr-only" id="resetHelp">Clears the molecule, dimer, crystal, scan and all settings, after asking you to confirm.</p>
   <p class="lede">Build stacked dimers from a single .xyz structure, or take molecules and real neighbouring pairs from a crystal (.cif). Set the interplanar distance, slip, tilt and twist in the molecule's own frame, edit the molecule in the designer, check the contacts, and export the monomer or the dimer as .xyz, PDB, MOL/SDF, Gaussian or ORCA input. Drag to rotate the view, scroll to zoom, or drop a file onto the viewer.</p>
 
   <div class="bench">
@@ -241,7 +244,7 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
     </div>
     <div>
       <h2>Input structure</h2>
-      <div class="acts"><label class="file">Open .xyz or .cif file<input type="file" id="file" accept=".xyz,.cif,.txt,text/plain"></label><button id="apply">Use pasted text</button></div>
+      <div class="acts"><label class="file">Open .xyz or .cif file<input type="file" id="file" accept=".xyz,.cif,.txt,text/plain"></label><button id="apply">Use pasted text</button><button id="exAllox">Load example: alloxan</button></div>
       <textarea id="src" spellcheck="false" aria-label="Input .xyz or .cif text"></textarea>
       <div class="msg" id="inmsg" aria-live="polite"></div>
     </div>
@@ -710,7 +713,7 @@ function compute(s=state){
 }
 
 function render(){
-  if(!mol){draw();return}
+  if(!mol){emptyState();draw();save();if(tab==='scan')scanChanged(false),drawMap();return}
   lastR=compute();
   stats(lastR);updateExport(lastR);designPanel();draw();save();
   if(tab==='scan'){if(geomSig()!==mapSig)scheduleMap();else drawMap()}
@@ -738,6 +741,7 @@ function stats(R){
 
 /* ============================== export ============================== */
 const EXP={what:'dimer',fmt:'xyz',gm:'#p wB97XD/def2TZVP',om:'! wB97X-D3 def2-TZVP TightSCF',qA:0,mA:1,qB:0,mB:1,cp:true,frag:true};
+const EXP_DEFAULT=JSON.stringify(EXP);
 const FMTS=[['xyz','XYZ','xyz'],['pdb','PDB','pdb'],['sdf','MOL / SDF','sdf'],['gjf','Gaussian','gjf'],['orca','ORCA','inp']];
 const WHATS=[['dimer','Dimer A+B'],['A','Molecule A'],['B','Molecule B']];
 let outText='',outName='structure.xyz';
@@ -825,7 +829,7 @@ function updateExport(R){
   const X=exportSet(R);
   outText={xyz:toXYZ,pdb:toPDB,sdf:toSDF,gjf:toGJF,orca:toORCA}[EXP.fmt](X);
   outName=fileBase()+'.'+FMTS.find(f=>f[0]===EXP.fmt)[2];
-  $('out').textContent=outText;
+  $('out').textContent=outText;$('copy').disabled=false;$('dl').disabled=false;
   $('dl').textContent='Download '+outName.slice(outName.lastIndexOf('.'));
   const qm=EXP.fmt==='gjf'||EXP.fmt==='orca';$('qmOpts').hidden=!qm;
   if(qm){$('qmMethodLab').textContent=EXP.fmt==='gjf'?'Route line':'Method line';$('qmMethod').value=EXP.fmt==='gjf'?EXP.gm:EXP.om;
@@ -878,7 +882,9 @@ function freeDir(i){
 function setR0(a,b,r){a.r0=a.r0||{};b.r0=b.r0||{};a.r0[b.id]=r;b.r0[a.id]=r}
 function clearR0(a){if(!a.r0)return;for(const id in a.r0){const b=mol.atoms[idxOf(+id)];if(b&&b.r0)delete b.r0[a.id]}a.r0={}}
 
+const needMol=()=>{if(mol)return false;dmsg('Load a molecule or start from a template first.',true);return true};
 function addAtom(){
+  if(needMol())return;
   const s=selIdx(),e=D.el;if(s.length>1){dmsg('Select one atom to bond the new atom to, or none.',true);return}
   edit(()=>{
     let p;if(!s.length){const c=mean(mol.atoms.map(a=>a.p));p=add(c,[0,0,3])}
@@ -888,10 +894,12 @@ function addAtom(){
   });
 }
 function setElement(){
+  if(needMol())return;
   const s=selIdx();if(!s.length){dmsg('Select the atoms to change first.',true);return}
   edit(()=>{s.forEach(i=>{const a=mol.atoms[i];a.e=D.el;a.dirty=true;clearR0(a)});dmsg(`Changed ${s.length} atom${s.length>1?'s':''} to ${D.el}. Tidy adjusts the bond lengths.`)});
 }
 function delAtoms(){
+  if(needMol())return;
   const s=selIdx();if(!s.length){dmsg('Select the atoms to delete first.',true);return}
   if(s.length>=mol.atoms.length){dmsg('A molecule needs at least one atom.',true);return}
   edit(()=>{const ids=new Set(s.map(i=>mol.atoms[i].id));mol.atoms=mol.atoms.filter(a=>!ids.has(a.id));D.sel=[];dmsg(`Deleted ${s.length} atom${s.length>1?'s':''}.`)});
@@ -922,6 +930,7 @@ function fragment(name){
   return{atoms:A,bonds:B};
 }
 function attach(fname){
+  if(needMol())return;
   const s=selIdx();if(s.length!==1){dmsg('Select exactly one atom to attach the group to.',true);return}
   const i=s[0],a=mol.atoms[i],halo=['H','F','Cl','Br','I'];
   let parent,u,removeIdx=null,dirtyX=false;
@@ -942,6 +951,7 @@ function attach(fname){
 }
 
 function tidy(){
+  if(needMol())return;
   const A=mol.atoms,n=A.length,adj=frame.adj,sel=new Set(selIdx());
   let movable=A.map((a,i)=>!!a.dirty||sel.has(i));
   A.forEach((a,i)=>{if(a.dirty)adj[i].forEach(j=>movable[j]=true)});
@@ -984,6 +994,7 @@ function measure(){
   return null;
 }
 function setMeasure(){
+  if(needMol())return;
   const s=selIdx(),m=measure(),v=parseFloat($('dmeasVal').value);if(!m||!Number.isFinite(v))return;
   const A=mol.atoms,adj=frame.adj;let msg='';
   edit(()=>{
@@ -1082,7 +1093,18 @@ function scene(){if(tab==='crystal'&&cryst)return sceneCrystal();if(!mol||!lastR
 function draw(){
   const dpr=window.devicePixelRatio||1,W=fig.clientWidth,H=fig.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
-  const S=scene();picks=[];if(!S||!S.atoms.length)return;
+  const S=scene();picks=[];
+  if(!S||!S.atoms.length){
+    if(!mol&&!(tab==='crystal'&&cryst)){
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#dfe8e8';ctx.font='600 17px "IBM Plex Sans",sans-serif';
+      ctx.fillText('No molecule loaded',W/2,(H-40)/2-26);
+      ctx.fillStyle='#b9c6c7';ctx.font='14px "IBM Plex Sans",sans-serif';
+      const words='Open or paste an .xyz or .cif file in Input structure, drop one here, load an example, or start from a template in the Design tab.'.split(' '),lines=[''];
+      for(const w of words){const t=lines[lines.length-1]?lines[lines.length-1]+' '+w:w;if(ctx.measureText(t).width>Math.min(W-40,440)&&lines[lines.length-1])lines.push(w);else lines[lines.length-1]=t}
+      lines.forEach((l,i)=>ctx.fillText(l,W/2,(H-40)/2+4+i*21));ctx.textAlign='start';ctx.textBaseline='alphabetic';
+    }
+    return;
+  }
   const pts=S.atoms.map(a=>a.p).concat(S.extra||[]),cen=S.center||mean(S.atoms.map(a=>a.p));
   const ext=Math.max(...pts.map(p=>dist(p,cen)))+1,sc=Math.min(W,H-50)/(2*ext)*zooms[vk()],V=views[vk()];
   const P=p=>{const q=mv(V,sub(p,cen));return[W/2+q[0]*sc,(H-40)/2-q[1]*sc,q[2]]};
@@ -1134,7 +1156,7 @@ function vbar(){
 }
 function setView(k){
   if(tab==='crystal'){if(!cryst)return;if(k==='obl')views.crystal=VIEWS.obl;else{const i='abc'.indexOf(k),ax=[0,1,2].map(c=>[0,1,2].map(r=>cryst.Mo[r][c])),Z=unit(ax[i]),Y=perp(ax[i===2?1:2],Z),X=cross(Y,Z);views.crystal=[X,Y,Z]}}
-  else if(tab==='design')views.design=mm(VIEWS[k],frame.F);
+  else if(tab==='design'){if(!frame)return;views.design=mm(VIEWS[k],frame.F)}
   else views[vk()]=VIEWS[k];
   zooms[vk()]=1;draw();
 }
@@ -1226,6 +1248,7 @@ $('presets').addEventListener('click',e=>{const b=e.target.closest('button');if(
 $('copyA').onclick=()=>{partner=null;pairInfo='';setTab('dimer')};
 $('optFrame').addEventListener('change',render);
 ['optHeavy','optSwap'].forEach(id=>$(id).addEventListener('change',()=>{
+  if(!mol){render();return}
   frame=frameOf(mol.atoms);if(partner)partner.fr=frameOf(partner.atoms);
   if(cryst){cryst.pairs=neighbours(cryst,cryst.S);cryst.pairSel=null;crystalPanel()}
   render()}));
@@ -1250,10 +1273,11 @@ $('dfrags').innerHTML=FRAGS.map(([k,l])=>`<button data-g="${k}">${l}</button>`).
 $('dfrags').addEventListener('click',e=>{const b=e.target.closest('button');if(b)attach(b.dataset.g)});
 $('dAdd').onclick=addAtom;$('dSet').onclick=setElement;$('dDel').onclick=delAtoms;$('dTidy').onclick=tidy;$('dmeasSet').onclick=setMeasure;
 $('dmeasVal').addEventListener('keydown',e=>{if(e.key==='Enter')setMeasure()});
-const undo=()=>{if(!D.undo.length)return;D.redo.push(snap());mol.atoms=JSON.parse(D.undo.pop());molChanged();dmsg('Undone.')};
-const redo=()=>{if(!D.redo.length)return;D.undo.push(snap());mol.atoms=JSON.parse(D.redo.pop());molChanged();dmsg('Redone.')};
+const undo=()=>{if(!mol||!D.undo.length)return;D.redo.push(snap());mol.atoms=JSON.parse(D.undo.pop());molChanged();dmsg('Undone.')};
+const redo=()=>{if(!mol||!D.redo.length)return;D.undo.push(snap());mol.atoms=JSON.parse(D.redo.pop());molChanged();dmsg('Redone.')};
 $('dUndo').onclick=undo;$('dRedo').onclick=redo;
 function pickByNumber(){
+  if(needMol())return;
   const txt=$('dPick').value.trim(),n=mol.atoms.length,ids=[];if(!txt){D.sel=[];render();return}
   for(const part of txt.split(/[\s,;]+/).filter(Boolean)){
     const m=part.match(/^(\d+)(?:-(\d+))?$/);if(!m){dmsg(`"${part}" is not an atom number or range (e.g. 3 or 7-9).`,true);return}
@@ -1263,7 +1287,7 @@ function pickByNumber(){
   D.sel=ids;dmsg('');render();
 }
 $('dPickGo').onclick=pickByNumber;$('dPick').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pickByNumber()}});
-$('dAll').onclick=()=>{D.sel=mol.atoms.map(a=>a.id);render()};$('dNone').onclick=()=>{D.sel=[];render()};
+$('dAll').onclick=()=>{if(needMol())return;D.sel=mol.atoms.map(a=>a.id);render()};$('dNone').onclick=()=>{D.sel=[];render()};
 $('dTpl').innerHTML=Object.keys(TEMPLATES).map(k=>`<option>${k}</option>`).join('');
 $('dNew').onclick=()=>{const k=$('dTpl').value,before=mol?snap():null;setMol(TEMPLATES[k](),k,`Template: ${k}.`);if(before)D.undo=[before];render();dmsg(`Started from ${k}.`)};
 document.addEventListener('keydown',e=>{
@@ -1317,6 +1341,7 @@ const SCAN_CLASH=.75,SCAN_MAX=20000,SCAN_CONFIRM=5000,MAP_MAX=40000;
 let scanBusy=false,scanCancel=false;
 const SCAN={rows:{},mir:0,x:'sl',y:'d',metric:'pct',slice:{},qm:'gjf',mode:'2d',z:'',skip:false,name:''};
 PARAMS.forEach(p=>{const ang=p.unit==='°';SCAN.rows[p.id]={on:p.id==='d'||p.id==='sl',min:p.id==='d'?3:0,max:p.id==='d'?4:ang?30:3,step:p.id==='d'?.1:ang?10:.5,fix:p.v}});
+const SCAN_DEFAULT=JSON.stringify(SCAN);
 /* Blue ramp, light → dark (sequential magnitude). */
 const BLUES=['#cce3fd','#b6d5f8','#9dc8f7','#84b9f3','#6aabf1','#519ced','#338ced','#257de0','#2370cd','#1b64be','#1757ac','#0f4a96','#0e3d7e'];
 
@@ -1362,7 +1387,7 @@ function scanChanged(rebuild=true){
   else if(!def.scanned.length)scmsg('scCount','Tick at least one parameter to scan.',true);
   else if(def.total>SCAN_MAX)scmsg('scCount',`${def.scanned.map(id=>def.ax[id].vals.length).join(' × ')} = ${def.total.toLocaleString('en')} dimers, above the limit of ${SCAN_MAX.toLocaleString('en')}. Use larger steps or fewer parameters.`,true);
   else scmsg('scCount',`${def.scanned.map(id=>def.ax[id].vals.length).join(' × ')} = ${def.total.toLocaleString('en')} dimer${def.total>1?'s':''}${def.total>SCAN_CONFIRM?' (you will be asked to confirm)':''}.`);
-  $('scGo').disabled=!!(def.errs.length||!def.scanned.length||def.total>SCAN_MAX||scanBusy);
+  $('scGo').disabled=!!(!mol||def.errs.length||!def.scanned.length||def.total>SCAN_MAX||scanBusy);
   // axes: horizontal, vertical and the slices for the other scanned parameters
   const sc=def.scanned;
   if(!sc.includes(SCAN.x))SCAN.x=sc[0]||'';
@@ -1751,6 +1776,7 @@ function scanReadme(ctx){
 
 /* ---------- generation ---------- */
 async function generateScan(opts={}){
+  if(!mol){scmsg('scProg','Load a molecule first.',true);return null}
   const def=scanDef();
   if(def.errs.length||!def.scanned.length||def.total>SCAN_MAX){scanChanged(false);return null}
   if(!opts.noConfirm&&def.total>SCAN_CONFIRM&&!confirm(`This scan has ${def.total.toLocaleString('en')} dimers. Generate them all?`))return null;
@@ -1802,6 +1828,33 @@ async function generateScan(opts={}){
 $('scGo').onclick=()=>generateScan();
 $('scStop').onclick=()=>{scanCancel=true};
 
+/* ============================== start over ============================== */
+function emptyState(){
+  $('stats').innerHTML='<div class="stat empty"><span>No molecule loaded. Open or paste an .xyz or .cif file in Input structure, drop one on the viewer, load an example, or start from a template in the Design tab.</span></div>';
+  outText='';outName='structure.xyz';$('out').textContent='Nothing to export yet.';$('copy').disabled=true;$('dl').disabled=true;$('qmOpts').hidden=true;segState();
+  if(tab==='design'){$('dsel').textContent='No molecule yet: start from a template below, or load a file.';$('dmeas').hidden=true;$('dUndo').disabled=!D.undo.length;$('dRedo').disabled=!D.redo.length}
+}
+function resetAll(opts={}){
+  if(!opts.noConfirm&&!confirm('Start over?\n\nThis clears the molecule, the dimer, the designer history, the crystal, the scan and every setting, and empties the session saved in this browser. It cannot be undone.'))return false;
+  if(scanBusy)scanCancel=true;
+  clearTimeout(mapTimer);mapData=null;mapCursor=null;previewBase=null;mapSig='';
+  mol=null;frame=null;partner=null;cryst=null;name='structure';pairInfo='';lastR=null;
+  PARAMS.forEach(p=>state[p.id]=p.v);state.mir=0;
+  Object.assign(EXP,JSON.parse(EXP_DEFAULT));
+  Object.keys(SCAN).forEach(k=>delete SCAN[k]);Object.assign(SCAN,JSON.parse(SCAN_DEFAULT));
+  Object.assign(D,{sel:[],undo:[],redo:[],center:null,el:'C'});
+  $('optFrame').checked=true;$('optHeavy').checked=true;$('optSwap').checked=false;$('optLabels').checked=true;
+  ['dimer','design','crystal'].forEach(k=>{views[k]=VIEWS.obl;zooms[k]=1});
+  ['src','file','dPick','delOther','dmeasVal'].forEach(id=>$(id).value='');
+  ['dmsg','dsel','scTip','scProg','outmsg','cxWarn','scCount'].forEach(id=>$(id).textContent='');
+  try{localStorage.removeItem('dimer-builder')}catch{}
+  sync();syncExp();setTab('dimer');
+  $('inmsg').className='msg';$('inmsg').textContent='Started over: everything is cleared. Open or paste an .xyz or .cif file, or start from a template in the Design tab.';
+  return true;
+}
+$('reset').onclick=()=>resetAll();
+$('exAllox').onclick=()=>{$('src').value=ALLOXAN;load(ALLOXAN,'Alloxan')};
+
 /* ============================== persistence ============================== */
 const molXYZ=atoms=>[atoms.length,'',...atoms.map(a=>xyzLine(a.e,a.p))].join('\n');
 let ready=false;
@@ -1809,16 +1862,17 @@ function save(){
   if(!ready)return;
   try{localStorage.setItem('dimer-builder',JSON.stringify({v:2,state,src:$('src').value,name,tab,pairInfo,
     opts:{frame:$('optFrame').checked,heavy:$('optHeavy').checked,swap:$('optSwap').checked,labels:$('optLabels').checked},
-    exp:EXP,scan:SCAN,mol:molXYZ(mol.atoms),partner:partner?molXYZ(partner.atoms):null}))}catch{}
+    exp:EXP,scan:SCAN,empty:!mol,mol:mol?molXYZ(mol.atoms):null,partner:mol&&partner?molXYZ(partner.atoms):null}))}catch{}
 }
 function restore(){
   let s=null;try{s=JSON.parse(localStorage.getItem('dimer-builder')||'null')}catch{}
-  if(!s||!s.src)return false;
+  if(!s||(!s.src&&!s.empty))return false;
   try{
     if(s.opts){$('optFrame').checked=s.opts.frame!==false;$('optHeavy').checked=s.opts.heavy!==false;$('optSwap').checked=!!s.opts.swap;$('optLabels').checked=s.opts.labels!==false}
     if(s.exp)Object.assign(EXP,s.exp);
     if(s.scan){const{rows,...rest}=s.scan;Object.assign(SCAN,rest);if(rows)PARAMS.forEach(p=>{if(rows[p.id])Object.assign(SCAN.rows[p.id],rows[p.id])})}
-    $('src').value=s.src;
+    $('src').value=s.src||'';
+    if(s.empty&&!s.mol){Object.assign(state,s.state||{});sync();setTab(tabs.includes(s.tab)?s.tab:'dimer');return true}
     if(!s.mol){if(!load(s.src,s.name))return false}
     else{
       if(looksLikeCIF(s.src)){try{cryst=parseCIF(s.src,s.name);cryst.pairs=neighbours(cryst,cryst.S)}catch{cryst=null}}
@@ -1837,7 +1891,7 @@ syncExp();ready=true;render();
 window.dimerforge={parseXYZ,parseCIF,elementOf,euler,neighbours,load,setTab,tidy,attach,placeB,poseM,toPDB,toSDF,toGJF,toORCA,exportSet,bondOrders,TEMPLATES,
   get picks(){return picks},get mol(){return mol},get frame(){return frame},get cryst(){return cryst},get partner(){return partner},state,EXP,D,render,select:ids=>{D.sel=ids.map(i=>mol.atoms[i].id);render()},
   loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText},
-  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData}};
+  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll};
 }
 </script>
 </body>
