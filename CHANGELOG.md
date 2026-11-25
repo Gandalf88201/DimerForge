@@ -5,6 +5,13 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 ## [Unreleased]
 
 ### Added
+- **Scan tab** for structural correlation maps: a full grid over any of d, slip long, slip short, tilt long, tilt short and twist (minimum, maximum and step each; the rest fixed), up to 20,000 dimers.
+- Live preview heat map of any two scanned parameters, coloured by tightest contact (% of vdW sum), closest contact, closest heavy-atom contact, centroid distance or angle between planes, with clashes marked. Hover, or use the arrow keys, to see each dimer in the viewer.
+- One `.zip` per scan: a main folder with one subfolder per dimer (`.xyz` plus a Gaussian or ORCA input), `index.xlsx` (every grid point with its readouts and clash flag, plus the settings), a self-contained matplotlib script `plot_scan.py` (1D, 2D or 3D), `all_dimers.xyz` and a README. Clashing dimers can be left out; they stay listed in the index.
+
+## [2.1.0] - 2026-11-25
+
+### Added
 - Keyboard control of the 3D viewer: arrow keys rotate (Shift for small steps), `+`/`−` zoom, `0` resets.
 - Designer: **Select atoms by number** (`3, 7-9`), so every designer action works without a mouse.
 - Content-Security-Policy that blocks scripts, styles, fonts and connections from other sites.
@@ -33,6 +40,7 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 - First release: interactive `.xyz` dimer builder with interplanar distance, slip, tilt and twist in the molecular frame, contact readouts with a clash warning, and `.xyz` export.
 
-[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Gandalf88201/DimerForge/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Gandalf88201/DimerForge/releases/tag/v1.0.0
