@@ -6,7 +6,7 @@ It fits the molecular plane to define a frame with long, short and normal axes. 
 
 ## Usage
 
-DimerForge is a single self-contained HTML file with no install and no build step.
+DimerForge is a single HTML file, plus the `fonts/` folder it uses, with no install and no build step. It makes no requests to other sites: the IBM Plex fonts are served from this repository, and a Content-Security-Policy blocks scripts, styles, fonts and connections from anywhere else. Structures you load stay in your browser.
 
 - Open `index.html` in any modern browser, or
 - serve it with GitHub Pages (Settings → Pages → deploy from the `main` branch, root folder).
@@ -21,6 +21,14 @@ Then:
 6. Choose what to export (dimer, molecule A or molecule B) and the format, then copy or download it.
 
 All settings, the current molecule and the input text are kept in the browser's local storage, so a reload restores the session.
+
+## Keyboard and screen readers
+
+- Tab reaches every control. The tabs (Dimer, Design, Crystal) switch with the left and right arrow keys.
+- The 3D viewer takes focus too. Arrow keys rotate the view (hold Shift for small steps), `+` and `−` zoom, and `0` resets it.
+- In the Design tab, **Select atoms by number** accepts numbers and ranges, such as `3, 7-9`, in the order you want them measured. It stays in sync with clicks in the viewer. Delete, Ctrl+Z, Ctrl+Y and Esc work while the viewer or the page has focus.
+- In the Crystal tab, the molecule and pair lists do everything that clicking in the viewer does.
+- The readouts under the viewer describe the structure in text, and status messages are announced.
 
 ## Reading `.xyz` files
 
@@ -72,6 +80,12 @@ By default the coordinates are written in the molecular frame, with A in the xy-
 
 The dimer file name encodes the parameters, for example `Alloxan_dimer_d3.40_sl1.50_ss0.00_tl0_ts0_tw0.xyz` (with `_m` when B is mirrored).
 
-## Example data
+## Example data and fonts
 
 `examples/Benzene_Pbca_COD7238223.cif` is entry 7238223 of the [Crystallography Open Database](https://www.crystallography.net/), whose data are in the public domain.
+
+The IBM Plex Sans and IBM Plex Mono fonts in `fonts/` are © IBM Corp. and licensed under the SIL Open Font License 1.1 (see the licence files in that folder).
+
+## Changes
+
+See [CHANGELOG.md](CHANGELOG.md).

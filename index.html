@@ -4,9 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DimerForge</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
 <style>
+/* IBM Plex (SIL Open Font License 1.1, see fonts/), served from this repository: no requests to other sites. */
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2")}
 /* VOICE: a precise lab instrument, calm and exact.
    IDEA: a molecular viewer bench, where the stack is set the way you set up a calculation.
    PICTURE: a large live ball-and-stick view of the dimer with A's plane and its frame axes drawn on it.
@@ -28,6 +33,9 @@ h3{font-size:15px;margin:16px 0 8px;font-weight:600}
 .fig{position:relative;min-height:460px;background:var(--view);border-radius:10px;overflow:hidden;touch-action:none;cursor:grab}
 .fig.drag{cursor:grabbing}.fig.over{outline:3px dashed var(--teal);outline-offset:-6px}
 .fig.pick{cursor:crosshair}
+.fig:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+pre:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .fig>canvas{position:absolute;inset:0;width:100%;height:100%}
 .vbar{position:absolute;left:10px;right:10px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .vbar button{background:#ffffff14;color:#dfe8e8;border:1px solid #ffffff26;min-height:36px;padding:0 12px;font-size:14px}
@@ -80,14 +88,16 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
 </style>
 </head>
 <body>
+<main>
 <div class="band">
   <h1>DimerForge</h1>
   <p class="lede">Build stacked dimers from a single .xyz structure, or take molecules and real neighbouring pairs from a crystal (.cif). Set the interplanar distance, slip, tilt and twist in the molecule's own frame, edit the molecule in the designer, check the contacts, and export the monomer or the dimer as .xyz, PDB, MOL/SDF, Gaussian or ORCA input. Drag to rotate the view, scroll to zoom, or drop a file onto the viewer.</p>
 
   <div class="bench">
     <div>
-      <div class="fig" id="fig">
-        <canvas id="cv"></canvas>
+      <div class="fig" id="fig" tabindex="0" role="application" aria-roledescription="3D viewer" aria-label="Molecule viewer" aria-describedby="figHelp">
+        <canvas id="cv" aria-hidden="true"></canvas>
+        <p class="sr-only" id="figHelp">Arrow keys rotate the view (hold Shift for small steps), plus and minus zoom, and 0 resets the view. The readouts below the viewer describe the structure. In the Design tab, select atoms by typing their numbers; in the Crystal tab, use the lists.</p>
         <div class="legend" id="legend"></div>
         <div class="vbar" id="vbar"></div>
       </div>
@@ -103,7 +113,7 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
 
       <section id="tab-dimer" role="tabpanel" aria-labelledby="t_dimer">
         <h2>Placement of copy B</h2>
-        <div class="chips" id="presets"></div>
+        <div class="chips" id="presets" role="group" aria-label="Presets"></div>
         <div id="params"></div>
         <div class="opts">
           <label><input type="checkbox" id="optMir"> Mirror B through its own plane (for inversion- or mirror-related pairs)</label>
@@ -117,21 +127,25 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
 
       <section id="tab-design" role="tabpanel" aria-labelledby="t_design" hidden>
         <h2>Molecular designer</h2>
-        <p class="note" style="margin-top:0">Click atoms in the viewer to select them. Shift-click adds an atom to the selection, or removes it. Edits change molecule A, and the dimer follows.</p>
+        <p class="note" style="margin-top:0">Click atoms in the viewer to select them, or type their numbers. Shift-click adds an atom to the selection, or removes it. Edits change molecule A, and the dimer follows.</p>
+        <div class="acts" style="margin-top:10px">
+          <label class="field" style="flex:1 1 160px">Select atoms by number<input type="text" id="dPick" placeholder="e.g. 3, 7-9" spellcheck="false" autocomplete="off"></label>
+          <button id="dPickGo" style="align-self:flex-end">Select</button>
+        </div>
         <div class="msg" id="dsel" aria-live="polite"></div>
         <div class="meas" id="dmeas" hidden>
           <label class="field"><span id="dmeasLab">Distance</span><span class="num"><input type="number" id="dmeasVal" step="0.01"><span id="dmeasUnit">Å</span></span></label>
           <button id="dmeasSet">Set</button>
         </div>
         <h3>Element</h3>
-        <div class="seg el" id="delems"></div>
+        <div class="seg el" id="delems" role="group" aria-label="Element"></div>
         <div class="acts">
           <input type="text" id="delOther" placeholder="Other: Fe" size="8" aria-label="Other element symbol" spellcheck="false">
           <button id="dAdd">Add atom</button><button id="dSet">Set element</button><button id="dDel">Delete</button>
         </div>
         <h3>Groups</h3>
         <p class="note" style="margin:-2px 0 8px">Select one atom. A selected H or halogen is replaced by the group. On any other atom, the group goes in a free position.</p>
-        <div class="seg" id="dfrags"></div>
+        <div class="seg" id="dfrags" role="group" aria-label="Groups"></div>
         <h3>Geometry</h3>
         <div class="acts"><button id="dTidy">Tidy geometry</button><button id="dUndo">Undo</button><button id="dRedo">Redo</button><button id="dAll">Select all</button><button id="dNone">Clear</button></div>
         <h3>Start from a template</h3>
@@ -167,8 +181,8 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
   <div class="out">
     <div>
       <h2>Export</h2>
-      <div class="seg" id="expWhat" aria-label="What to export"></div>
-      <div class="seg" id="expFmt" aria-label="File format"></div>
+      <div class="seg" id="expWhat" role="group" aria-label="What to export"></div>
+      <div class="seg" id="expFmt" role="group" aria-label="File format"></div>
       <div class="opts" style="margin:0 0 10px"><label><input type="checkbox" id="optFrame" checked> Write coordinates in the molecular frame (A in the xy-plane)</label></div>
       <div id="qmOpts" hidden>
         <div class="grid2">
@@ -180,17 +194,18 @@ textarea{width:100%;min-height:220px;font-size:14px;resize:vertical}
         </div>
         <div class="opts" style="margin:0 0 10px"><label><input type="checkbox" id="optFragTag" checked> <span id="fragTagLab">Counterpoise correction (fragments 1 and 2)</span></label></div>
       </div>
-      <div class="acts"><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button><span class="msg" id="outmsg"></span></div>
-      <pre id="out"></pre>
+      <div class="acts"><button class="pri" id="copy">Copy</button><button id="dl" hidden>Download</button><span class="msg" id="outmsg" aria-live="polite"></span></div>
+      <pre id="out" tabindex="0" role="region" aria-label="Export preview"></pre>
     </div>
     <div>
       <h2>Input structure</h2>
       <div class="acts"><label class="file">Open .xyz or .cif file<input type="file" id="file" accept=".xyz,.cif,.txt,text/plain"></label><button id="apply">Use pasted text</button></div>
       <textarea id="src" spellcheck="false" aria-label="Input .xyz or .cif text"></textarea>
-      <div class="msg" id="inmsg"></div>
+      <div class="msg" id="inmsg" aria-live="polite"></div>
     </div>
   </div>
 </div>
+</main>
 
 <script>
 {
@@ -975,6 +990,7 @@ function designPanel(){
   if(tab!=='design'||!mol)return;
   const s=selIdx(),m=measure();
   $('dsel').textContent=s.length?`Selected: ${s.map(i=>mol.atoms[i].e+(i+1)).join(', ')}`:'No atoms selected.';
+  if(document.activeElement!==$('dPick'))$('dPick').value=s.map(i=>i+1).join(', ');
   $('dmeas').hidden=!m;
   if(m){$('dmeasLab').textContent=m.kind+(s.length===2?'':` (moves the side of atom ${s[s.length-1]+1})`);$('dmeasUnit').textContent=m.unit;$('dmeasVal').step=m.unit==='Å'?'0.01':'0.5';
     if(document.activeElement!==$('dmeasVal'))$('dmeasVal').value=fmt(m.v,m.unit==='Å'?3:1)}
@@ -1059,6 +1075,7 @@ function draw(){
 }
 const shade=h=>{const n=parseInt(h.slice(1),16);const f=x=>Math.round(x*.42).toString(16).padStart(2,'0');return'#'+f(n>>16)+f((n>>8)&255)+f(n&255)};
 new ResizeObserver(()=>draw()).observe(fig);
+if(document.fonts)document.fonts.ready.then(()=>draw()); // canvas labels use IBM Plex
 
 function legend(){
   const L={dimer:'<span><i style="background:#d8dee0"></i>A (reference)</span><span><i style="background:transparent;border:2px solid var(--teal)"></i>B (copy)</span><span style="color:#ff8a78">long</span><span style="color:#c8e86a">short</span><span style="color:#8fc7ff">n</span>',
@@ -1094,6 +1111,16 @@ function pick(x,y,addSel){
     dmsg('');render();
   }else if(tab==='crystal'&&cryst&&hit&&hit.pick>=0)selectCrystalMol(hit.pick);
 }
+fig.addEventListener('keydown',e=>{
+  if(e.target!==fig||e.ctrlKey||e.metaKey||e.altKey)return;
+  const st=rad(e.shiftKey?3:15),R={ArrowLeft:axisRot([0,1,0],-st),ArrowRight:axisRot([0,1,0],st),ArrowUp:axisRot([1,0,0],-st),ArrowDown:axisRot([1,0,0],st)}[e.key];
+  if(R){views[tab]=mm(R,views[tab])}
+  else if(e.key==='+'||e.key==='='){zooms[tab]=Math.min(8,zooms[tab]*1.2)}
+  else if(e.key==='-'||e.key==='_'){zooms[tab]=Math.max(.25,zooms[tab]/1.2)}
+  else if(e.key==='0'||e.key==='Home'){setView('obl');e.preventDefault();return}
+  else return;
+  e.preventDefault();draw();
+});
 fig.addEventListener('dragover',e=>{e.preventDefault();fig.classList.add('over')});
 fig.addEventListener('dragleave',()=>fig.classList.remove('over'));
 fig.addEventListener('drop',e=>{e.preventDefault();fig.classList.remove('over');const f=e.dataTransfer.files[0];if(f)readFile(f)});
@@ -1180,6 +1207,16 @@ $('dmeasVal').addEventListener('keydown',e=>{if(e.key==='Enter')setMeasure()});
 const undo=()=>{if(!D.undo.length)return;D.redo.push(snap());mol.atoms=JSON.parse(D.undo.pop());molChanged();dmsg('Undone.')};
 const redo=()=>{if(!D.redo.length)return;D.undo.push(snap());mol.atoms=JSON.parse(D.redo.pop());molChanged();dmsg('Redone.')};
 $('dUndo').onclick=undo;$('dRedo').onclick=redo;
+function pickByNumber(){
+  const txt=$('dPick').value.trim(),n=mol.atoms.length,ids=[];if(!txt){D.sel=[];render();return}
+  for(const part of txt.split(/[\s,;]+/).filter(Boolean)){
+    const m=part.match(/^(\d+)(?:-(\d+))?$/);if(!m){dmsg(`"${part}" is not an atom number or range (e.g. 3 or 7-9).`,true);return}
+    const a=+m[1],b=m[2]?+m[2]:a;if(a<1||b<1||a>n||b>n){dmsg(`Atom numbers run from 1 to ${n}.`,true);return}
+    for(let k=a;a<=b?k<=b:k>=b;k+=a<=b?1:-1){const id=mol.atoms[k-1].id;if(!ids.includes(id))ids.push(id)}
+  }
+  D.sel=ids;dmsg('');render();
+}
+$('dPickGo').onclick=pickByNumber;$('dPick').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();pickByNumber()}});
 $('dAll').onclick=()=>{D.sel=mol.atoms.map(a=>a.id);render()};$('dNone').onclick=()=>{D.sel=[];render()};
 $('dTpl').innerHTML=Object.keys(TEMPLATES).map(k=>`<option>${k}</option>`).join('');
 $('dNew').onclick=()=>{const k=$('dTpl').value,before=mol?snap():null;setMol(TEMPLATES[k](),k,`Template: ${k}.`);if(before)D.undo=[before];render();dmsg(`Started from ${k}.`)};
