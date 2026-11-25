@@ -5,6 +5,12 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 ## [Unreleased]
 
 ### Added
+- **Start over** button (top right): after you confirm, it clears the molecule, dimer, designer history, crystal, scan and every setting, empties the saved session and leaves an empty workspace. The empty workspace survives a reload.
+- **Load example: alloxan** button in Input structure, and an empty-workspace message in the viewer, readouts and export panel.
+
+## [2.2.0] - 2026-11-25
+
+### Added
 - **Scan tab** for structural correlation maps: a full grid over any of d, slip long, slip short, tilt long, tilt short and twist (minimum, maximum and step each; the rest fixed), up to 20,000 dimers.
 - Live preview heat map of any two scanned parameters, coloured by tightest contact (% of vdW sum), closest contact, closest heavy-atom contact, centroid distance or angle between planes, with clashes marked. Hover, or use the arrow keys, to see each dimer in the viewer.
 - One `.zip` per scan: a main folder with one subfolder per dimer (`.xyz` plus a Gaussian or ORCA input), `index.xlsx` (every grid point with its readouts and clash flag, plus the settings), a self-contained matplotlib script `plot_scan.py` (1D, 2D or 3D), `all_dimers.xyz` and a README. Clashing dimers can be left out; they stay listed in the index.
@@ -40,7 +46,8 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 - First release: interactive `.xyz` dimer builder with interplanar distance, slip, tilt and twist in the molecular frame, contact readouts with a clash warning, and `.xyz` export.
 
-[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/Gandalf88201/DimerForge/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/Gandalf88201/DimerForge/releases/tag/v1.0.0

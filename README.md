@@ -23,6 +23,8 @@ Then:
 
 All settings, the current molecule and the input text are kept in the browser's local storage, so a reload restores the session.
 
+**Start over** (top right) clears everything after asking you to confirm: the molecule, the dimer, the designer history, the crystal, the scan, every setting and the saved session. It leaves an empty workspace, which stays empty after a reload, ready for your own file or a template. **Load example: alloxan** brings back the default molecule.
+
 ## Keyboard and screen readers
 
 - Tab reaches every control. The tabs (Dimer, Design, Crystal) switch with the left and right arrow keys.
