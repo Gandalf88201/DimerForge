@@ -4,6 +4,8 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-11-25
+
 ### Changed
 - **New workspace layout**, like a desktop program: the 3D viewer fills the window; a resizable dock under it holds the Readouts, Export and Input tabs; the tools sit in a side panel that scrolls on its own. No more empty space under the viewer or long page scrolling. On narrow or short windows the panels stack.
 - **Light and dark themes** with a switch in the new top bar (Auto follows the system). The 3D viewer and the scan heat map follow the theme; in light mode atoms and bonds are outlined so hydrogens stay visible.
@@ -56,7 +58,8 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 
 - First release: interactive `.xyz` dimer builder with interplanar distance, slip, tilt and twist in the molecular frame, contact readouts with a clash warning, and `.xyz` export.
 
-[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/Gandalf88201/DimerForge/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Gandalf88201/DimerForge/compare/v2.0.0...v2.1.0
