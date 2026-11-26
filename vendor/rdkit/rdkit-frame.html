@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DimerForge · RDKit.js</title>
+<!-- RDKit.js runs in this frame so that the main page can keep a strict Content-Security-Policy:
+     the Emscripten/Embind glue needs eval ('unsafe-eval') and WebAssembly ('wasm-unsafe-eval'), which only this frame allows.
+     The frame loads nothing from other sites and talks to the page only by postMessage. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; base-uri 'none'; form-action 'none'">
+<script src="RDKit_minimal.wasm.js"></script>
+<script src="RDKit_minimal.js"></script>
+</head>
+<body>
+<script>
+"use strict";
+(() => {
+  let RD = null, log = null;
+  const post = o => parent.postMessage(Object.assign({ rdkit: 1 }, o), "*");
+  const lastError = () => {
+    if (!log) return "";
+    const t = log.get_buffer().trim(); log.clear_buffer();
+    const lines = t.split("\n").map(l => l.replace(/^\[[^\]]*\]\s*/, "").trim()).filter(Boolean);
+    return lines[lines.length - 1] || "";
+  };
+  function read(input) {
+    if (log) log.clear_buffer();
+    const m = RD.get_mol(input);
+    if (!m || !m.is_valid()) { if (m) m.delete(); throw new Error(lastError() || "RDKit could not read the structure."); }
+    return m;
+  }
+  const OPS = {
+    /* Sanitize a MOL block: valence, aromaticity, charges. Returns canonical SMILES, InChI and InChIKey. */
+    check({ molblock }) {
+      const m = read(molblock);
+      try {
+        let inchi = "", inchikey = "";
+        try { inchi = m.get_inchi(); inchikey = inchi ? RD.get_inchikey_for_inchi(inchi) : ""; } catch { }
+        return { smiles: m.get_smiles(), inchi, inchikey };
+      } finally { m.delete(); }
+    },
+    /* SMILES to a Kekulé MOL block with fresh 2D coordinates. */
+    smiles({ smiles }) {
+      const m = read(smiles);
+      try { m.set_new_coords(true); return { molblock: m.get_molblock() }; } finally { m.delete(); }
+    },
+    /* New 2D coordinates for a MOL block (CoordGen). */
+    layout({ molblock }) {
+      const m = read(molblock);
+      try { m.set_new_coords(true); return { molblock: m.get_molblock() }; } finally { m.delete(); }
+    }
+  };
+  addEventListener("message", e => {
+    if (e.source !== parent || !e.data || e.data.rdkit !== 1 || e.data.id == null) return;
+    const { id, op, args } = e.data;
+    if (!RD) { post({ id, ok: false, error: "RDKit.js is not ready." }); return; }
+    try { post(Object.assign({ id, ok: true }, OPS[op](args || {}))); }
+    catch (err) { post({ id, ok: false, error: String(err && err.message || err) }); }
+  });
+  (async () => {
+    try {
+      const b = atob(self.RDKIT_WASM_GZ_B64), u = new Uint8Array(b.length);
+      for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i);
+      self.RDKIT_WASM_GZ_B64 = null;
+      const wasm = await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+      RD = await initRDKitModule({
+        instantiateWasm: (imports, done) => { WebAssembly.instantiate(wasm, imports).then(r => done(r.instance)); return {}; },
+        print: () => { }, printErr: () => { }
+      });
+      try { RD.prefer_coordgen(true); } catch { }
+      try { log = RD.set_log_capture("rdApp.*"); } catch { }
+      post({ ready: true, version: RD.version() });
+    } catch (err) {
+      post({ ready: false, error: String(err && err.message || err) });
+    }
+  })();
+})();
+</script>
+</body>
+</html>

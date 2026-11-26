@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DimerForge</title>
 <script>try{const t=localStorage.getItem("dimerforge-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch{}</script>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; frame-src 'self'; base-uri 'none'; form-action 'none'">
 <style>
 /* IBM Plex (SIL Open Font License 1.1, see fonts/), served from this repository: no requests to other sites. */
 @font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
@@ -23,7 +23,7 @@
   --bg:#eef0f2;--surface:#ffffff;--surface-2:#f5f6f8;--sunken:#f0f2f4;
   --ink:#151a1e;--mute:#59646d;--faint:#8b959d;--line:#dde2e6;--line-2:#c7ced4;
   --accent:#0f7f73;--accent-hover:#0b6c62;--accent-ink:#ffffff;--accent-soft:#e1f2ef;
-  --danger:#c2391f;--danger-soft:#fbe9e5;--sel:#a86f00;--focus:#0f7f73;
+  --danger:#c2391f;--danger-soft:#fbe9e5;--sel:#a86f00;--focus:#0f7f73;--warn:#8a5a00;--warn-soft:#fdf4de;--warn-line:#e3c36f;
   --view-bg:#e8ebee;--view-ink:#1d2329;--view-mute:#55616a;--view-btn:rgba(255,255,255,.9);--view-btn-hover:#ffffff;--view-btn-line:rgba(20,30,40,.16);
   --v-plane:rgba(40,60,70,.07);--v-plane-line:rgba(40,60,70,.38);--v-planeB:rgba(15,127,115,.09);--v-planeB-line:rgba(15,127,115,.55);
   --ax-l:#c4361c;--ax-s:#4d7c0f;--ax-n:#1d5fc9;--ring-b:#0f8a7c;--atom-edge:rgba(20,30,40,.42);--v-cell:rgba(30,40,50,.32);
@@ -34,7 +34,7 @@
   --bg:#0c0f12;--surface:#14191d;--surface-2:#191f24;--sunken:#101418;
   --ink:#e6ebee;--mute:#9ba7af;--faint:#6f7b84;--line:#242c32;--line-2:#323c43;
   --accent:#2fb5a3;--accent-hover:#45c7b5;--accent-ink:#04201c;--accent-soft:#13302c;
-  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;
+  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;--warn:#ffc65c;--warn-soft:#2f250f;--warn-line:#6b5524;
   --view-bg:#0f1316;--view-ink:#dfe8e8;--view-mute:#9fb0b2;--view-btn:rgba(255,255,255,.07);--view-btn-hover:rgba(255,255,255,.14);--view-btn-line:rgba(255,255,255,.16);
   --v-plane:rgba(210,225,228,.06);--v-plane-line:rgba(210,225,228,.3);--v-planeB:rgba(47,181,163,.08);--v-planeB-line:rgba(47,181,163,.42);
   --ax-l:#ff8a78;--ax-s:#c8e86a;--ax-n:#8fc7ff;--ring-b:#2fb5a3;--atom-edge:rgba(0,0,0,0);--v-cell:rgba(220,232,234,.32);
@@ -44,7 +44,7 @@
   --bg:#0c0f12;--surface:#14191d;--surface-2:#191f24;--sunken:#101418;
   --ink:#e6ebee;--mute:#9ba7af;--faint:#6f7b84;--line:#242c32;--line-2:#323c43;
   --accent:#2fb5a3;--accent-hover:#45c7b5;--accent-ink:#04201c;--accent-soft:#13302c;
-  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;
+  --danger:#ff7a63;--danger-soft:#3a1a14;--sel:#ffd166;--focus:#5fd8c7;--warn:#ffc65c;--warn-soft:#2f250f;--warn-line:#6b5524;
   --view-bg:#0f1316;--view-ink:#dfe8e8;--view-mute:#9fb0b2;--view-btn:rgba(255,255,255,.07);--view-btn-hover:rgba(255,255,255,.14);--view-btn-line:rgba(255,255,255,.16);
   --v-plane:rgba(210,225,228,.06);--v-plane-line:rgba(210,225,228,.3);--v-planeB:rgba(47,181,163,.08);--v-planeB-line:rgba(47,181,163,.42);
   --ax-l:#ff8a78;--ax-s:#c8e86a;--ax-n:#8fc7ff;--ring-b:#2fb5a3;--atom-edge:rgba(0,0,0,0);--v-cell:rgba(220,232,234,.32);
@@ -165,6 +165,16 @@ textarea{width:100%;font-size:12px;resize:none;background:var(--sunken)}
 .list button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent);background:var(--accent-soft)}
 .list b{font-weight:600}.list small{display:block;color:var(--mute);font:11.5px/1.45 "IBM Plex Mono",monospace}
 .meas{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px}.meas .num{width:140px}
+#dMode{margin-bottom:12px}
+.seg.sk button{min-width:32px;font-family:"IBM Plex Mono",monospace;padding:0 7px}.seg.sk .gap{width:6px;flex:none}
+.chk{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:3px;font-size:12px}
+.chk li{padding:4px 8px 4px 22px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line);position:relative;line-height:1.4}
+.chk li::before{content:"✓";position:absolute;left:7px;top:4px;font-weight:600;color:var(--accent)}
+.chk li.warn{background:var(--warn-soft);border-color:var(--warn-line)}.chk li.warn::before{content:"!";color:var(--warn)}
+.chk li.err{background:var(--danger-soft);border-color:var(--danger)}.chk li.err::before{content:"×";color:var(--danger)}
+.chk li.info::before{content:"i";color:var(--mute)}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;margin:0 0 8px;font-size:12px}
+.kv dt{color:var(--mute)}.kv dd{margin:0;font-family:"IBM Plex Mono",monospace;overflow-wrap:anywhere}
 .scrow{border:1px solid var(--line);border-radius:5px;padding:2px 9px 7px;margin:0 0 6px;background:var(--surface-2)}
 .scrow legend{padding:0 4px;font-size:12.5px;font-weight:500}.scrow legend label{display:flex;gap:7px;align-items:center;min-height:24px;cursor:pointer}
 .sc3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -355,7 +365,32 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 
       <section id="tab-design" role="tabpanel" aria-labelledby="t_design" hidden>
         <h2>Molecular designer <button class="qhelp" data-help="h-design" aria-label="Help: Design tab">?</button></h2>
-        <p class="note" style="margin-top:0">Click atoms in the viewer to select them, or type their numbers. Shift-click adds an atom to the selection, or removes it. Edits change molecule A, and the dimer follows.</p>
+        <div class="seg joined" id="dMode" role="group" aria-label="Designer mode"><button data-m="2d">2D sketch</button><button data-m="3d">3D edit</button></div>
+
+        <div id="dm2d">
+        <p class="note" style="margin-top:0">Click the canvas to add an atom; click an atom to extend the chain or change its element; drag from an atom to draw a bond; click a bond to change its order. Hydrogens follow from the valence. Edits that break the valence rules are blocked.</p>
+        <h3>Atoms</h3>
+        <div class="seg el" id="skEl" role="group" aria-label="Element to draw"></div>
+        <div class="acts"><input type="text" id="skOther" placeholder="Other: Se" size="8" aria-label="Other element symbol" spellcheck="false"></div>
+        <h3>Bonds, rings, charges</h3>
+        <div class="seg sk" id="skTools" role="group" aria-label="Drawing tool"></div>
+        <div class="acts"><button id="skUndo">Undo</button><button id="skRedo">Redo</button><button id="skTidy" title="Redraw the structure with a clean 2D layout (RDKit)">Tidy up</button><button id="skClear">Clear</button></div>
+        <div class="msg" id="skMsg" aria-live="polite"></div>
+        <h3>SMILES</h3>
+        <div class="acts"><input type="text" id="skSmi" spellcheck="false" autocomplete="off" aria-label="SMILES" placeholder="e.g. CC(=O)Oc1ccccc1C(=O)O" style="flex:1 1 160px"><button id="skLoad">Load</button><button id="skCopy">Copy</button></div>
+        <div class="acts"><select id="skEx" aria-label="Load an example"></select><button id="skFromA" title="Turn molecule A into a 2D drawing">Sketch molecule A</button></div>
+        <h3>Chemistry check</h3>
+        <ul class="chk" id="skCheck" aria-live="polite"></ul>
+        <dl class="kv" id="skInfo"></dl>
+        <h3>3D structure</h3>
+        <div class="acts"><button class="pri" id="skBuild">Build 3D as molecule A</button></div>
+        <div class="msg" id="skBuildMsg" aria-live="polite"></div>
+        <p class="note">Build 3D adds the hydrogens and optimises the geometry with the UFF force field, then makes it molecule A for the dimer, with its bond orders and formal charges.</p>
+        <p class="note" id="rdkStat"></p>
+        </div>
+
+        <div id="dm3d" hidden>
+        <p class="note" style="margin-top:0">Click atoms in the viewer to select them, or type their numbers. Shift-click adds an atom to the selection, or removes it. Edits change molecule A, and the dimer follows. Edits that would give an atom more bonds than its valence allows are blocked.</p>
         <div class="acts" style="margin-top:10px">
           <label class="field" style="flex:1 1 160px">Select atoms by number<input type="text" id="dPick" placeholder="e.g. 3, 7-9" spellcheck="false" autocomplete="off"></label>
           <button id="dPickGo" style="align-self:flex-end">Select</button>
@@ -375,12 +410,16 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
         <p class="note" style="margin:-2px 0 8px">Select one atom. A selected H or halogen is replaced by the group. On any other atom, the group goes in a free position.</p>
         <div class="seg" id="dfrags" role="group" aria-label="Groups"></div>
         <h3>Geometry</h3>
-        <div class="acts"><button id="dTidy">Tidy geometry</button><button id="dUndo">Undo</button><button id="dRedo">Redo</button><button id="dAll">Select all</button><button id="dNone">Clear</button></div>
+        <div class="acts"><button id="dTidy">Tidy geometry</button><button id="dUff" title="Optimise the whole molecule with the UFF force field">Optimise (UFF)</button><button id="dUndo">Undo</button><button id="dRedo">Redo</button><button id="dAll">Select all</button><button id="dNone">Clear</button></div>
+        <h3>Chemistry check</h3>
+        <ul class="chk" id="d3Check" aria-live="polite"></ul>
+        <div class="acts"><button id="dFillH" title="Add hydrogens to atoms whose valence is not complete">Add missing H</button></div>
         <h3>Start from a template</h3>
         <div class="acts"><select id="dTpl" aria-label="Template"></select><button id="dNew">Replace molecule</button></div>
         <div class="opts"><label><input type="checkbox" id="optLabels" checked> Show atom numbers</label></div>
         <div class="msg" id="dmsg" aria-live="polite"></div>
-        <p class="note">Tidy relaxes the atoms you added or re-elemented (and any you select) towards typical bond lengths and angles, and pushes apart clashing atoms. Other atoms keep their geometry. Shortcuts: Delete, Ctrl+Z, Ctrl+Y, Esc.</p>
+        <p class="note">Tidy relaxes the atoms you added or re-elemented (and any you select) towards typical bond lengths and angles, and pushes apart clashing atoms. Other atoms keep their geometry. Optimise (UFF) relaxes every atom with the UFF force field. Shortcuts: Delete, Ctrl+Z, Ctrl+Y, Esc.</p>
+        </div>
       </section>
 
       <section id="tab-crystal" role="tabpanel" aria-labelledby="t_crystal" hidden>
@@ -452,10 +491,10 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 
 <section class="hs" id="h-start" data-title="Getting started">
 <h3 tabindex="-1">Getting started</h3>
-<p>DimerForge builds molecular dimers for quantum-chemistry calculations. You load one molecule (A), place a copy of it (B) with six geometric parameters, check the contacts, and export the pair, or a whole grid of pairs, as input files. It can also take a molecule, or a real neighbouring pair, from a crystal structure, and edit the molecule in a small 3D designer.</p>
+<p>DimerForge builds molecular dimers for quantum-chemistry calculations. You load one molecule (A), place a copy of it (B) with six geometric parameters, check the contacts, and export the pair, or a whole grid of pairs, as input files. It can also take a molecule, or a real neighbouring pair, from a crystal structure, and you can draw a molecule in 2D, under the valence rules, and build it in 3D, or edit it directly in 3D.</p>
 <p>Everything runs in your browser. Nothing is uploaded: the structures you load, your settings and the files you export stay on your computer.</p>
 <ol>
-  <li><b>Load a structure</b>: <b>Open…</b> an <code>.xyz</code> or <code>.cif</code> file, drop one on the viewer, <b>Paste</b> its text, or pick one of the <b>Examples</b>.</li>
+  <li><b>Load a structure</b>: <b>Open…</b> an <code>.xyz</code> or <code>.cif</code> file, drop one on the viewer, <b>Paste</b> its text, or pick one of the <b>Examples</b>. Or draw it in the <b>Design</b> tab (or type its SMILES) and press <b>Build 3D as molecule A</b>.</li>
   <li><b>Place copy B</b> in the <b>Dimer</b> tab with a preset or the six sliders.</li>
   <li><b>Check</b> the <b>Readouts</b> under the viewer: distances, angle between the planes, closest contacts and the clash warning.</li>
   <li><b>Export</b> the dimer (or either molecule) from the <b>Export</b> tab, or generate a whole grid in the <b>Scan</b> tab.</li>
@@ -532,13 +571,26 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 
 <section class="hs" id="h-design" data-title="Design tab">
 <h3 tabindex="-1">Design tab</h3>
-<p>The designer edits molecule A in place, and the dimer follows.</p>
+<p>The designer has two modes, switched at the top of the tab. <b>2D sketch</b> draws a molecule as a structural formula and builds it in 3D; <b>3D edit</b> changes molecule A in place, and the dimer follows. Both apply the valence rules (see <a href="#h-valence">Valence rules</a>): an edit that would give an atom more bonds than it can form is <b>blocked</b>, with the reason, and unusual but possible chemistry is <b>flagged</b> in the <b>Chemistry check</b>.</p>
+<p><b>2D sketch</b></p>
+<ul>
+<li><b>Drawing.</b> Click the canvas to add an atom of the chosen element. Click an atom to extend the chain from it, or, with a different element chosen, to change it. Drag from an atom to draw a bond, to empty space (in 30° steps) or to another atom. Click a bond to change its order (single → double → triple). Drag the background to pan, and scroll to zoom; <b>Fit</b> frames the drawing.</li>
+<li><b>Atoms</b>: C, N, O, S, P, F, Cl, Br, I, H, B, Si, or any symbol typed under <i>Other</i>. Hydrogens are not drawn: they follow from the valence and appear in the labels (OH, NH₂). Carbon is shown as a vertex.</li>
+<li><b>Bonds, rings, charges.</b> The bond tools (—, =, ≡) draw that order. The ring tools add a 3- to 6-membered ring, or a benzene ring (⌬): on empty canvas, on an atom (the ring grows from it) or on a bond (a fused ring). <b>+</b> and <b>−</b> change an atom's formal charge (−3 to +3); <b>•</b> cycles its unpaired electrons (0, 1, 2). The eraser (⌫) removes an atom or a bond.</li>
+<li><b>Changing an element.</b> If the new element can keep the atom's bonds only as an ion, it gets that charge: a carbon with four bonds becomes N⁺ when you change it to N, and B⁻ when you change it to B. If no charge works (O with four bonds), the change is blocked.</li>
+<li><b>Tidy up</b> redraws the structure with a clean 2D layout. <b>Clear</b> empties the canvas; <b>Undo</b> and <b>Redo</b> cover every edit.</li>
+<li><b>SMILES.</b> Type or paste a SMILES and press <b>Load</b> (or <kbd>Enter</kbd>); the field shows the canonical SMILES of the drawing, and <b>Copy</b> copies it. <b>Examples</b> loads common molecules. <b>Sketch molecule A</b> turns the current molecule A into a drawing, with the bond orders and charges it has (or guesses).</li>
+<li><b>Chemistry check</b> lists any problem, with the atoms by element and number (the numbers are also drawn next to flagged atoms), and gives the formula, molar mass, atom count, net charge, spin multiplicity, SMILES and InChIKey.</li>
+<li><b>Build 3D as molecule A</b> adds the hydrogens, makes a 3D structure and optimises it with the UFF force field (see <a href="#h-uff">3D structures and UFF</a>). The result replaces molecule A, keeps its bond orders and formal charges for the MOL/SDF export, and sets the charge and multiplicity of A and B in the Export tab. The designer then switches to 3D edit; Undo there brings back the previous molecule.</li>
+</ul>
+<p><b>3D edit</b></p>
 <ul>
 <li><b>Selecting.</b> Click an atom to select it; <b>Shift</b>-click adds an atom to the selection, or removes it. <b>Select atoms by number</b> takes numbers and ranges such as <code>3, 7-9</code>, in the order you want them measured. Atom numbers are shown in the viewer when <b>Show atom numbers</b> is ticked.</li>
-<li><b>Element.</b> Choose an element from the palette, or type any symbol under <i>Other</i>. <b>Add atom</b> bonds a new atom to the one selected atom, in a free direction. <b>Set element</b> changes every selected atom. <b>Delete</b> removes them.</li>
+<li><b>Element.</b> Choose an element from the palette, or type any symbol under <i>Other</i>. <b>Add atom</b> bonds a new atom to the one selected atom, in a free direction. <b>Set element</b> changes every selected atom. <b>Delete</b> removes them. Adding an atom, or a group, to an atom that has no bond left (a carbon with four bonds, counting a double bond twice) is blocked: select one of its hydrogens to replace it instead. Changing an element is blocked when the atom has more bonded neighbours than the new element allows.</li>
 <li><b>Groups.</b> Select one atom and pick a group: CH₃, CF₃, OH, OCH₃, SH, NH₂, NO₂, CN, CHO, COOH, C₆H₅, F, Cl, Br or I. If the selected atom is a terminal H or halogen, it is replaced and the group takes its bond direction. Otherwise the group goes in a free position. Planar groups are laid in the plane of the parent atom's neighbours.</li>
 <li><b>Measure and set.</b> With 2, 3 or 4 atoms selected, the panel shows the distance, angle or dihedral, and you can type a new value. The part of the molecule on the side of the last selected atom moves. If the atoms are in a ring, only the last atom moves. A dihedral can't be set about a ring bond.</li>
-<li><b>Tidy geometry</b> relaxes the atoms you added or re-elemented, their neighbours and any selected atoms. See <a href="#h-tidy">How Tidy works</a>.</li>
+<li><b>Tidy geometry</b> relaxes the atoms you added or re-elemented, their neighbours and any selected atoms. See <a href="#h-tidy">How Tidy works</a>. <b>Optimise (UFF)</b> relaxes the whole molecule with the UFF force field.</li>
+<li><b>Chemistry check</b> assigns bond orders (from the sketch, or guessed from the geometry) and formal charges, and lists atoms whose valence is not filled (a missing hydrogen, or a radical site), expanded valences and formal charges. <b>Add missing H</b> fills the open valences with hydrogens.</li>
 <li><b>Templates</b> replace the molecule with benzene, naphthalene, anthracene, tetracene, phenanthrene, pyrene, triphenylene, coronene, pyridine, pyrimidine, pyrazine, 1,3,5-triazine, thiophene, furan, pyrrole, methane, water or a single carbon atom.</li>
 <li><b>Undo</b> and <b>Redo</b> cover every edit (<kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Y</kbd>). <kbd>Delete</kbd> removes the selection and <kbd>Esc</kbd> clears it.</li>
 </ul>
@@ -594,7 +646,8 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 <tr><td>Tabs</td><td><kbd>←</kbd> <kbd>→</kbd> move between the tool tabs, and between the dock tabs.</td></tr>
 <tr><td>Viewer (focused)</td><td>Arrow keys rotate (<kbd>Shift</kbd> for small steps); <kbd>+</kbd> and <kbd>−</kbd> zoom; <kbd>0</kbd> resets the view.</td></tr>
 <tr><td>Dock divider (focused)</td><td><kbd>↑</kbd> <kbd>↓</kbd> resize by 24&nbsp;px; <kbd>Page Up</kbd> and <kbd>Page Down</kbd> by 120&nbsp;px.</td></tr>
-<tr><td>Design tab</td><td><kbd>Delete</kbd> removes the selection; <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo; <kbd>Ctrl</kbd>+<kbd>Y</kbd> redo; <kbd>Esc</kbd> clears the selection; <kbd>Enter</kbd> in the number fields applies them.</td></tr>
+<tr><td>2D sketch (canvas focused)</td><td>With the pointer on an atom: <kbd>C</kbd> <kbd>N</kbd> <kbd>O</kbd> <kbd>S</kbd> <kbd>P</kbd> <kbd>F</kbd> <kbd>H</kbd> <kbd>I</kbd> <kbd>B</kbd>, <kbd>L</kbd> (Cl) and <kbd>R</kbd> (Br) change it, or extend it when it is already that element; <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> set the order of the bond under the pointer (or add a bond of that order to the atom); <kbd>Delete</kbd> erases what is under the pointer. Otherwise the arrow keys pan, <kbd>+</kbd> and <kbd>−</kbd> zoom and <kbd>0</kbd> fits. <kbd>Ctrl</kbd>+<kbd>Z</kbd> and <kbd>Ctrl</kbd>+<kbd>Y</kbd> undo and redo. Without a mouse, type a SMILES in the Design tab.</td></tr>
+<tr><td>Design tab, 3D edit</td><td><kbd>Delete</kbd> removes the selection; <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo; <kbd>Ctrl</kbd>+<kbd>Y</kbd> redo; <kbd>Esc</kbd> clears the selection; <kbd>Enter</kbd> in the number fields applies them.</td></tr>
 <tr><td>Scan heat map (focused)</td><td>Arrow keys move between cells; <kbd>Enter</kbd> keeps the dimer; <kbd>Esc</kbd> returns to the previous one.</td></tr>
 </tbody></table>
 </section>
@@ -696,12 +749,54 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 </ul>
 </section>
 
+<section class="hs" id="h-valence" data-title="Valence rules">
+<h3 tabindex="-1">Valence rules</h3>
+<p>The designer checks every atom of the main-group elements against the number of bonds it can form, counting a double bond as 2 and a triple bond as 3. Edits that break these rules are blocked; the Chemistry check lists everything else that is unusual.</p>
+<ul>
+<li><b>Allowed valences</b> follow from the valence electrons, shifted by the formal charge: an ion behaves like its isoelectronic neutral atom. C has valence 4; N 3, and 4 as N⁺ or 2 as N⁻; O 2, and 3 as O⁺ or 1 as O⁻; B 3, and 4 as B⁻; F 1. Elements of period 2 keep the octet. From period 3 on, <b>expanded valences</b> in steps of 2 are possible: S 2, 4, 6; P 3, 5; Cl, Br, I 1, 3, 5, 7.</li>
+<li><b>Unpaired electrons</b> use up valence: a carbon radical forms 3 bonds, a carbene 2.</li>
+<li><b>Blocked</b> (impossible): more bonds than the largest allowed valence, a charge the element cannot carry, or charges beyond ±3. The message says which atom and why, and suggests the charge that would make it legal (N⁺ for a nitrogen with four bonds).</li>
+<li><b>Hydrogens</b> fill the lowest allowed valence that the drawn bonds fit: CH₄, NH₃, H₂O, SH₂, but S with three bonds gets one H to reach valence 4. Hydrogens are added to the non-metals only.</li>
+<li><b>Flagged</b> (possible but unusual): expanded valences, carbocations and carbanions, charges of 2 or more, like charges on bonded atoms, unpaired electrons (with the spin multiplicity), sp atoms in rings of fewer than 8 atoms, separate fragments, and elements with no rules here (transition metals and the f-block), which get no hydrogens and approximate UFF parameters.</li>
+<li><b>RDKit</b> also reads every drawing (sanitisation: valence, aromaticity, Kekulé structure). If it refuses a structure that DimerForge accepts, the Chemistry check says so, with RDKit's reason.</li>
+<li><b>In 3D edit</b>, where bonds come from the geometry, a move is blocked when an atom would have more bonded neighbours, or more bonds counting the orders known from the sketch, than its valence allows. The Chemistry check then assigns bond orders by pairing the open valences of bonded atoms (as for the MOL/SDF export), takes nitro groups as N⁺–O⁻ and an atom with too many bonds for the neutral element as the matching ion (ammonium N⁺, borate B⁻), and lists what remains open.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-uff" data-title="3D structures and UFF">
+<h3 tabindex="-1">3D structures and UFF</h3>
+<p><b>Build 3D as molecule A</b> turns the drawing into a 3D structure in four steps.</p>
+<ol>
+<li><b>Hydrogens</b> are added to every atom as its valence asks, in the directions of an ideal tetrahedral, trigonal or linear arrangement, given its electron domains (bonds and lone pairs).</li>
+<li><b>Start geometry.</b> The drawing is the starting point, scaled to 1.45&nbsp;Å bonds, with small out-of-plane offsets; saturated rings start puckered. So the cis/trans geometry of double bonds is the one you drew. Bridged or caged ring systems (norbornane, camphor, adamantane, cubane) cannot be unfolded from a flat drawing, so for those, and whenever the result is strained, DimerForge also embeds the molecule by distance geometry (Crippen and Havel), from bounds on all interatomic distances, and keeps the result with the lowest energy that still has the drawn double-bond geometry.</li>
+<li><b>Optimisation</b> with the Universal Force Field (UFF) of Rappé et al. (1992): bond stretching, angle bending, torsions, inversion (planarity of sp² atoms) and van der Waals (Lennard-Jones) terms, without electrostatics. Atom types and the special cases follow the RDKit implementation, and the energies agree with RDKit's UFF. The minimiser is L-BFGS, for up to 2000 steps.</li>
+<li><b>Molecule A.</b> The structure replaces molecule A, with the bond orders and formal charges of the drawing.</li>
+</ol>
+<ul>
+<li>The minimiser finds the minimum nearest the start, which need not be the lowest conformation. Energies are in kcal/mol and compare conformations of the same molecule, not different molecules.</li>
+<li>The drawing has no wedges, so stereocentres (and, for example, cis- or trans-decalin) come out as the optimisation leaves them. Check them before you use the geometry.</li>
+<li><b>Optimise (UFF)</b> in 3D edit applies the same force field to the current molecule A, with its known or guessed bond orders and charges.</li>
+<li>UFF geometries are a good start, not a final answer: optimise the monomer with your quantum-chemistry method before building production dimers.</li>
+</ul>
+</section>
+
+<section class="hs" id="h-rdkit" data-title="RDKit.js">
+<h3 tabindex="-1">RDKit.js</h3>
+<p>The 2D sketch uses <a href="https://github.com/rdkit/rdkit-js">RDKit.js</a> 2026.9.2, the WebAssembly build of the RDKit toolkit (BSD licence), for SMILES, InChI and InChIKey, for sanitising drawings and for <b>Tidy up</b> (CoordGen 2D layouts). It is part of this repository (<code>vendor/rdkit</code>), so it works offline and makes no requests to other sites.</p>
+<ul>
+<li>It loads the first time you open the 2D sketch: about 3&nbsp;MB, compressed. The line at the bottom of the 2D sketch panel says when it is ready.</li>
+<li>It runs in a hidden frame with its own Content-Security-Policy, because its JavaScript glue needs <code>eval</code> and WebAssembly; the main page keeps its strict policy.</li>
+<li>If it cannot load, the sketcher still works and still applies the valence rules. Only SMILES, InChI and Tidy up are unavailable.</li>
+<li>The UFF force field, the valence rules and the 3D build are DimerForge's own code and do not need RDKit.</li>
+</ul>
+</section>
+
 <section class="hs" id="h-formats" data-title="File formats">
 <h3 tabindex="-1">File formats</h3>
 <ul>
 <li><b>XYZ:</b> atom count, a comment line with every parameter and the atom ranges (A = 1…N, B = N+1…2N), then <code>Element x y z</code> in ångström.</li>
 <li><b>PDB:</b> HETATM records, molecule A as chain A (residue 1) and B as chain B (residue 2), a TER between them, and CONECT records for every bond.</li>
-<li><b>MOL / SDF:</b> a V2000 record with bonds. Bond orders are guessed: each atom's missing valence (C 4, N 3, O 2, …) is paired with a bonded neighbour's, shortest bonds first, by a backtracking search that falls back to a greedy pairing. Terminal O, S and Se on P, As, S and Se receive double bonds as needed. Nitro groups get N⁺ and O⁻ formal charges. Check the result for unusual bonding.</li>
+<li><b>MOL / SDF:</b> a V2000 record with bonds. When molecule A was built from the 2D sketch, its bond orders and formal charges are written as drawn. Otherwise bond orders are guessed: each atom's missing valence (C 4, N 3, O 2, …) is paired with a bonded neighbour's, shortest bonds first, by a backtracking search that falls back to a greedy pairing. Terminal O, S and Se on P, As, S and Se receive double bonds as needed. Nitro groups get N⁺ and O⁻ formal charges, and an atom with more bonds than the neutral element allows gets the charge of the matching ion (ammonium N⁺, borate B⁻). Check the result for unusual bonding.</li>
 <li><b>Gaussian (.gjf):</b> <code>%chk</code>, the route line, a title, the charge and multiplicity, and the atoms. With counterpoise for a dimer, <code>counterpoise=2</code> is added to the route, atoms are tagged <code>(Fragment=1)</code> or <code>(Fragment=2)</code>, and the charge line lists the total and then each fragment.</li>
 <li><b>ORCA (.inp):</b> the method line, a comment, and an <code>* xyz charge multiplicity</code> block. With fragment labels for a dimer, atoms are written <code>C(1)</code> or <code>C(2)</code>.</li>
 <li><b>Charge and multiplicity of a dimer:</b> the total charge is the sum of the two; the total multiplicity is the high-spin combination, <i>m</i><sub>A</sub> + <i>m</i><sub>B</sub> − 1.</li>
@@ -726,6 +821,9 @@ kbd{font:500 11px "IBM Plex Mono",monospace;border:1px solid var(--line-2);borde
 <li>M. Mantina, A. C. Chamberlin, R. Valero, C. J. Cramer, D. G. Truhlar, “Consistent van der Waals Radii for the Whole Main Group”, <i>J. Phys. Chem. A</i> <b>113</b>, 5806 (2009).</li>
 <li>B. Cordero et al., “Covalent radii revisited”, <i>Dalton Trans.</i> 2832 (2008).</li>
 <li>P. Pyykkö, M. Atsumi, “Molecular Single-Bond Covalent Radii for Elements 1–118”, <i>Chem. Eur. J.</i> <b>15</b>, 186 (2009).</li>
+<li>A. K. Rappé, C. J. Casewit, K. S. Colwell, W. A. Goddard III, W. M. Skiff, “UFF, a full periodic table force field for molecular mechanics and molecular dynamics simulations”, <i>J. Am. Chem. Soc.</i> <b>114</b>, 10024 (1992).</li>
+<li>G. M. Crippen, T. F. Havel, <i>Distance Geometry and Molecular Conformation</i>, Research Studies Press (1988): the distance-geometry embedding.</li>
+<li>RDKit: Open-source cheminformatics, <i>rdkit.org</i>; RDKit.js, <i>github.com/rdkit/rdkit-js</i>. The UFF atom typing follows its implementation.</li>
 <li>S. F. Boys, F. Bernardi, “The calculation of small molecular interactions by the differences of separate total energies”, <i>Mol. Phys.</i> <b>19</b>, 553 (1970): the counterpoise correction.</li>
 <li>Crystallography Open Database, <i>crystallography.net</i>: the benzene example, entry 7238223.</li>
 </ul>
@@ -1196,7 +1294,8 @@ function compute(s=state){
 }
 
 function render(){
-  if(!mol){emptyState();draw();save();if(tab==='scan')scanChanged(false),drawMap();return}
+  if(tab==='design')skPanel();
+  if(!mol){emptyState();if(skOn())stats(null);draw();save();if(tab==='scan')scanChanged(false),drawMap();return}
   lastR=compute();
   stats(lastR);updateExport(lastR);designPanel();draw();save();
   if(tab==='scan'){if(geomSig()!==mapSig)scheduleMap();else drawMap()}
@@ -1209,9 +1308,11 @@ function stats(R){
     S=[[c.slice(0,3).map(x=>fmt(x,3)).join(' '),'Cell a b c (Å)'],[c.slice(3).map(x=>fmt(x,1)).join(' '),'Cell α β γ (°)'],
        [cryst.sg?cryst.sg.replace(/\s+/g,' '):'—',`Space group (${cryst.ops.length} operations)`],[String(cryst.mols.length),'Molecules in the cell'],
        [m.formula,'Selected molecule'],[String(cryst.pairs.length),'Distinct neighbour pairs']];
-  }else if(tab==='design'){
-    const s=selIdx();
-    S=[[formula(mol.atoms.map(a=>a.e)),'Formula'],[String(mol.atoms.length),'Atoms'],[String(frame.bonds.length),'Bonds'],[fmt(frame.rms,3)+' Å','Plane fit RMS deviation'],[String(s.length),'Selected atoms']];
+  }else if(tab==='design'&&D.mode==='2d'){S=skStats()}
+  else if(tab==='design'){
+    const s=selIdx(),c=check3D(),bad=c.issues.filter(x=>x.lvl==='err'||x.lvl==='warn').length;
+    S=[[formula(mol.atoms.map(a=>a.e)),'Formula'],[String(mol.atoms.length),'Atoms'],[String(frame.bonds.length),'Bonds'],[(c.q>0?'+':'')+c.q,'Net formal charge'],
+      [bad?`${bad} to check`:'OK','Chemistry check',c.issues.some(x=>x.lvl==='err')],[fmt(frame.rms,3)+' Å','Plane fit RMS deviation'],[String(s.length),'Selected atoms']];
   }else{
     const clash=R.worst.q<.75;
     S=[[fmt(R.cc)+' Å','Centroid to centroid'],[fmt(R.lat)+' Å','Lateral offset (total slip)'],[fmt(R.ang,1)+'°','Angle between planes'],
@@ -1238,10 +1339,12 @@ function exportSet(R,s=state,what=EXP.what){
   const inFrame=$('optFrame').checked,conv=inFrame?(p=>p):toGlobal,BA=Batoms();
   const A=R.A.map((p,i)=>({e:mol.atoms[i].e,p:conv(p),f:1})),B=R.B.map((p,j)=>({e:BA[j].e,p:conv(p),f:2}));
   const bA=frame.bonds,bB=Bframe().bonds,fr=inFrame?'molecular frame':'input frame';
-  if(what==='A')return{atoms:A,bonds:bA,title:`${name} molecule A | ${fr}`,q:EXP.qA,m:EXP.mA};
-  if(what==='B')return{atoms:B.map(a=>({...a,f:1})),bonds:bB,title:`${name} molecule B | ${paramTag(s)} | ${fr}`,q:EXP.qB,m:EXP.mB};
-  const n=A.length;
-  return{atoms:A.concat(B),bonds:bA.concat(bB.map(([i,j])=>[i+n,j+n])),title:`${name} dimer | ${paramTag(s)} | ${fr} | A=1-${n} B=${n+1}-${n+B.length}`,q:EXP.qA+EXP.qB,m:EXP.mA+EXP.mB-1,dimer:true};
+  const kA=chemKnown(mol.atoms,bA),kB=partner?chemKnown(partner.atoms,bB):kA;
+  if(what==='A')return{atoms:A,bonds:bA,known:kA,title:`${name} molecule A | ${fr}`,q:EXP.qA,m:EXP.mA};
+  if(what==='B')return{atoms:B.map(a=>({...a,f:1})),bonds:bB,known:kB,title:`${name} molecule B | ${paramTag(s)} | ${fr}`,q:EXP.qB,m:EXP.mB};
+  const n=A.length,un=(k,na,nb)=>k||{ord:new Array(nb).fill(null),chg:new Array(na).fill(null)};
+  const known=kA||kB?{ord:un(kA,A.length,bA.length).ord.concat(un(kB,B.length,bB.length).ord),chg:un(kA,A.length,bA.length).chg.concat(un(kB,B.length,bB.length).chg)}:null;
+  return{atoms:A.concat(B),bonds:bA.concat(bB.map(([i,j])=>[i+n,j+n])),known,title:`${name} dimer | ${paramTag(s)} | ${fr} | A=1-${n} B=${n+1}-${n+B.length}`,q:EXP.qA+EXP.qB,m:EXP.mA+EXP.mB-1,dimer:true};
 }
 const xyzLine=(e,p)=>e.padEnd(3)+p.map(x=>fmt(x,6).padStart(14)).join('');
 function toXYZ(X){return[X.atoms.length,X.title,...X.atoms.map(a=>xyzLine(a.e,a.p))].join('\n')+'\n'}
@@ -1257,24 +1360,28 @@ function toPDB(X){
   L.push('END');return L.join('\n')+'\n';
 }
 /* Bond orders guessed from valence: each atom's missing valence is paired with a bonded neighbour's (backtracking, shortest bonds first). */
-function bondOrders(atoms,bonds){
+function bondOrders(atoms,bonds,known){
   const n=atoms.length,adj=atoms.map(()=>[]);bonds.forEach(([i,j],k)=>{adj[i].push({j,k});adj[j].push({j:i,k})});
-  const term=i=>adj[i].length===1;
+  const term=i=>adj[i].length===1,fixed=bonds.map((_,k)=>!!known&&known.ord[k]!=null),kc=i=>known?known.chg[i]:null;
   const rem=atoms.map((a,i)=>{
-    const d=adj[i].length,e=a.e,tO=adj[i].filter(({j})=>term(j)&&['O','S','Se'].includes(atoms[j].e)).length;
-    if(['P','As'].includes(e)&&d===4)return Math.min(1,tO);
-    if(['S','Se'].includes(e)&&d>2)return Math.min(d===4?2:1,tO);
-    if(e==='N'&&d===3&&tO>=1)return 1;
-    return VAL[e]!=null?Math.max(0,VAL[e]-d):0;
+    if(adj[i].every(({k})=>fixed[k]))return 0;
+    const d=adj[i].length,e=a.e,tO=adj[i].filter(({j})=>term(j)&&['O','S','Se'].includes(atoms[j].e)).length;let r;
+    if(kc(i)){const L=valences(e,kc(i));r=L&&L.length?Math.max(0,L[0]-d):0}
+    else if(['P','As'].includes(e)&&d===4)r=Math.min(1,tO);
+    else if(['S','Se'].includes(e)&&d>2)r=Math.min(d===4?2:1,tO);
+    else if(e==='N'&&d===3&&tO>=1)r=1;
+    else r=VAL[e]!=null?Math.max(0,VAL[e]-d):0;
+    adj[i].forEach(({k})=>{if(fixed[k])r-=known.ord[k]-1});
+    return Math.max(0,r);
   });
-  const ord=bonds.map(()=>1),L=bonds.map(([i,j])=>dist(atoms[i].p,atoms[j].p));
+  const ord=bonds.map((_,k)=>fixed[k]?known.ord[k]:1),L=bonds.map(([i,j])=>dist(atoms[i].p,atoms[j].p));
   adj.forEach(l=>l.sort((x,y)=>L[x.k]-L[y.k]));
   let steps=0;
   const solve=()=>{
     if(++steps>40000)return false;
     const u=rem.findIndex(r=>r>0);if(u<0)return true;
     for(const{j,k}of adj[u]){
-      if(rem[j]<=0||ord[k]>=3)continue;
+      if(fixed[k]||rem[j]<=0||ord[k]>=3)continue;
       ord[k]++;rem[u]--;rem[j]--;
       if(solve())return true;
       ord[k]--;rem[u]++;rem[j]++;
@@ -1283,18 +1390,22 @@ function bondOrders(atoms,bonds){
   };
   const r0=rem.slice();
   if(!solve()){ // greedy fallback: satisfy what can be satisfied
-    rem.splice(0,n,...r0);ord.fill(1);
-    for(let u=0;u<n;u++)for(const{j,k}of adj[u])while(rem[u]>0&&rem[j]>0&&ord[k]<3){ord[k]++;rem[u]--;rem[j]--}
+    rem.splice(0,n,...r0);bonds.forEach((_,k)=>ord[k]=fixed[k]?known.ord[k]:1);
+    for(let u=0;u<n;u++)for(const{j,k}of adj[u])while(!fixed[k]&&rem[u]>0&&rem[j]>0&&ord[k]<3){ord[k]++;rem[u]--;rem[j]--}
   }
   const chg=atoms.map(()=>0);
-  atoms.forEach((a,i)=>{if(a.e==='O'&&term(i)&&rem[i]===1){const j=adj[i][0].j;if(atoms[j].e==='N'&&adj[j].length===3){chg[i]=-1;chg[j]=1;rem[i]=0}}});
+  atoms.forEach((a,i)=>{if(kc(i)==null&&a.e==='O'&&term(i)&&rem[i]===1){const j=adj[i][0].j;if(kc(j)==null&&atoms[j].e==='N'&&adj[j].length===3){chg[i]=-1;chg[j]=1;rem[i]=0}}});
+  /* more bonds than the neutral atom allows, but fine as an ion (ammonium N⁺, oxonium O⁺, borate B⁻): take that charge */
+  atoms.forEach((a,i)=>{if(kc(i)!=null||chg[i])return;const bs=adj[i].reduce((s,{k})=>s+ord[k],0);if(bs<=maxValence(a.e,0))return;
+    const c=[1,-1].find(c=>maxValence(a.e,c)>=bs);if(c)chg[i]=c});
   return{ord,chg};
 }
 function toSDF(X){
   const p3=v=>String(v).padStart(3),d=new Date(),two=v=>String(v).padStart(2,'0');
   const stamp=two(d.getMonth()+1)+two(d.getDate())+two(d.getFullYear()%100)+two(d.getHours())+two(d.getMinutes());
-  const{ord,chg}=bondOrders(X.atoms,X.bonds),code=c=>c?4-c:0;
-  const L=[X.title.slice(0,80),'  DimerFrg'+stamp+'3D','Bond orders guessed from the geometry by DimerForge',
+  const{ord,chg}=assignOrders(X.atoms,X.bonds,X.known),code=c=>c?4-c:0;
+  const kn=X.known&&X.known.ord.every(o=>o!=null);
+  const L=[X.title.slice(0,80),'  DimerFrg'+stamp+'3D',kn?'Bond orders and charges from the DimerForge 2D sketch':'Bond orders guessed from the geometry by DimerForge',
     p3(X.atoms.length)+p3(X.bonds.length)+'  0  0  0  0  0  0  0  0999 V2000'];
   X.atoms.forEach((a,i)=>L.push(a.p.map(x=>fmt(x,4).padStart(10)).join('')+' '+a.e.padEnd(3)+' 0'+p3(code(chg[i]))+'  0'.repeat(10)));
   X.bonds.forEach(([i,j],k)=>L.push(p3(i+1)+p3(j+1)+p3(ord[k])+'  0'));
@@ -1373,6 +1484,7 @@ function addAtom(){
   if(needMol())return;
   const s=selIdx(),e=D.el;if(s.length>1){dmsg('Select one atom to bond the new atom to, or none.',true);return}
   edit(()=>{
+    if(s.length){const why=guard3D(s[0],1);if(why){dmsg('Blocked. '+why,true);return false}}
     let p;if(!s.length){const c=mean(mol.atoms.map(a=>a.p));p=add(c,[0,0,3])}
     else{const i=s[0];p=add(mol.atoms[i].p,scale(freeDir(i),rs(mol.atoms[i].e)+rs(e)))}
     const a=newAtom(e,p,{dirty:true});mol.atoms.push(a);D.sel=[a.id];
@@ -1382,7 +1494,9 @@ function addAtom(){
 function setElement(){
   if(needMol())return;
   const s=selIdx();if(!s.length){dmsg('Select the atoms to change first.',true);return}
-  edit(()=>{s.forEach(i=>{const a=mol.atoms[i];a.e=D.el;a.dirty=true;clearR0(a)});dmsg(`Changed ${s.length} atom${s.length>1?'s':''} to ${D.el}. Tidy adjusts the bond lengths.`)});
+  const bad=s.filter(i=>frame.adj[i].length>maxValence(D.el,0));
+  if(bad.length){const i=bad[0],n=frame.adj[i].length;dmsg(`Blocked. ${mol.atoms[i].e}${i+1} has ${n} bonded atoms; ${D.el} allows at most ${maxValence(D.el,0)}.`+(bad.length>1?` (${bad.length} of the selected atoms.)`:''),true);return}
+  edit(()=>{s.forEach(i=>{const a=mol.atoms[i];a.e=D.el;a.dirty=true;clearR0(a);delete a.q;delete a.rad;delete a.bo});dmsg(`Changed ${s.length} atom${s.length>1?'s':''} to ${D.el}. Tidy adjusts the bond lengths.`)});
 }
 function delAtoms(){
   if(needMol())return;
@@ -1421,7 +1535,7 @@ function attach(fname){
   const i=s[0],a=mol.atoms[i],halo=['H','F','Cl','Br','I'];
   let parent,u,removeIdx=null,dirtyX=false;
   if(frame.adj[i].length===1&&halo.includes(a.e)){parent=frame.adj[i][0];u=unit(sub(a.p,mol.atoms[parent].p));removeIdx=i}
-  else{parent=i;u=freeDir(i);dirtyX=frame.adj[i].length>0}
+  else{const why=guard3D(i,1);if(why){dmsg('Blocked. '+why,true);return}parent=i;u=freeDir(i);dirtyX=frame.adj[i].length>0}
   const P=mol.atoms[parent],F=fragment(fname),X=F.atoms[0];
   const q=frame.adj[parent].find(k=>k!==removeIdx);
   const w=(q!=null&&perp(sub(mol.atoms[q].p,P.p),u))||anyPerp(u),v=cross(u,w);
@@ -1536,6 +1650,7 @@ function designPanel(){
   if(m){$('dmeasLab').textContent=m.kind+(s.length===2?'':` (moves the side of atom ${s[s.length-1]+1})`);$('dmeasUnit').textContent=m.unit;$('dmeasVal').step=m.unit==='Å'?'0.01':'0.5';
     if(document.activeElement!==$('dmeasVal'))$('dmeasVal').value=fmt(m.v,m.unit==='Å'?3:1)}
   $('dUndo').disabled=!D.undo.length;$('dRedo').disabled=!D.redo.length;
+  if(D.mode==='3d')$('d3Check').innerHTML=check3D().issues.map(x=>`<li class="${x.lvl}">${esc(x.text)}</li>`).join('');
   [...$('delems').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.e===D.el));
 }
 
@@ -1581,11 +1696,12 @@ let VT={};
 function vtheme(){const c=getComputedStyle(document.documentElement),g=n=>c.getPropertyValue(n).trim(),edge=g('--atom-edge');
   return{ink:g('--view-ink'),mute:g('--view-mute'),planeA:g('--v-plane'),planeLineA:g('--v-plane-line'),planeB:g('--v-planeB'),planeLineB:g('--v-planeB-line'),
     l:g('--ax-l'),s:g('--ax-s'),n:g('--ax-n'),cell:g('--v-cell'),ringB:g('--ring-b'),sel:g('--sel'),edge,edgeOn:!/^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(edge),
-    chipBg:g('--chip-bg'),chipInk:g('--chip-ink'),danger:g('--danger')}}
+    chipBg:g('--chip-bg'),chipInk:g('--chip-ink'),danger:g('--danger'),warn:g('--warn'),bg:g('--view-bg')}}
 function draw(){
   VT=vtheme();
   const dpr=window.devicePixelRatio||1,W=fig.clientWidth,H=fig.clientHeight;
   cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  if(skOn()){picks=[];drawSketch(W,H);return}
   const S=scene();picks=[];
   if(!S||!S.atoms.length){
     if(!mol&&!(tab==='crystal'&&cryst)){
@@ -1644,9 +1760,11 @@ function legend(){
   const L={dimer:'<span><i class="sw-a"></i>A (reference)</span><span><i class="sw-b"></i>B (copy)</span><span class="ax-l">long</span><span class="ax-s">short</span><span class="ax-n">n</span>',
     design:'<span><i class="sw-sel"></i>selected</span><span>Click an atom to select it · Shift-click for several</span>',
     crystal:cryst?'<span><i class="sw-a"></i>selected molecule</span><span><i class="sw-b"></i>neighbour</span><span class="ax-l">a</span><span class="ax-s">b</span><span class="ax-n">c</span><span>Click a molecule to select it</span>':'<span>Load a CIF file to see the crystal</span>'};
-  $('legend').innerHTML=L[vk()];fig.classList.toggle('pick',tab==='design'||tab==='crystal');
+  $('legend').innerHTML=skOn()?'<span>2D sketch · click to draw · drag from an atom for a bond · drag the background to pan · scroll to zoom</span>':L[vk()];fig.classList.toggle('pick',tab==='design'||tab==='crystal');
+  fig.setAttribute('aria-roledescription',skOn()?'2D drawing area':'3D viewer');
 }
 function vbar(){
+  if(skOn()){$('vbar').innerHTML='<button data-sk="fit">Fit</button><button data-sk="in" aria-label="Zoom in">+</button><button data-sk="out" aria-label="Zoom out">−</button>';return}
   const L=tab==='crystal'?[['obl','Oblique'],['a','Along a'],['b','Along b'],['c','Along c']]:[['obl','Oblique'],['top','Along n'],['long','Along long axis'],['short','Along short axis']];
   $('vbar').innerHTML=L.map(([k,l])=>`<button data-view="${k}">${l}</button>`).join('')+'<button data-z="in" aria-label="Zoom in">+</button><button data-z="out" aria-label="Zoom out">−</button>';
 }
@@ -1656,15 +1774,18 @@ function setView(k){
   else views[vk()]=VIEWS[k];
   zooms[vk()]=1;draw();
 }
-$('vbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.z){zooms[vk()]=b.dataset.z==='in'?Math.min(8,zooms[vk()]*1.2):Math.max(.25,zooms[vk()]/1.2);draw()}else setView(b.dataset.view)});
+$('vbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.sk){const V=SK.view;if(b.dataset.sk==='fit')V.fit=true;else V.sc=b.dataset.sk==='in'?Math.min(120,V.sc*1.2):Math.max(8,V.sc/1.2);draw();return}
+  if(b.dataset.z){zooms[vk()]=b.dataset.z==='in'?Math.min(8,zooms[vk()]*1.2):Math.max(.25,zooms[vk()]/1.2);draw()}else setView(b.dataset.view)});
 
 let drag=null;
-fig.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;drag={x:e.clientX,y:e.clientY,moved:0,add:e.shiftKey||e.ctrlKey||e.metaKey};fig.setPointerCapture(e.pointerId);fig.classList.add('drag')});
-fig.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;drag.moved+=Math.abs(dx)+Math.abs(dy);
+fig.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;if(skOn()){skDown(e);return}drag={x:e.clientX,y:e.clientY,moved:0,add:e.shiftKey||e.ctrlKey||e.metaKey};fig.setPointerCapture(e.pointerId);fig.classList.add('drag')});
+fig.addEventListener('pointermove',e=>{if(skOn()){skMove(e);return}if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;drag.moved+=Math.abs(dx)+Math.abs(dy);
   if(drag.moved<4)return;views[vk()]=mm(axisRot([1,0,0],dy*.01),mm(axisRot([0,1,0],dx*.01),views[vk()]));draw()});
-fig.addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;fig.classList.remove('drag');if(d.moved<4){const r=fig.getBoundingClientRect();pick(e.clientX-r.left,e.clientY-r.top,d.add)}});
-fig.addEventListener('pointercancel',()=>{drag=null;fig.classList.remove('drag')});
-fig.addEventListener('wheel',e=>{e.preventDefault();zooms[vk()]=Math.min(8,Math.max(.25,zooms[vk()]*Math.exp(-e.deltaY*.0015)));draw()},{passive:false});
+fig.addEventListener('pointerup',e=>{if(skOn()){skUp(e);return}if(!drag)return;const d=drag;drag=null;fig.classList.remove('drag');if(d.moved<4){const r=fig.getBoundingClientRect();pick(e.clientX-r.left,e.clientY-r.top,d.add)}});
+fig.addEventListener('pointercancel',()=>{drag=null;SK.ptr=null;fig.classList.remove('drag')});
+fig.addEventListener('pointerleave',()=>{if(skOn()&&!SK.ptr&&SK.hover){SK.hover=null;draw()}});
+fig.addEventListener('wheel',e=>{e.preventDefault();if(skOn()){skWheel(e);return}zooms[vk()]=Math.min(8,Math.max(.25,zooms[vk()]*Math.exp(-e.deltaY*.0015)));draw()},{passive:false});
 function pick(x,y,addSel){
   if(tab==='dimer'||tab==='scan')return;
   let hit=null;for(const p of picks)if(Math.hypot(p.x-x,p.y-y)<=p.r+3&&(!hit||p.z>hit.z))hit=p;
@@ -1676,6 +1797,7 @@ function pick(x,y,addSel){
 }
 fig.addEventListener('keydown',e=>{
   if(e.target!==fig||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(skOn()){skKey(e);return}
   const st=rad(e.shiftKey?3:15),R={ArrowLeft:axisRot([0,1,0],-st),ArrowRight:axisRot([0,1,0],st),ArrowUp:axisRot([1,0,0],-st),ArrowDown:axisRot([1,0,0],st)}[e.key];
   if(R){views[vk()]=mm(R,views[vk()])}
   else if(e.key==='+'||e.key==='='){zooms[vk()]=Math.min(8,zooms[vk()]*1.2)}
@@ -1725,7 +1847,7 @@ $('cxExample').onclick=()=>{$('src').value=BENZENE_CIF;load(BENZENE_CIF,'benzene
 const tabs=['dimer','design','crystal','scan'];
 function setTab(t){
   if(t!=='scan'&&previewBase){Object.assign(state,previewBase);previewBase=null;sync()}
-  mapCursor=null;tab=t;if(t==='scan'){syncScan();scheduleMap()}tabs.forEach(k=>{$('tab-'+k).hidden=k!==t;$('t_'+k).setAttribute('aria-selected',k===t);$('t_'+k).tabIndex=k===t?0:-1});
+  mapCursor=null;tab=t;if(t==='scan'){syncScan();scheduleMap()}if(t==='design'&&D.mode==='2d')rdkLoad();tabs.forEach(k=>{$('tab-'+k).hidden=k!==t;$('t_'+k).setAttribute('aria-selected',k===t);$('t_'+k).tabIndex=k===t?0:-1});
   $('pairNote').hidden=!pairInfo;$('pairNote').textContent=pairInfo;$('partnerActs').hidden=!partner;
   legend();vbar();crystalPanel();render();
 }
@@ -1787,6 +1909,12 @@ $('dAll').onclick=()=>{if(needMol())return;D.sel=mol.atoms.map(a=>a.id);render()
 $('dTpl').innerHTML=Object.keys(TEMPLATES).map(k=>`<option>${k}</option>`).join('');
 $('dNew').onclick=()=>{const k=$('dTpl').value,before=mol?snap():null;setMol(TEMPLATES[k](),k,`Template: ${k}.`);if(before)D.undo=[before];render();dmsg(`Started from ${k}.`)};
 document.addEventListener('keydown',e=>{
+  if(tab==='design'&&D.mode==='2d'&&!e.target.closest('input,textarea,select')){
+    const k=e.key.toLowerCase(),mod=e.ctrlKey||e.metaKey;
+    if(mod&&k==='z'&&!e.shiftKey){e.preventDefault();skUndo()}else if(mod&&(k==='y'||(k==='z'&&e.shiftKey))){e.preventDefault();skRedo()}
+    else if(k==='escape'&&SK.ptr){SK.ptr=null;draw()}
+    return;
+  }
   if(tab!=='design'||!mol||e.target.closest('input,textarea,select'))return;
   const k=e.key.toLowerCase(),mod=e.ctrlKey||e.metaKey;
   if(mod&&k==='z'&&!e.shiftKey){e.preventDefault();undo()}else if(mod&&(k==='y'||(k==='z'&&e.shiftKey))){e.preventDefault();redo()}
@@ -1795,7 +1923,7 @@ document.addEventListener('keydown',e=>{
 
 /* ============================== input ============================== */
 function setMol(atoms,nm,note){
-  mol={atoms:atoms.map(a=>newAtom(a.e,a.p.slice()))};
+  mol={atoms:atoms.map(a=>newAtom(a.e,a.p.slice(),'q' in a?{q:a.q||0,rad:a.rad||0}:undefined))};
   name=(nm||'structure').replace(/\.(xyz|cif|txt)$/i,'').replace(/[^\w.-]+/g,'_').slice(0,40)||'structure';
   partner=null;pairInfo='';frame=frameOf(mol.atoms);
   D.sel=[];D.undo=[];D.redo=[];D.center=null;views.design=mm(VIEWS.obl,frame.F);
@@ -2434,11 +2562,12 @@ function resetAll(opts={}){
   PARAMS.forEach(p=>state[p.id]=p.v);state.mir=0;
   Object.assign(EXP,JSON.parse(EXP_DEFAULT));
   Object.keys(SCAN).forEach(k=>delete SCAN[k]);Object.assign(SCAN,JSON.parse(SCAN_DEFAULT));
-  Object.assign(D,{sel:[],undo:[],redo:[],center:null,el:'C'});
+  Object.assign(D,{sel:[],undo:[],redo:[],center:null,el:'C',mode:'2d'});
+  Object.assign(SK,{G:{atoms:[],bonds:[]},undo:[],redo:[],tool:'el:C',hover:null,ptr:null,an:null,rd:null,name:'',flash:null});SK.view.fit=true;SK.ver++;
   $('optFrame').checked=true;$('optHeavy').checked=true;$('optSwap').checked=false;$('optLabels').checked=true;
   ['dimer','design','crystal'].forEach(k=>{views[k]=VIEWS.obl;zooms[k]=1});
-  ['src','file','dPick','delOther','dmeasVal'].forEach(id=>$(id).value='');
-  ['dmsg','dsel','scTip','scProg','outmsg','cxWarn','scCount'].forEach(id=>$(id).textContent='');
+  ['src','file','dPick','delOther','dmeasVal','skSmi','skOther'].forEach(id=>$(id).value='');
+  ['dmsg','dsel','scTip','scProg','outmsg','cxWarn','scCount','skMsg','skBuildMsg'].forEach(id=>$(id).textContent='');
   try{localStorage.removeItem('dimer-builder')}catch{}
   sync();syncExp();setTab('dimer');
   $('inmsg').className='msg';$('inmsg').textContent='Started over: everything is cleared. Use Open…, Paste or Examples in the top bar, or start from a template in the Design tab.';
@@ -2447,6 +2576,843 @@ function resetAll(opts={}){
 $('reset').onclick=()=>resetAll();
 $('exAllox').onclick=()=>{$('src').value=ALLOXAN;load(ALLOXAN,'Alloxan')};
 
+/* ============================== chemistry rules ============================== */
+/* Valence electrons of the main-group elements (noble gases count as a closed shell of 8). Elements not listed
+   (transition metals, lanthanides, actinides) have no valence rules here. */
+const GRP={H:1,He:8,Li:1,Be:2,B:3,C:4,N:5,O:6,F:7,Ne:8,Na:1,Mg:2,Al:3,Si:4,P:5,S:6,Cl:7,Ar:8,K:1,Ca:2,Ga:3,Ge:4,As:5,Se:6,Br:7,Kr:8,
+  Rb:1,Sr:2,In:3,Sn:4,Sb:5,Te:6,I:7,Xe:8,Cs:1,Ba:2,Tl:3,Pb:4,Bi:5,Po:6,At:7,Rn:8};
+/* Hydrogens are filled in only on these; metals keep the bonds they are drawn with. */
+const NONMETAL=new Set('H B C N O F Si P S Cl Ge As Se Br Sn Sb Te I At'.split(' '));
+const periodOf=e=>{const z=ZOF[e]||0;return z<=2?1:z<=10?2:z<=18?3:z<=36?4:z<=54?5:z<=86?6:7};
+/* Standard atomic weights (IUPAC, abridged), H to Rn. */
+const AW=[1.008,4.0026,6.94,9.0122,10.81,12.011,14.007,15.999,18.998,20.180,22.990,24.305,26.982,28.085,30.974,32.06,35.45,39.948,39.098,40.078,
+  44.956,47.867,50.942,51.996,54.938,55.845,58.933,58.693,63.546,65.38,69.723,72.630,74.922,78.971,79.904,83.798,85.468,87.62,88.906,91.224,
+  92.906,95.95,98,101.07,102.91,106.42,107.87,112.41,114.82,118.71,121.76,127.60,126.90,131.29,132.91,137.33,138.91,140.12,140.91,144.24,
+  145,150.36,151.96,157.25,158.93,162.50,164.93,167.26,168.93,173.05,174.97,178.49,180.95,183.84,186.21,190.23,192.22,195.08,196.97,200.59,
+  204.38,207.2,208.98,209,210,222];
+const massOf=e=>AW[(ZOF[e]||0)-1];
+/* Allowed valences (bond orders summed, a double bond counting 2) of element e with formal charge q, lowest first.
+   The charge shifts the electron count (N⁺ behaves like C, O⁻ like F). Period 2 keeps the octet; from period 3 on,
+   expanded valences in steps of 2 are allowed (S 2, 4, 6; P 3, 5; Cl 1, 3, 5, 7). [] means the charge is impossible,
+   null that the element has no rules. */
+function valences(e,q=0){
+  if(e==='H')return q===0?[1]:[0];
+  const v=GRP[e];if(v==null)return null;
+  const n=v-q;if(n<0||n>8)return[];
+  const base=n<=4?n:8-n,out=[base];
+  if(periodOf(e)>=3&&n>4)for(let x=base+2;x<=n;x+=2)out.push(x);
+  return out;
+}
+const maxValence=(e,q=0,rad=0)=>{const L=valences(e,q);return L==null?Infinity:L.length?Math.max(...L)-rad:-1};
+const SUPD={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const chgText=q=>!q?'':(Math.abs(q)>1?String(Math.abs(q)).replace(/\d/g,d=>SUPD[d]):'')+(q>0?'⁺':'⁻');
+const chgPlain=q=>!q?'':(Math.abs(q)>1?Math.abs(q):'')+(q>0?'+':'−');
+/* Per-atom valence check. atoms: [{e,q,rad}]; bonds: [[i,j,order]]. With implicitH, non-metals get the hydrogens their
+   lowest fitting valence asks for (h); without it (explicit-H structures) 'missing' counts the unfilled valence. */
+function valenceReport(atoms,bonds,implicitH){
+  const n=atoms.length,bs=new Array(n).fill(0),deg=new Array(n).fill(0);
+  bonds.forEach(([i,j,o])=>{bs[i]+=o;bs[j]+=o;deg[i]++;deg[j]++});
+  return atoms.map((a,i)=>{
+    const q=a.q||0,r=a.rad||0,L=valences(a.e,q),R={bs:bs[i],deg:deg[i],h:0,missing:0};
+    if(L==null){R.norules=true;return R}
+    if(!L.length){R.impossible='charge';return R}
+    const max=Math.max(...L)-r;R.max=max;
+    if(bs[i]>max){R.impossible='valence';return R}
+    const V=L.find(x=>x-r>=bs[i]);R.V=V;R.expanded=V!==L[0];
+    const free=V-r-bs[i];
+    if(implicitH){if(NONMETAL.has(a.e))R.h=free}else R.missing=NONMETAL.has(a.e)?free:0;
+    return R;
+  });
+}
+/* Plain-language reason why an atom breaks the rules, with the charge that would make it legal, if any. */
+function blockedText(a,R,lab){
+  const q=a.q||0,sym=a.e+chgText(q);
+  if(R.impossible==='charge')return `${lab}: ${a.e} cannot carry a charge of ${chgPlain(q)}.`;
+  const tip=[q+1,q-1].map(c=>({c,m:maxValence(a.e,c,a.rad||0)})).find(x=>Math.abs(x.c)<=3&&x.m>=R.bs);
+  return `${lab} would have ${R.bs} bond${R.bs===1?'':'s'}${a.rad?' and an unpaired electron':''}; ${sym} allows at most ${R.max}.`+
+    (tip?` As ${a.e}${chgText(tip.c)} it could: set that charge first.`:'');
+}
+/* Rings: for every bond, the shortest cycle through it (an SSSR-like set for ordinary molecules). */
+function ringsOf(n,adj,maxSize=12){
+  const seen=new Set(),out=[];
+  for(let u=0;u<n;u++)for(const v of adj[u]){
+    if(v<u)continue;
+    const prev=new Array(n).fill(-1);prev[u]=u;const q=[u];let found=false;
+    for(let h=0;h<q.length&&!found;h++){const x=q[h];for(const y of adj[x]){if(x===u&&y===v)continue;if(prev[y]!==-1)continue;prev[y]=x;if(y===v){found=true;break}q.push(y)}}
+    if(!found)continue;
+    const ring=[v];let x=v;while(x!==u){x=prev[x];ring.push(x)}
+    if(ring.length>maxSize)continue;
+    const key=ring.slice().sort((a,b)=>a-b).join(',');if(!seen.has(key)){seen.add(key);out.push(ring)}
+  }
+  return out;
+}
+const fragments=(n,adj)=>{const c=new Array(n).fill(-1);let k=0;for(let s=0;s<n;s++){if(c[s]>=0)continue;const q=[s];c[s]=k;while(q.length){const x=q.pop();for(const y of adj[x])if(c[y]<0){c[y]=k;q.push(y)}}k++}return{count:k,of:c}};
+/* Bond orders for a structure with explicit hydrogens. Orders known from a drawing (known.ord[k]) are kept; the
+   others are guessed by pairing missing valences (bondOrders). Charges: known ones, else the nitro-type guess. */
+function assignOrders(atoms,bonds,known){
+  const n=atoms.length;
+  if(known&&known.ord.every(o=>o!=null))return{ord:known.ord.slice(),chg:known.chg.map(c=>c||0)};
+  const g=bondOrders(atoms,bonds,known);
+  if(known)known.chg.forEach((c,i)=>{if(c!=null)g.chg[i]=c});
+  return g;
+}
+/* What molecule A knows about its chemistry: a.bo[otherId] = order and a.q (from a drawing). */
+function chemKnown(atoms,bonds){
+  const ord=bonds.map(([i,j])=>{const a=atoms[i],b=atoms[j],o=a.bo?.[b.id];return o!=null&&b.bo?.[a.id]===o?o:null});
+  const chg=atoms.map(a=>a.q!=null?a.q:null);
+  return ord.some(o=>o!=null)||chg.some(c=>c)?{ord,chg}:null;
+}
+/* ============================== UFF force field ============================== */
+/* Rappé, Casewit, Colwell, Goddard and Skiff, J. Am. Chem. Soc. 114 (1992) 10024. Atom typing and the special cases
+   follow the RDKit implementation, so energies match RDKit's UFF. Electrostatics are left out, as in RDKit's default.
+   Parameters per type: r1, θ0, x1, D1, ζ, Z1, V1 (sp3 torsion), U1 (sp2 torsion), χ (GMP electronegativity). */
+const UFFP={'H_':[0.354,180,2.886,0.044,12,0.712,0,0,4.528],'B_3':[0.838,109.47,4.083,0.18,12.052,1.755,0,2,5.11],'B_2':[0.828,120,4.083,0.18,12.052,1.755,0,2,5.11],
+  'C_3':[0.757,109.47,3.851,0.105,12.73,1.912,2.119,2,5.343],'C_R':[0.729,120,3.851,0.105,12.73,1.912,0,2,5.343],'C_2':[0.732,120,3.851,0.105,12.73,1.912,0,2,5.343],'C_1':[0.706,180,3.851,0.105,12.73,1.912,0,2,5.343],
+  'N_3':[0.7,106.7,3.66,0.069,13.407,2.544,0.45,2,6.899],'N_R':[0.699,120,3.66,0.069,13.407,2.544,0,2,6.899],'N_2':[0.685,111.2,3.66,0.069,13.407,2.544,0,2,6.899],'N_1':[0.656,180,3.66,0.069,13.407,2.544,0,2,6.899],
+  'O_3':[0.658,104.51,3.5,0.06,14.085,2.3,0.018,2,8.741],'O_R':[0.68,110,3.5,0.06,14.085,2.3,0,2,8.741],'O_2':[0.634,120,3.5,0.06,14.085,2.3,0,2,8.741],'O_1':[0.639,180,3.5,0.06,14.085,2.3,0,2,8.741],
+  'F_':[0.668,180,3.364,0.05,14.762,1.735,0,2,10.874],'Si3':[1.117,109.47,4.295,0.402,12.175,2.323,1.225,1.25,4.168],
+  'P_3+3':[1.101,93.8,4.147,0.305,13.072,2.863,2.4,1.25,5.463],'P_3+5':[1.056,109.47,4.147,0.305,13.072,2.863,2.4,1.25,5.463],
+  'S_3+2':[1.064,92.1,4.035,0.274,13.969,2.703,0.484,1.25,6.928],'S_3+4':[1.049,103.2,4.035,0.274,13.969,2.703,0.484,1.25,6.928],'S_3+6':[1.027,109.47,4.035,0.274,13.969,2.703,0.484,1.25,6.928],
+  'S_R':[1.077,92.2,4.035,0.274,13.969,2.703,0,1.25,6.928],'S_2':[0.854,120,4.035,0.274,13.969,2.703,0,1.25,6.928],'Cl':[1.044,180,3.947,0.227,14.866,2.348,0,1.25,8.564],
+  'Ge3':[1.197,109.47,4.28,0.379,12,2.789,0.701,0.7,4.051],'As3+3':[1.211,92.1,4.23,0.309,13,2.864,1.5,0.7,5.188],'Se3+2':[1.19,90.6,4.205,0.291,14,2.764,0.335,0.7,6.428],
+  'Br':[1.192,180,4.189,0.251,15,2.519,0,0.7,7.79],'Sn3':[1.398,109.47,4.392,0.567,12,2.961,0.199,0.2,3.987],'Sb3+3':[1.407,91.6,4.42,0.449,13,2.704,1.1,0.2,4.899],
+  'Te3+2':[1.386,90.25,4.47,0.398,14,2.882,0.3,0.2,5.816],'I_':[1.382,180,4.5,0.339,15,2.65,0,0.2,6.822],'Li':[1.336,180,2.451,0.025,12,1.026,0,2,3.006],
+  'Na':[1.539,180,2.983,0.03,12,1.081,0,1.25,2.843],'K_':[1.953,180,3.812,0.035,12,1.165,0,0.7,2.421],'Al3':[1.244,109.47,4.499,0.505,11.278,1.792,0,1.25,4.06],'Mg3+2':[1.421,109.47,3.021,0.111,12,1.787,0,1.25,3.951]};
+const UFF_G=332.06,UFF_L=0.1332,GROUP16=new Set(['O','S','Se','Te','Po']);
+/* Hybridisation, aromaticity, conjugation and UFF types for a structure with explicit hydrogens. */
+function perceive(A,B){
+  const n=A.length,adj=A.map(()=>[]),bs=new Array(n).fill(0),pi=new Array(n).fill(0),trip=new Array(n).fill(false);
+  B.forEach(([i,j,o],k)=>{adj[i].push({j,o,k});adj[j].push({j:i,o,k});bs[i]+=o;bs[j]+=o;pi[i]+=o-1;pi[j]+=o-1;if(o===3)trip[i]=trip[j]=true});
+  const deg=adj.map(l=>l.length);
+  const lp=A.map((a,i)=>{const v=GRP[a.e];if(v==null||a.e==='H')return 0;return Math.max(0,Math.floor((v-(a.q||0)-bs[i]-(a.rad||0))/2))});
+  const hyb=A.map((a,i)=>{if(a.e==='H')return'S';const s=deg[i]+lp[i];return s<=1?'S':s===2?'SP':s===3?'SP2':s===4?'SP3':s===5?'SP3D':'SP3D2'});
+  /* A lone pair next to a π bond (amide N, phenol O, pyrrole N, furan O, thiophene S, nitro O⁻) is conjugated: sp². */
+  const donor=new Array(n).fill(false),h0=hyb.slice();
+  A.forEach((a,i)=>{if(hyb[i]!=='SP3'||!lp[i]||deg[i]>3||!['N','O','S'].includes(a.e))return;
+    if(adj[i].some(({j})=>(h0[j]==='SP2'||h0[j]==='SP')&&adj[j].some(({j:k,o})=>k!==i&&o>1))){hyb[i]='SP2';donor[i]=true}});
+  /* Aromatic rings (5 to 7 atoms, all sp², 4n+2 π electrons); fused rings are found by repeating the pass. */
+  const nb=adj.map(l=>l.map(x=>x.j)),allRings=ringsOf(n,nb,8),rings=allRings.filter(r=>r.length>=5&&r.length<=7);
+  const arom=new Array(n).fill(false),aromB=new Set(),bk=(i,j)=>i<j?i*n+j:j*n+i,bondK=new Map();B.forEach(([i,j],k)=>bondK.set(bk(i,j),k));
+  const ringAr=rings.map(()=>false);
+  for(let pass=0,changed=true;changed&&pass<6;pass++){changed=false;
+    rings.forEach((R,r)=>{if(ringAr[r])return;const inR=new Set(R);let e=0,ok=true;
+      for(const x of R){if(hyb[x]!=='SP2'){ok=false;break}
+        const dbl=adj[x].find(b=>b.o===2);
+        if(dbl){if(inR.has(dbl.j)||aromB.has(dbl.k))e+=1;else if(['O','S','N','Se'].includes(A[dbl.j].e))e+=0;else{ok=false;break}}
+        else if(adj[x].some(b=>b.o===3)){ok=false;break}
+        else if(lp[x]>=1)e+=2}
+      if(ok&&e%4===2){ringAr[r]=true;changed=true;R.forEach((x,t)=>{arom[x]=true;aromB.add(bondK.get(bk(x,R[(t+1)%R.length])))})}})}
+  const bo=B.map(([,,o],k)=>aromB.has(k)?1.5:o);
+  /* Conjugated bonds (RDKit's notion, simplified): aromatic, or between π-system atoms where the π system is not an isolated double bond. */
+  const pis=A.map((a,i)=>(hyb[i]==='SP2'||hyb[i]==='SP')&&(pi[i]>0||donor[i]||arom[i]));
+  const otherPi=(i,j)=>adj[i].some(({j:k})=>k!==j&&pis[k]);
+  const conj=new Array(n).fill(false);
+  B.forEach(([i,j,o],k)=>{if(aromB.has(k)||(pis[i]&&pis[j]&&(o===1||otherPi(i,j)||otherPi(j,i))))conj[i]=conj[j]=true});
+  const label=A.map((a,i)=>{const h=hyb[i],tv=bs[i];
+    switch(a.e){
+      case'H':return'H_';case'F':return'F_';case'Cl':return'Cl';case'Br':return'Br';case'I':return'I_';
+      case'C':case'N':case'O':return a.e+'_'+(h==='SP'?'1':h==='SP2'?(arom[i]||conj[i]?'R':'2'):'3');
+      case'B':return h==='SP2'?'B_2':'B_3';
+      case'S':if(h==='SP2')return arom[i]||conj[i]?'S_R':'S_2';return tv<=2?'S_3+2':tv<=4?'S_3+4':'S_3+6';
+      case'P':return tv<=3?'P_3+3':'P_3+5';
+      case'Si':return'Si3';case'Ge':return'Ge3';case'As':return'As3+3';case'Se':return'Se3+2';case'Sn':return'Sn3';case'Sb':return'Sb3+3';case'Te':return'Te3+2';
+      case'Li':return'Li';case'Na':return'Na';case'K':return'K_';case'Al':return'Al3';case'Mg':return'Mg3+2';
+    }
+    return null;});
+  return{adj,deg,lp,hyb,arom,bo,label,rings:allRings,trip};
+}
+const uffR0=(bo,p,q)=>{const ri=p[0],rj=q[0],rBO=-UFF_L*(ri+rj)*Math.log(bo),d=Math.sqrt(p[8])-Math.sqrt(q[8]),rEN=ri*rj*d*d/(p[8]*ri+q[8]*rj);return ri+rj+rBO-rEN};
+/* Build the force field. Returns {n, energy(X), grad(X,G), types, approx}. X is a flat array of coordinates. */
+function uffSetup(A,B){
+  const P=perceive(A,B),n=A.length,approx=[];
+  const par=A.map((a,i)=>{const t=P.label[i];if(t&&UFFP[t])return UFFP[t];approx.push(a.e);
+    const s=P.deg[i]+P.lp[i],th=s<=2?180:s===3?120:s===4?109.47:90;return[cov(a.e),th,2*vdw(a.e),0.1,12,2,0,0,5]});
+  const bondT=[],angT=[],torT=[],invT=[],vdwT=[];
+  const boOf=new Map(),bk=(i,j)=>i<j?i*n+j:j*n+i;
+  B.forEach(([i,j],k)=>{const bo=P.bo[k],r0=uffR0(bo,par[i],par[j]);boOf.set(bk(i,j),bo);bondT.push([i,j,r0,2*UFF_G*par[i][5]*par[j][5]/(r0*r0*r0)])});
+  const inRingOf=(x,s)=>P.rings.some(R=>R.length===s&&R.includes(x));
+  for(let j=0;j<n;j++){const nb=P.adj[j].map(x=>x.j);if(nb.length<2)continue;
+    for(let x=0;x<nb.length;x++)for(let y=x+1;y<nb.length;y++){const i=nb[x],k=nb[y];
+      let order=0,th0=rad(par[j][1]);const h=P.hyb[j];
+      if(h==='SP')order=1;else if(h==='SP2'){order=3;
+        /* RDKit's hack for sp2 atoms in 3- and 4-membered rings */
+        for(const[s,one,both]of[[3,150,60],[4,135,90]])if(inRingOf(j,s)){const a=inRingOf(i,s),b=inRingOf(k,s);if(a!==b){order=0;th0=rad(one)}else if(a&&b){order=0;th0=rad(both)}break}}
+      else if(h==='SP3D2')order=4;
+      if(order===0&&Math.abs(Math.sin(th0))<1e-3)order=1;
+      const c0=Math.cos(th0);
+      const r12=uffR0(boOf.get(bk(i,j)),par[i],par[j]),r23=uffR0(boOf.get(bk(j,k)),par[j],par[k]);
+      const r13=Math.sqrt(r12*r12+r23*r23-2*r12*r23*c0),beta=2*UFF_G/(r12*r23);
+      const K=beta*par[i][5]*par[k][5]/Math.pow(r13,5)*r12*r23*(3*r12*r23*(1-c0*c0)-r13*r13*c0);
+      const C2=1/(4*Math.max(1e-8,Math.sin(th0)**2)),C1=-4*C2*c0,C0=C2*(2*c0*c0+1);
+      angT.push([i,j,k,K,order,C0,C1,C2])}}
+  /* Torsions about every bond that is not terminal and not next to a triple bond, between sp2/sp3 atoms. */
+  B.forEach(([j,k],bi)=>{
+    if(P.deg[j]<2||P.deg[k]<2||P.trip[j]||P.trip[k])return;
+    const hj=P.hyb[j],hk=P.hyb[k];if(!['SP2','SP3'].includes(hj)||!['SP2','SP3'].includes(hk))return;
+    const bo=P.bo[bi],list=[];
+    for(const{j:i}of P.adj[j]){if(i===k)continue;for(const{j:l}of P.adj[k]){if(l===j||l===i)continue;
+      const endSP2=P.hyb[i]==='SP2'||P.hyb[l]==='SP2';let V,nn,ct;
+      const ej=A[j].e,ek=A[k].e,eq17=()=>5*Math.sqrt(par[j][7]*par[k][7])*(1+4.18*Math.log(bo));
+      if(hj==='SP3'&&hk==='SP3'){V=Math.sqrt(par[j][6]*par[k][6]);nn=3;ct=-1;
+        if(bo===1&&GROUP16.has(ej)&&GROUP16.has(ek)){V=Math.sqrt((ej==='O'?2:6.8)*(ek==='O'?2:6.8));nn=2;ct=-1}}
+      else if(hj==='SP2'&&hk==='SP2'){V=eq17();nn=2;ct=1}
+      else{V=1;nn=6;ct=1;
+        if(bo===1){if((hj==='SP3'&&GROUP16.has(ej)&&!GROUP16.has(ek))||(hk==='SP3'&&GROUP16.has(ek)&&!GROUP16.has(ej))){V=eq17();nn=2;ct=-1}
+          else if(endSP2){V=2;nn=3;ct=-1}}}
+      list.push([i,j,k,l,V,nn,ct])}}
+    list.forEach(t=>{t[4]/=list.length;torT.push(t)})});
+  /* Inversion (out-of-plane) at sp2 C, N, O and at P, As, Sb, Bi with three neighbours. */
+  for(let j=0;j<n;j++){const e=A[j].e;if(P.deg[j]!==3)continue;
+    const light=e==='C'||e==='N'||e==='O';if(light?P.hyb[j]!=='SP2':!['P','As','Sb','Bi'].includes(e))continue;
+    const nb=P.adj[j].map(x=>x.j);let K,C0,C1,C2;
+    if(light){C0=1;C1=-1;C2=0;K=e==='C'&&nb.some(x=>A[x].e==='O'&&P.hyb[x]==='SP2')?50:6}
+    else{const w0=rad({P:84.4339,As:86.9735,Sb:87.7047,Bi:90}[e]);C2=1;C1=-4*Math.cos(w0);C0=-(C1*Math.cos(w0)+C2*Math.cos(2*w0));K=22/(C0+C1+C2)}
+    K/=3;[[nb[0],nb[1],nb[2]],[nb[0],nb[2],nb[1]],[nb[1],nb[2],nb[0]]].forEach(([a,b,c])=>invT.push([a,j,b,c,K,C0,C1,C2]))}
+  /* van der Waals (Lennard-Jones 12-6) between atoms three or more bonds apart, or in different fragments. */
+  const near=new Set();
+  for(let i=0;i<n;i++){near.add(i*n+i);for(const{j}of P.adj[i]){near.add(bk(i,j));for(const{j:k}of P.adj[j])near.add(bk(i,k))}}
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(!near.has(i*n+j))vdwT.push([i,j,Math.sqrt(par[i][2]*par[j][2]),Math.sqrt(par[i][3]*par[j][3])]);
+  const V3=(X,i)=>[X[3*i],X[3*i+1],X[3*i+2]];
+  const angE=(t,X)=>{const a=sub(V3(X,t[0]),V3(X,t[1])),b=sub(V3(X,t[2]),V3(X,t[1]));let c=dot(a,b)/(len(a)*len(b)||1);c=Math.max(-1,Math.min(1,c));
+    const s2=1-c*c,c2=c*c-s2,[K,o,C0,C1,C2]=[t[3],t[4],t[5],t[6],t[7]];
+    if(!o)return K*(C0+C1*c+C2*c2);
+    const cn=o===1?-c:o===2?c2:o===3?c*(c*c-3*s2):c**4-6*c*c*s2+s2*s2;return K*(1-cn)/(o*o)};
+  const torE=(t,X)=>{const p1=V3(X,t[0]),p2=V3(X,t[1]),p3=V3(X,t[2]),p4=V3(X,t[3]);
+    const t1=cross(sub(p1,p2),sub(p3,p2)),t2=cross(sub(p2,p3),sub(p4,p3)),l1=len(t1),l2=len(t2);
+    let c=l1>1e-10&&l2>1e-10?dot(t1,t2)/(l1*l2):1;c=Math.max(-1,Math.min(1,c));const s2=1-c*c,o=t[5];
+    const cn=o===2?1-2*s2:o===3?c*(c*c-3*s2):1+s2*(-32*s2*s2+48*s2-18);return t[4]/2*(1-t[6]*cn)};
+  const invE=(t,X)=>{const p2=V3(X,t[1]),a=unit(sub(V3(X,t[0]),p2)),b=unit(sub(V3(X,t[2]),p2)),l=unit(sub(V3(X,t[3]),p2));
+    const nrm=unit(cross(a,b));const cy=dot(nrm,l),sy=Math.sqrt(Math.max(0,1-cy*cy));return t[4]*(t[5]+t[6]*sy+t[7]*(2*sy*sy-1))};
+  function energy(X,G){
+    let E=0;
+    for(const[i,j,r0,k]of bondT){const dx=X[3*i]-X[3*j],dy=X[3*i+1]-X[3*j+1],dz=X[3*i+2]-X[3*j+2],r=Math.hypot(dx,dy,dz)||1e-9,d=r-r0;E+=.5*k*d*d;
+      if(G){const f=k*d/r;G[3*i]+=f*dx;G[3*i+1]+=f*dy;G[3*i+2]+=f*dz;G[3*j]-=f*dx;G[3*j+1]-=f*dy;G[3*j+2]-=f*dz}}
+    for(const[i,j,x,D]of vdwT){const dx=X[3*i]-X[3*j],dy=X[3*i+1]-X[3*j+1],dz=X[3*i+2]-X[3*j+2],r2=dx*dx+dy*dy+dz*dz||1e-9;
+      if(r2>100*x*x)continue;const s2=x*x/r2,s6=s2*s2*s2,s12=s6*s6;E+=D*(s12-2*s6);
+      if(G){const f=-12*D*(s12-s6)/r2;G[3*i]+=f*dx;G[3*i+1]+=f*dy;G[3*i+2]+=f*dz;G[3*j]-=f*dx;G[3*j+1]-=f*dy;G[3*j+2]-=f*dz}}
+    /* Angles, torsions and inversions: gradients by central differences over each term's own atoms. */
+    const num=(T,fn,at)=>{for(const t of T){E+=fn(t,X);if(!G)continue;
+      for(const a of at.map(q=>t[q]))for(let c=0;c<3;c++){const id=3*a+c,x0=X[id],h=1e-5;X[id]=x0+h;const ep=fn(t,X);X[id]=x0-h;const em=fn(t,X);X[id]=x0;G[id]+=(ep-em)/(2*h)}}};
+    num(angT,angE,[0,1,2]);num(torT,torE,[0,1,2,3]);num(invT,invE,[0,1,2,3]);
+    return E;
+  }
+  return{n,energy,P,types:P.label,approx,terms:{bonds:bondT.length,angles:angT.length,torsions:torT.length,inversions:invT.length,vdw:vdwT.length}};
+}
+/* L-BFGS minimisation with a backtracking line search; no atom moves more than 0.3 Å per step. */
+function uffMinimize(ff,X,{maxIt=2000,gtol=1e-4,etol=1e-10}={}){
+  const N=X.length,m=8,S=[],Y=[],RH=[];
+  let G=new Float64Array(N),E=ff.energy(X,G),it=0,conv=false;
+  const dotv=(a,b)=>{let s=0;for(let i=0;i<N;i++)s+=a[i]*b[i];return s};
+  const rms=g=>Math.sqrt(dotv(g,g)/Math.max(1,N));
+  for(;it<maxIt;it++){
+    if(rms(G)<gtol){conv=true;break}
+    const q=Float64Array.from(G),al=[];
+    for(let k=S.length-1;k>=0;k--){const a=RH[k]*dotv(S[k],q);al[k]=a;for(let i=0;i<N;i++)q[i]-=a*Y[k][i]}
+    if(S.length){const k=S.length-1,gm=dotv(S[k],Y[k])/dotv(Y[k],Y[k]);for(let i=0;i<N;i++)q[i]*=gm}
+    else{const s=.1/Math.max(1e-9,Math.sqrt(dotv(G,G)));for(let i=0;i<N;i++)q[i]*=s}
+    for(let k=0;k<S.length;k++){const b=RH[k]*dotv(Y[k],q);for(let i=0;i<N;i++)q[i]+=S[k][i]*(al[k]-b)}
+    for(let i=0;i<N;i++)q[i]=-q[i];
+    let gd=dotv(G,q);if(gd>=0){S.length=Y.length=RH.length=0;for(let i=0;i<N;i++)q[i]=-G[i]*.1/Math.max(1e-9,Math.sqrt(dotv(G,G)));gd=dotv(G,q)}
+    let mx=0;for(let i=0;i<N;i+=3)mx=Math.max(mx,Math.hypot(q[i],q[i+1],q[i+2]));
+    let a=mx>.3?.3/mx:1;const Xn=new Float64Array(N),Gn=new Float64Array(N);let En;
+    for(let t=0;;t++){for(let i=0;i<N;i++)Xn[i]=X[i]+a*q[i];Gn.fill(0);En=ff.energy(Xn,Gn);if(En<=E+1e-4*a*gd||t>40)break;a*=.5}
+    if(!(En<=E)){if(!S.length)break;S.length=Y.length=RH.length=0;continue}
+    const s=new Float64Array(N),y=new Float64Array(N);for(let i=0;i<N;i++){s[i]=Xn[i]-X[i];y[i]=Gn[i]-G[i]}
+    const sy=dotv(s,y);if(sy>1e-12){S.push(s);Y.push(y);RH.push(1/sy);if(S.length>m){S.shift();Y.shift();RH.shift()}}
+    const dE=E-En;X.set(Xn);G=Gn.slice();E=En;
+    if(dE<etol*Math.max(1,Math.abs(E))&&rms(G)<gtol*100){conv=true;it++;break}
+  }
+  return{E,it,conv,rms:rms(G)};
+}
+/* ============================== drawing to 3D ============================== */
+/* Ideal directions for a centre with s electron domains, given the unit vectors to the neighbours already placed.
+   The drawing lies in the xy-plane, so z is the default normal. */
+function domainDirs(U,s){
+  const z=[0,0,1],out=[];
+  if(s<=2){if(!U.length)out.push([1,0,0],[-1,0,0]);else out.push(scale(U[0],-1));return out}
+  if(s===3){
+    if(!U.length)return[0,120,240].map(a=>[Math.cos(rad(a)),Math.sin(rad(a)),0]);
+    if(U.length===1){const nrm=perp(z,U[0])?z:anyPerp(U[0]);return[120,-120].map(a=>mv(axisRot(nrm,rad(a)),U[0]))}
+    return[unit(scale(add(U[0],U[1]),-1))];
+  }
+  if(s===4){
+    if(!U.length){const t=1/Math.sqrt(3);return[[t,t,t],[t,-t,-t],[-t,t,-t],[-t,-t,t]]}
+    if(U.length===1){const b=U[0],w=perp([b[1],-b[0],0],b)||anyPerp(b),v=cross(b,w);
+      return[0,120,240].map(f=>unit(add(scale(b,-1/3),scale(add(scale(w,Math.cos(rad(f))),scale(v,Math.sin(rad(f)))),Math.sqrt(8)/3))))}
+    if(U.length===2){const b=unit(scale(add(U[0],U[1]),-1)),c=cross(U[0],U[1]),nrm=len(c)>1e-3?unit(c):z,h=rad(54.75);
+      return[unit(add(scale(b,Math.cos(h)),scale(nrm,Math.sin(h)))),unit(add(scale(b,Math.cos(h)),scale(nrm,-Math.sin(h))))]}
+    const v=scale(add(add(U[0],U[1]),U[2]),-1);return[len(v)>.3?unit(v):z];
+  }
+  /* five or six domains, or anything unusual: the free directions furthest from what is there */
+  const cand=[];for(let i=0;i<60;i++){const y=1-2*(i+.5)/60,r=Math.sqrt(1-y*y),t=i*2.39996;cand.push([r*Math.cos(t),y,r*Math.sin(t)])}
+  const have=U.slice();for(let k=0;k<s-U.length;k++){let best=null,bs=-9;for(const c of cand){const m=have.length?Math.min(...have.map(u=>-dot(u,c))):1;if(m>bs){bs=m;best=c}}have.push(best);out.push(best)}
+  return out;
+}
+/* A drawing {atoms:[{e,x,y,q,rad}], bonds:[[i,j,o]]} → 3D atoms with explicit hydrogens, ready for UFF. */
+function drawingTo3D(atoms,bonds){
+  const R=valenceReport(atoms,bonds,true),n=atoms.length;
+  let seed=12345;const rnd=()=>(seed=(seed*1103515245+12345)%2147483648)/2147483648-.5;
+  /* scale so that the mean bond is 1.45 Å (RDKit draws 1.5) */
+  const L=bonds.length?bonds.reduce((s,[i,j])=>s+Math.hypot(atoms[i].x-atoms[j].x,atoms[i].y-atoms[j].y),0)/bonds.length:1.5,f=1.45/(L||1.5);
+  const A=atoms.map(a=>({e:a.e,q:a.q||0,rad:a.rad||0,p:[a.x*f,a.y*f,.15*rnd()]})),B=bonds.map(b=>b.slice());
+  /* saturated rings start puckered (a chair for six-membered rings): alternate the height around the ring */
+  const adj=atoms.map(()=>[]);bonds.forEach(([i,j,o])=>{adj[i].push([j,o]);adj[j].push([i,o])});
+  const sat=i=>adj[i].every(([,o])=>o===1);
+  ringsOf(n,adj.map(l=>l.map(x=>x[0])),8).filter(r=>r.length>=5&&r.every(sat)).forEach(r=>r.forEach((x,k)=>{A[x].p[2]+=(k%2?.25:-.25)*(r.length%2?.6:1)}));
+  const P=perceive(A.map(a=>({e:a.e,q:a.q,rad:a.rad})),B);
+  atoms.forEach((a,i)=>{const h=R[i].h||0;if(!h)return;
+    const U=adj[i].map(([j])=>unit(sub(A[j].p,A[i].p))),lp=Math.max(0,Math.floor(((GRP[a.e]||0)-(a.q||0)-(R[i].bs+h)-(a.rad||0))/2));
+    const dirs=domainDirs(U,adj[i].length+h+lp),r=uffR0(1,UFFP[P.label[i]]||[cov(a.e),0,0,0,0,0,0,0,5],UFFP.H_);
+    for(let k=0;k<h;k++){const d=dirs[k]||domainDirs([...U,...dirs.slice(0,k)],6)[0];A.push({e:'H',q:0,rad:0,p:add(A[i].p,scale(unit(add(d,[0,0,.05*rnd()])),r))});B.push([i,A.length-1,1])}
+  });
+  return{atoms:A,bonds:B};
+}
+/* Distance-geometry embedding (Crippen and Havel): bounds from the bonding, triangle smoothing, random distances,
+   metric-matrix coordinates, then a fit to the bounds. Used for bridged or caged rings that a flat drawing cannot unfold.
+   ez: [[i,j,k,l,cis]] keeps the drawn geometry of double bonds. Sets atoms[].p. */
+function dgEmbed(atoms,bonds,seed,ez=[]){
+  const n=atoms.length,P=perceive(atoms,bonds),par=atoms.map((a,i)=>UFFP[P.label[i]]||[cov(a.e),109.47,2*vdw(a.e),.1,12,2,0,0,5]);
+  const Lo=new Float64Array(n*n),Up=new Float64Array(n*n),fix=new Uint8Array(n*n),id=(i,j)=>i*n+j;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)if(i!==j){Lo[id(i,j)]=.72*(vdw(atoms[i].e)+vdw(atoms[j].e))*(atoms[i].e==='H'||atoms[j].e==='H'?.9:1);Up[id(i,j)]=100}
+  const set=(i,j,l,u,f)=>{for(const[a,b]of[[i,j],[j,i]]){if(fix[id(a,b)]>f)continue;Lo[id(a,b)]=l;Up[id(a,b)]=u;fix[id(a,b)]=f}};
+  const r0=new Map(),bk=(i,j)=>i<j?i*n+j:j*n+i;
+  bonds.forEach(([i,j],k)=>{const r=uffR0(P.bo[k],par[i],par[j]);r0.set(bk(i,j),r);set(i,j,r-.01,r+.01,3)});
+  const inR=(x,s)=>P.rings.some(R=>R.length===s&&R.includes(x)),theta=(i,j,k)=>{const h=P.hyb[j];
+    for(const s of[3,4,5])if(P.rings.some(R=>R.length===s&&R.includes(i)&&R.includes(j)&&R.includes(k)))return s===3?60:s===4?90:108;
+    return h==='SP'?180:h==='SP2'?120:h==='SP3'&&inR(j,3)?116:par[j][1]>=180?109.47:Math.max(90,par[j][1])};
+  for(let j=0;j<n;j++){const nb=P.adj[j].map(x=>x.j);for(let x=0;x<nb.length;x++)for(let y=x+1;y<nb.length;y++){const i=nb[x],k=nb[y],a=r0.get(bk(i,j)),b=r0.get(bk(j,k)),c=Math.cos(rad(theta(i,j,k))),d=Math.sqrt(a*a+b*b-2*a*b*c);set(i,k,d-.05,d+.05,2)}}
+  const ezMap=new Map(ez.map(([i,j,k,l,cis])=>[bk(i,l),cis]));
+  bonds.forEach(([j,k])=>{for(const{j:i}of P.adj[j]){if(i===k)continue;for(const{j:l}of P.adj[k]){if(l===j||l===i)continue;
+    const a=r0.get(bk(i,j)),b=r0.get(bk(j,k)),c=r0.get(bk(k,l)),t1=rad(theta(i,j,k)),t2=rad(theta(j,k,l));
+    const xi=a*Math.cos(Math.PI-t1),yi=a*Math.sin(Math.PI-t1),xl=b+c*Math.cos(t2),yl=c*Math.sin(t2);
+    const dc=Math.hypot(xl-xi,yl-yi),dt=Math.hypot(xl-xi,-yl-yi),cis=ezMap.get(bk(i,l));
+    if(cis!=null)set(i,l,(cis?dc:dt)-.08,(cis?dc:dt)+.08,1);else set(i,l,Math.min(dc,dt)-.05,Math.max(dc,dt)+.05,1)}}});
+  for(let k=0;k<n;k++)for(let i=0;i<n;i++){if(i===k)continue;const uik=Up[id(i,k)],lik=Lo[id(i,k)];for(let j=i+1;j<n;j++){if(j===k)continue;
+    const u=uik+Up[id(k,j)];if(Up[id(i,j)]>u){Up[id(i,j)]=Up[id(j,i)]=u}
+    const l=Math.max(lik-Up[id(k,j)],Lo[id(j,k)]-uik);if(Lo[id(i,j)]<l){Lo[id(i,j)]=Lo[id(j,i)]=l}}}
+  for(let i=0;i<n*n;i++)if(Lo[i]>Up[i])Lo[i]=Up[i];
+  let sd=seed*7919+17;const rnd=()=>(sd=(sd*1103515245+12345)%2147483648)/2147483648;
+  const Dm=new Float64Array(n*n);for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const d=Lo[id(i,j)]+rnd()*(Up[id(i,j)]-Lo[id(i,j)]);Dm[id(i,j)]=Dm[id(j,i)]=d*d}
+  const r2=new Float64Array(n);let tot=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)tot+=Dm[id(i,j)];
+  for(let i=0;i<n;i++){let s=0;for(let j=0;j<n;j++)s+=Dm[id(i,j)];r2[i]=s/n-tot/(n*n)}
+  const Gm=new Float64Array(n*n);for(let i=0;i<n;i++)for(let j=0;j<n;j++)Gm[id(i,j)]=(r2[i]+r2[j]-Dm[id(i,j)])/2;
+  const X=new Float64Array(3*n);
+  for(let e=0;e<3;e++){let v=new Float64Array(n).map(()=>rnd()-.5),lam=0;
+    for(let it=0;it<200;it++){const w=new Float64Array(n);for(let i=0;i<n;i++){let s=0;for(let j=0;j<n;j++)s+=Gm[id(i,j)]*v[j];w[i]=s}
+      const nm=Math.hypot(...w)||1;lam=w.reduce((s,x,i)=>s+x*v[i],0);v=w.map(x=>x/nm)}
+    const sc=Math.sqrt(Math.max(lam,1e-3));for(let i=0;i<n;i++)X[3*i+e]=v[i]*sc;
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)Gm[id(i,j)]-=lam*v[i]*v[j]}
+  /* fit the coordinates to the bounds */
+  const fit={energy(Y,G){let E=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    const dx=Y[3*i]-Y[3*j],dy=Y[3*i+1]-Y[3*j+1],dz=Y[3*i+2]-Y[3*j+2],d2=dx*dx+dy*dy+dz*dz,u=Up[id(i,j)],l=Lo[id(i,j)];let g=0;
+    if(d2>u*u){const f=d2/(u*u)-1;E+=f*f;g=2*f/(u*u)}
+    else if(d2<l*l){const s=l*l+d2,f=2*l*l/s-1;E+=f*f;g=2*f*(-2*l*l/(s*s))}
+    if(G&&g){g*=2;G[3*i]+=g*dx;G[3*i+1]+=g*dy;G[3*i+2]+=g*dz;G[3*j]-=g*dx;G[3*j+1]-=g*dy;G[3*j+2]-=g*dz}}return E}};
+  uffMinimize(fit,X,{maxIt:1500,gtol:1e-5});
+  atoms.forEach((a,i)=>a.p=[X[3*i],X[3*i+1],X[3*i+2]]);
+}
+/* cis/trans of each drawn double bond (heavy neighbours, not in a ring of fewer than 8 atoms), as [i,j,k,l,cis] */
+function drawnEZ(atoms,bonds){
+  const n=atoms.length,adj=atoms.map(()=>[]);bonds.forEach(([i,j])=>{adj[i].push(j);adj[j].push(i)});
+  const small=ringsOf(n,adj,7),out=[];
+  bonds.forEach(([j,k,o])=>{if(o!==2||small.some(R=>R.includes(j)&&R.includes(k)))return;
+    const i=adj[j].find(x=>x!==k),l=adj[k].find(x=>x!==j);if(i==null||l==null)return;
+    const A=atoms,side=x=>Math.sign((A[k].x-A[j].x)*(A[x].y-A[j].y)-(A[k].y-A[j].y)*(A[x].x-A[j].x));
+    const si=side(i),sl=side(l);if(si&&sl)out.push([i,j,k,l,si===sl])});
+  return out;
+}
+const ezKept=(atoms,ez)=>ez.every(([i,j,k,l,cis])=>Math.abs(dihedral(atoms[i].p,atoms[j].p,atoms[k].p,atoms[l].p))<90===cis);
+/* Build 3D from a drawing: start from the drawing; for bridged rings or a strained result, also try distance-geometry
+   embeddings, and keep the lowest UFF energy that keeps the drawn double-bond geometry. */
+function build3D(atoms,bonds){
+  const M=drawingTo3D(atoms,bonds),res=uffOptimise(M.atoms,M.bonds),ez=drawnEZ(atoms,bonds);
+  let best={M,res,how:'drawing'};
+  const adj=atoms.map(()=>[]);bonds.forEach(([i,j])=>{adj[i].push(j);adj[j].push(i)});
+  const R=ringsOf(atoms.length,adj,12),bridged=R.some((a,x)=>R.some((b,y)=>y>x&&a.filter(v=>b.includes(v)).length>=3));
+  const strained=res.E/M.atoms.length>3||M.bonds.some(([i,j])=>dist(M.atoms[i].p,M.atoms[j].p)>2.2)||!ezKept(M.atoms,ez);
+  if((bridged||strained)&&M.atoms.length<=400)for(const seed of[1,2,3,4]){
+    const T={atoms:M.atoms.map(a=>({...a,p:a.p.slice()})),bonds:M.bonds};
+    try{dgEmbed(T.atoms,T.bonds,seed,ez)}catch{continue}
+    const r=uffOptimise(T.atoms,T.bonds);
+    if(ezKept(T.atoms,ez)&&(r.E<best.res.E-1e-3||!ezKept(best.M.atoms,ez)))best={M:T,res:r,how:'distance geometry'};
+  }
+  return best;
+}
+/* Optimise a structure with UFF in place. Returns the result, with the force field for the record. */
+function uffOptimise(atoms,bonds,opts){
+  const ff=uffSetup(atoms.map(a=>({e:a.e,q:a.q||0,rad:a.rad||0})),bonds),X=Float64Array.from(atoms.flatMap(a=>a.p));
+  const r=uffMinimize(ff,X,opts);atoms.forEach((a,i)=>a.p=[X[3*i],X[3*i+1],X[3*i+2]]);return Object.assign(r,{ff});
+}
+
+/* MOL (V2000) blocks for RDKit.js. atoms: [{e,x,y,z,q,rad}], bonds: [[i,j,o]]. */
+function molblock(atoms,bonds,title=''){
+  const p3=v=>String(v).padStart(3),f=v=>(+v||0).toFixed(4).padStart(10);
+  const L=[title.slice(0,80),'  DimerFrg          2D','',p3(atoms.length)+p3(bonds.length)+'  0  0  0  0  0  0  0  0999 V2000'];
+  atoms.forEach(a=>L.push(f(a.x)+f(a.y)+f(a.z||0)+' '+a.e.padEnd(3)+' 0  0  0  0  0  0  0  0  0  0  0  0'));
+  bonds.forEach(([i,j,o])=>L.push(p3(i+1)+p3(j+1)+p3(o)+'  0'));
+  const prop=(tag,list)=>{for(let k=0;k<list.length;k+=8){const c=list.slice(k,k+8);L.push(`M  ${tag}${p3(c.length)}`+c.map(([i,v])=>' '+p3(i+1)+' '+p3(v)).join(''))}};
+  prop('CHG',atoms.map((a,i)=>[i,a.q||0]).filter(x=>x[1]));
+  prop('RAD',atoms.map((a,i)=>[i,a.rad?a.rad+1:0]).filter(x=>x[1]));
+  L.push('M  END');return L.join('\n')+'\n';
+}
+function parseMolblock(t){
+  const L=t.split(/\r?\n/),c=L[3]||'',na=+c.slice(0,3),nb=+c.slice(3,6);
+  if(!(na>=0)||/V3000/.test(c))throw new Error('Only V2000 MOL blocks are read.');
+  const OLD={1:3,2:2,3:1,5:-1,6:-2,7:-3},atoms=[],bonds=[];
+  for(let k=0;k<na;k++){const l=L[4+k];atoms.push({e:elementOf(l.slice(31,34).trim())||'C',x:+l.slice(0,10),y:+l.slice(10,20),z:+l.slice(20,30),q:OLD[+l.slice(36,39)]||0,rad:0})}
+  for(let k=0;k<nb;k++){const l=L[4+na+k];bonds.push([+l.slice(0,3)-1,+l.slice(3,6)-1,Math.min(3,Math.max(1,+l.slice(6,9)||1))])}
+  let chg=false;
+  for(const l of L.slice(4+na+nb)){const m=l.match(/^M {2}(CHG|RAD)\s*(\d+)(.*)$/);if(!m)continue;
+    if(m[1]==='CHG'&&!chg){chg=true;atoms.forEach(a=>a.q=0)}
+    const v=m[3].trim().split(/\s+/).map(Number);for(let k=0;k+1<v.length;k+=2){const a=atoms[v[k]-1];if(!a)continue;if(m[1]==='CHG')a.q=v[k+1];else a.rad=v[k+1]===2?1:v[k+1]===1||v[k+1]===3?2:0}}
+  return{atoms,bonds};
+}
+/* Structure with explicit H → drawing graph: hydrogens on heavy atoms become implicit when the valence rules give the same count;
+   a shortfall becomes unpaired electrons (up to two); otherwise the hydrogens stay explicit. */
+function foldHydrogens(atoms,bonds,inferRadicals=true){
+  const n=atoms.length,adj=atoms.map(()=>[]);bonds.forEach(([i,j,o],k)=>{adj[i].push({j,o,k});adj[j].push({j:i,o,k})});
+  const isH=i=>atoms[i].e==='H'&&!atoms[i].q&&adj[i].length===1&&adj[i][0].o===1&&atoms[adj[i][0].j].e!=='H';
+  const drop=new Set(),A=atoms.map(a=>({...a,rad:a.rad||0}));
+  for(let i=0;i<n;i++){if(isH(i))continue;
+    const hs=adj[i].filter(({j})=>isH(j)).map(({j})=>j);if(!hs.length&&!NONMETAL.has(A[i].e))continue;
+    const heavyBs=adj[i].filter(({j})=>!hs.includes(j)).reduce((s,{o})=>s+o,0);
+    const L=valences(A[i].e,A[i].q||0);if(!L||!NONMETAL.has(A[i].e))continue;
+    const r=A[i].rad,V=L.find(x=>x-r>=heavyBs),want=V==null?null:V-r-heavyBs;
+    if(want===hs.length||!inferRadicals){hs.forEach(h=>drop.add(h));continue}
+    if(want!=null&&want>hs.length&&want-hs.length+r<=2){A[i].rad=r+want-hs.length;hs.forEach(h=>drop.add(h))}
+  }
+  const keep=[...Array(n).keys()].filter(i=>!drop.has(i)),map=new Map(keep.map((i,k)=>[i,k]));
+  return{atoms:keep.map(i=>A[i]),bonds:bonds.filter(([i,j])=>map.has(i)&&map.has(j)).map(([i,j,o])=>[map.get(i),map.get(j),o]),index:keep};
+}
+/* ============================== RDKit.js bridge ============================== */
+/* RDKit runs in vendor/rdkit/rdkit-frame.html (see the README there); requests and answers go by postMessage. */
+const RDK={st:'off',ver:'',err:'',frame:null,seq:0,wait:new Map(),ready:[],timer:0};
+function rdkLoad(){
+  if(RDK.st!=='off')return;RDK.st='loading';rdkStatus();
+  const f=document.createElement('iframe');f.src='vendor/rdkit/rdkit-frame.html';f.title='RDKit.js';f.hidden=true;f.tabIndex=-1;f.setAttribute('aria-hidden','true');
+  RDK.frame=f;document.body.appendChild(f);
+  RDK.timer=setTimeout(()=>{if(RDK.st==='loading')rdkDone(false,'it did not start within 30 s')},30000);
+}
+function rdkDone(ok,info){clearTimeout(RDK.timer);RDK.st=ok?'ready':'failed';if(ok)RDK.ver=info;else RDK.err=info;RDK.ready.splice(0).forEach(f=>f());rdkStatus();if(ok)skCheckSoon()}
+addEventListener('message',e=>{
+  if(!RDK.frame||e.source!==RDK.frame.contentWindow||!e.data||e.data.rdkit!==1)return;
+  const d=e.data;
+  if('ready' in d){rdkDone(!!d.ready,d.ready?d.version:d.error);return}
+  const w=RDK.wait.get(d.id);if(w){RDK.wait.delete(d.id);w(d)}
+});
+const rdkWhenReady=()=>new Promise(r=>{if(RDK.st==='ready'||RDK.st==='failed')r();else{RDK.ready.push(r);rdkLoad()}});
+async function rdk(op,args){
+  await rdkWhenReady();
+  if(RDK.st!=='ready')return{ok:false,error:'RDKit.js is not available'+(RDK.err?` (${RDK.err})`:'')};
+  return new Promise(res=>{const id=++RDK.seq;RDK.wait.set(id,res);RDK.frame.contentWindow.postMessage({rdkit:1,id,op,args},'*')});
+}
+function rdkStatus(){
+  $('rdkStat').textContent={off:'',loading:'Loading RDKit.js…',ready:`RDKit.js ${RDK.ver} is ready: SMILES, InChI and Tidy up use it.`,
+    failed:`RDKit.js could not load (${RDK.err}). SMILES, InChI and Tidy up are off; the valence rules still apply.`}[RDK.st];
+}
+
+/* ============================== 2D sketcher ============================== */
+/* The drawing: atoms {id,e,x,y,q,rad} in Å-like units (bonds 1.5 long, y up) and bonds {a,b,o} between atom ids.
+   Hydrogens are implicit. Every edit is checked: one that gives an atom more bonds than its valence allows is refused. */
+const SKL=1.5;
+const SK={G:{atoms:[],bonds:[]},nid:0,undo:[],redo:[],tool:'el:C',view:{sc:32,cx:0,cy:0,fit:true},hover:null,ptr:null,an:null,rd:null,ver:0,name:'',flash:null};
+D.mode='2d';
+const skOn=()=>tab==='design'&&D.mode==='2d';
+const skAt=(G,id)=>G.atoms.find(a=>a.id===id);
+const skBond=(G,a,b)=>G.bonds.find(x=>(x.a===a&&x.b===b)||(x.a===b&&x.b===a));
+const skNb=(G,id)=>G.bonds.filter(b=>b.a===id||b.b===id).map(b=>b.a===id?b.b:b.a);
+function skArrays(G){const m=new Map(G.atoms.map((a,i)=>[a.id,i]));return{atoms:G.atoms,bonds:G.bonds.map(b=>[m.get(b.a),m.get(b.b),b.o]),m}}
+const skMsg=(t,err)=>{$('skMsg').className='msg'+(err?' err':'');$('skMsg').textContent=t};
+const skBMsg=(t,err)=>{$('skBuildMsg').className='msg'+(err?' err':'');$('skBuildMsg').textContent=t};
+const skLab=(G,i)=>G.atoms[i].e+(i+1);
+
+/* Valence and plausibility of the drawing, with the hydrogens, formula and molar mass that follow. */
+function skAnalyze(G=SK.G){
+  const{atoms,bonds,m}=skArrays(G),n=atoms.length,R=valenceReport(atoms,bonds,true);
+  const adj=atoms.map(()=>[]);bonds.forEach(([i,j])=>{adj[i].push(j);adj[j].push(i)});
+  const rings=ringsOf(n,adj,8),fr=fragments(n,adj),idx=[...Array(n).keys()];
+  const els=[];atoms.forEach((a,i)=>{els.push(a.e);for(let k=0;k<R[i].h;k++)els.push('H')});
+  const q=atoms.reduce((s,a)=>s+(a.q||0),0),un=atoms.reduce((s,a)=>s+(a.rad||0),0);
+  let mw=0,mwOk=!!n;els.forEach(e=>{const w=massOf(e);if(w==null)mwOk=false;else mw+=w});
+  const lab=i=>skLab(G,i),list=ix=>{const L=ix.map(lab);return L.length>6?L.slice(0,6).join(', ')+` and ${L.length-6} more`:L.join(', ')};
+  const issues=[],st=atoms.map(()=>null),flag=(ix,l)=>ix.forEach(i=>{if(st[i]!=='err')st[i]=l});
+  const imp=idx.filter(i=>R[i].impossible);imp.forEach(i=>issues.push({lvl:'err',text:blockedText(atoms[i],R[i],lab(i))}));flag(imp,'err');
+  const ex=idx.filter(i=>R[i].expanded);
+  if(ex.length){issues.push({lvl:'warn',text:`Expanded valence (hypervalent): ${ex.map(i=>`${lab(i)} with ${R[i].V}`).join(', ')}.`+(ex.some(i=>R[i].h)?' Hydrogens were added to reach it; check that this is what you mean.':'')});flag(ex,'warn')}
+  const cc=idx.filter(i=>atoms[i].e==='C'&&atoms[i].q);
+  if(cc.length){issues.push({lvl:'warn',text:cc.map(i=>`${lab(i)} is a ${atoms[i].q>0?'carbocation':'carbanion'}`).join('; ')+'.'});flag(cc,'warn')}
+  const big=idx.filter(i=>Math.abs(atoms[i].q||0)>=2);if(big.length){issues.push({lvl:'warn',text:`Charge of 2 or more on ${list(big)}.`});flag(big,'warn')}
+  const like=bonds.filter(([i,j])=>(atoms[i].q||0)*(atoms[j].q||0)>0);
+  if(like.length){issues.push({lvl:'warn',text:`Like charges on bonded atoms: ${like.map(([i,j])=>lab(i)+'–'+lab(j)).join(', ')}.`});flag(like.flatMap(([i,j])=>[i,j]),'warn')}
+  const rd=idx.filter(i=>atoms[i].rad);
+  if(rd.length){issues.push({lvl:'warn',text:rd.map(i=>`${lab(i)} has ${atoms[i].rad===2?'two unpaired electrons':'an unpaired electron'}`).join('; ')+`. Spin multiplicity ${un+1}.`});flag(rd,'warn')}
+  const nr=idx.filter(i=>R[i].norules);
+  if(nr.length){issues.push({lvl:'warn',text:`No valence rules for ${[...new Set(nr.map(i=>atoms[i].e))].join(', ')}: no hydrogens are added there, and UFF uses approximate parameters.`});flag(nr,'warn')}
+  const sp=new Set();rings.forEach(r=>{if(r.length<8)r.forEach(x=>{const ob=bonds.filter(([i,j])=>i===x||j===x);if(ob.some(b=>b[2]===3)||ob.filter(b=>b[2]===2).length>=2)sp.add(x)})});
+  if(sp.size){issues.push({lvl:'warn',text:`Linear (sp) atom in a ring of fewer than 8 atoms: ${list([...sp])}. Such rings are strongly strained.`});flag([...sp],'warn')}
+  if(fr.count>1)issues.push({lvl:'warn',text:`${fr.count} separate fragments. Build 3D keeps them together as one molecule A.`});
+  if(q)issues.push({lvl:'info',text:`Net charge ${q>0?'+':''}${q}.`});
+  if(n&&!issues.some(x=>x.lvl==='err'||x.lvl==='warn'))issues.unshift({lvl:'ok',text:'Every atom satisfies its valence.'});
+  return{atoms,bonds,m,R,rings,frags:fr.count,els,q,mult:un+1,mw:mwOk?mw:null,issues,st,nH:els.length-n,adj};
+}
+const skFormula=an=>an.atoms.length?formula(an.els)+chgText(an.q):'—';
+
+/* Apply an edit to a copy of the drawing; keep it only if it adds no impossible atom. */
+function skBad(G){const{atoms,bonds}=skArrays(G),R=valenceReport(atoms,bonds,true),out=new Map();atoms.forEach((a,i)=>{if(R[i].impossible)out.set(a.id,blockedText(a,R[i],skLab(G,i)))});return out}
+function skTry(fn){const G=JSON.parse(JSON.stringify(SK.G)),r=fn(G);if(r===false)return{ok:false};const bad=skBad(G),old=skBad(SK.G),fresh=[...bad.keys()].filter(id=>!old.has(id));return fresh.length?{ok:false,G,why:bad.get(fresh[0]),ids:fresh}:{ok:true,G,r}}
+function skCommit(G,msg){SK.undo.push(JSON.stringify(SK.G));if(SK.undo.length>100)SK.undo.shift();SK.redo=[];SK.G=G;skChanged();skMsg(typeof msg==='string'?msg:'')}
+function skBlocked(t){skMsg('Blocked. '+t.why,true);SK.flash={ids:t.ids,t:performance.now()};draw();setTimeout(draw,1300)}
+function skEdit(fn){const t=skTry(fn);if(t.ok){skCommit(t.G,t.r);return true}if(t.why)skBlocked(t);return false}
+function skChanged(){SK.ver++;SK.an=skAnalyze();SK.rd=null;skBMsg('');skCheckSoon();render()}
+let skTimer=0;
+function skCheckSoon(){
+  clearTimeout(skTimer);if(!SK.G.atoms.length||RDK.st!=='ready'){SK.rd=null;if(tab==='design')skPanel();return}
+  const v=SK.ver;skTimer=setTimeout(async()=>{const{atoms,bonds}=skArrays(SK.G),r=await rdk('check',{molblock:molblock(atoms,bonds)});if(v===SK.ver){SK.rd=r;if(tab==='design')skPanel()}},150);
+}
+const skUndo=()=>{if(!SK.undo.length)return;SK.redo.push(JSON.stringify(SK.G));SK.G=JSON.parse(SK.undo.pop());skChanged();skMsg('Undone.')};
+const skRedo=()=>{if(!SK.redo.length)return;SK.undo.push(JSON.stringify(SK.G));SK.G=JSON.parse(SK.redo.pop());skChanged();skMsg('Redone.')};
+
+function skNewAtom(G,e,x,y){const a={id:++SK.nid,e,x,y,q:0,rad:0};G.atoms.push(a);return a}
+function skSetBond(G,a,b,o){const ex=skBond(G,a,b);if(ex){ex.o=o;return ex}const bd={a,b,o};G.bonds.push(bd);return bd}
+function skDelAtom(G,id){G.atoms=G.atoms.filter(a=>a.id!==id);G.bonds=G.bonds.filter(b=>b.a!==id&&b.b!==id)}
+/* Angle (radians) for a new bond from atom id: zigzag from a chain end, the widest gap otherwise, straight on for sp atoms. */
+function skFreeAngle(G,id,newOrder=1){
+  const a=skAt(G,id),nb=skNb(G,id).map(j=>skAt(G,j));
+  if(!nb.length)return rad(30);
+  const ang=nb.map(b=>Math.atan2(b.y-a.y,b.x-a.x));
+  if(nb.length===1){
+    const ords=G.bonds.filter(b=>b.a===id||b.b===id).map(b=>b.o),lin=ords.includes(3)||newOrder===3||(ords.includes(2)&&newOrder===2);
+    const cands=lin?[ang[0]+Math.PI]:[ang[0]+rad(120),ang[0]-rad(120)];
+    const room=t=>{const x=a.x+SKL*Math.cos(t),y=a.y+SKL*Math.sin(t);return Math.min(...G.atoms.filter(o=>o.id!==id).map(o=>Math.hypot(o.x-x,o.y-y)))};
+    return cands.reduce((b,t)=>room(t)>room(b)+1e-6?t:b,cands[0]);
+  }
+  const s=ang.map(t=>(t+2*Math.PI)%(2*Math.PI)).sort((x,y)=>x-y);let best=0,at=0;
+  s.forEach((t,k)=>{const nx=k+1<s.length?s[k+1]:s[0]+2*Math.PI,g=nx-t;if(g>best){best=g;at=t+g/2}});
+  return at;
+}
+/* Change an atom's element. If the new element can keep the bonds only as an ion (N⁺ with four bonds, O⁺ with three, B⁻ with four), it gets that charge. */
+function skSetElement(G,id,e){
+  const a=skAt(G,id);a.e=e;a.q=0;a.rad=0;
+  const bs=G.bonds.filter(b=>b.a===id||b.b===id).reduce((s,b)=>s+b.o,0);
+  if(bs>maxValence(e,0)){const c=[1,-1].find(c=>maxValence(e,c)>=bs);if(c){a.q=c;return`Changed to ${e}${chgText(c)}: ${bs} bonds need that charge.`}}
+  return`Changed to ${e}.`;
+}
+function skExtend(G,id,e,o){const a=skAt(G,id),t=skFreeAngle(G,id,o),b=skNewAtom(G,e,a.x+SKL*Math.cos(t),a.y+SKL*Math.sin(t));skSetBond(G,id,b.id,o);return b}
+/* A ring of n atoms: free at a point, sharing a bond (fused) or growing from an atom. Atoms that land on existing ones are merged. */
+function skRing(G,n,arom,hit,wx,wy){
+  const R=SKL/(2*Math.sin(Math.PI/n)),ap=SKL/(2*Math.tan(Math.PI/n)),st=2*Math.PI/n;let cx,cy,a0,dir=1;
+  if(hit&&hit.bond){
+    const A=skAt(G,hit.bond.a),B=skAt(G,hit.bond.b),mx=(A.x+B.x)/2,my=(A.y+B.y)/2;let nx=-(B.y-A.y),ny=B.x-A.x;const l=Math.hypot(nx,ny)||1;nx/=l;ny/=l;
+    let s=0;G.atoms.forEach(o=>{if(o!==A&&o!==B)s+=Math.sign((o.x-mx)*nx+(o.y-my)*ny)});if(s>0){nx=-nx;ny=-ny}
+    cx=mx+nx*ap;cy=my+ny*ap;a0=Math.atan2(A.y-cy,A.x-cx);const aB=Math.atan2(B.y-cy,B.x-cx),d=((aB-a0)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI;dir=d>0?1:-1;
+  }else if(hit&&hit.atom!=null){
+    const A=skAt(G,hit.atom),t=skFreeAngle(G,A.id);cx=A.x+R*Math.cos(t);cy=A.y+R*Math.sin(t);a0=t+Math.PI;
+  }else{cx=wx;cy=wy;a0=-Math.PI/2+Math.PI/n}
+  const ids=[];
+  for(let k=0;k<n;k++){const x=cx+R*Math.cos(a0+dir*k*st),y=cy+R*Math.sin(a0+dir*k*st),ex=G.atoms.find(o=>Math.hypot(o.x-x,o.y-y)<.35*SKL);ids.push(ex?ex.id:skNewAtom(G,'C',x,y).id)}
+  for(let k=0;k<n;k++){const a=ids[k],b=ids[(k+1)%n];if(!skBond(G,a,b))G.bonds.push({a,b,o:1})}
+  if(arom){
+    const pi=id=>G.bonds.some(b=>(b.a===id||b.b===id)&&b.o>1);let best=null;
+    for(const off of[0,1]){let c=0;for(let k=off;k<n;k+=2){const a=ids[k],b=ids[(k+1)%n];if(skBond(G,a,b).o>1||(!pi(a)&&!pi(b)))c++}if(!best||c>best.c)best={off,c}}
+    for(let k=best.off;k<n;k+=2){const a=ids[k],b=ids[(k+1)%n],bd=skBond(G,a,b);if(bd.o===1&&!pi(a)&&!pi(b))bd.o=2}
+  }
+  return`${arom?'Benzene ring':n+'-membered ring'} ${hit&&hit.bond?'fused onto the bond':hit&&hit.atom!=null?'attached to the atom':'added'}.`;
+}
+const SK_ELEMS=['C','N','O','S','P','F','Cl','Br','I','H','B','Si'];
+const SK_TOOLS=[['b1','—','Single bond'],['b2','=','Double bond'],['b3','≡','Triple bond'],0,['r3','3','Three-membered ring'],['r4','4','Four-membered ring'],['r5','5','Five-membered ring'],['r6','6','Six-membered ring'],['ar','⌬','Benzene ring'],0,
+  ['qp','+','Positive charge: click an atom'],['qm','−','Negative charge: click an atom'],['rad','•','Unpaired electrons: click an atom to cycle 0, 1, 2'],0,['er','⌫','Eraser: click an atom or a bond']];
+/* Click with the current tool on an atom, a bond or empty canvas (world coordinates wx, wy). */
+function skClick(hit,wx,wy){
+  const t=SK.tool;
+  if(t==='er'){if(!hit){skMsg('The eraser removes the atom or bond you click.');return}
+    skEdit(G=>{if(hit.atom!=null){const a=skAt(G,hit.atom);skDelAtom(G,hit.atom);return`Erased ${a.e}.`}G.bonds=G.bonds.filter(b=>b!==skBond(G,hit.bond.a,hit.bond.b));return'Erased the bond.'});return}
+  if(t==='qp'||t==='qm'||t==='rad'){if(hit?.atom==null){skMsg('Click an atom to change its charge or unpaired electrons.');return}
+    skEdit(G=>{const a=skAt(G,hit.atom);if(t==='rad'){a.rad=((a.rad||0)+1)%3;return`${a.e}: ${['no','one','two'][a.rad]} unpaired electron${a.rad===1?'':'s'}.`}
+      const nq=(a.q||0)+(t==='qp'?1:-1);if(Math.abs(nq)>3){skMsg('Charges run from −3 to +3.',true);return false}a.q=nq;return`${a.e} charge ${nq>0?'+':''}${nq}.`});return}
+  if(t[0]==='r'||t==='ar'){skEdit(G=>skRing(G,t==='ar'?6:+t[1],t==='ar',hit,wx,wy));return}
+  const o=t[0]==='b'?+t[1]:1,e=t.startsWith('el:')?t.slice(3):'C';
+  if(!hit){skEdit(G=>{const a=skNewAtom(G,e,wx,wy);if(t[0]==='b'){const b=skNewAtom(G,'C',wx+SKL*Math.cos(rad(30)),wy+SKL*Math.sin(rad(30)));skSetBond(G,a.id,b.id,o)}return''});return}
+  if(hit.atom!=null){
+    const cur=skAt(SK.G,hit.atom);
+    if(t.startsWith('el:')&&cur.e!==e){skEdit(G=>skSetElement(G,hit.atom,e));return}
+    skEdit(G=>{skExtend(G,hit.atom,e,o);return''});return}
+  /* a bond: the bond tools set their order (again: cycle), the atom tools cycle 1 → 2 → 3 → 1 */
+  const b=skBond(SK.G,hit.bond.a,hit.bond.b),seq=t[0]==='b'&&b.o!==o?[o]:[b.o%3+1,(b.o+1)%3+1];
+  let last=null;for(const no of seq){const r=skTry(G=>{skBond(G,b.a,b.b).o=no;return`${['','Single','Double','Triple'][no]} bond.`});if(r.ok){skCommit(r.G,r.r);return}last=last||r}
+  if(last&&last.why)skBlocked(last);
+}
+/* Drag from an atom: a bond to another atom, or to a new atom at a 30° step. */
+function skDragEnd(fromId,end){
+  const o=SK.tool[0]==='b'?+SK.tool[1]:1,e=SK.tool.startsWith('el:')?SK.tool.slice(3):'C';
+  skEdit(G=>{if(end.id!=null){if(end.id===fromId)return false;skSetBond(G,fromId,end.id,o);return''}const b=skNewAtom(G,e,end.x,end.y);skSetBond(G,fromId,b.id,o);return''});
+}
+
+/* ---------- drawing ---------- */
+const mixHex=(a,b,t)=>{const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),B=p(b);return'#'+A.map((x,i)=>Math.round(x+(B[i]-x)*t).toString(16).padStart(2,'0')).join('')};
+const skInk=e=>e==='C'||e==='H'?VT.ink:VT.edgeOn?mixHex(color(e),'#000000',.38):mixHex(color(e),'#ffffff',.12);
+function skFit(W,H){
+  const A=SK.G.atoms,V=SK.view;if(!A.length){V.cx=0;V.cy=0;V.sc=32;return}
+  const xs=A.map(a=>a.x),ys=A.map(a=>a.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  V.cx=(x0+x1)/2;V.cy=(y0+y1)/2;V.sc=Math.max(12,Math.min(46,Math.min((W-60)/(x1-x0+SKL),(H-120)/(y1-y0+SKL))));
+}
+const skGeo=()=>{const W=fig.clientWidth,H=fig.clientHeight,V=SK.view;return{W,H,S:(x,y)=>[W/2+(x-V.cx)*V.sc,(H-40)/2-(y-V.cy)*V.sc],I:(sx,sy)=>[V.cx+(sx-W/2)/V.sc,V.cy-(sy-(H-40)/2)/V.sc]}};
+function skHit(sx,sy){
+  const{S}=skGeo();let best=null;
+  SK.G.atoms.forEach(a=>{const[x,y]=S(a.x,a.y),d=Math.hypot(x-sx,y-sy);if(d<13&&(!best||d<best.d))best={atom:a.id,d}});
+  if(best)return best;
+  SK.G.bonds.forEach(b=>{const A=skAt(SK.G,b.a),B=skAt(SK.G,b.b),[x1,y1]=S(A.x,A.y),[x2,y2]=S(B.x,B.y),dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((sx-x1)*dx+(sy-y1)*dy)/L2)),d=Math.hypot(x1+t*dx-sx,y1+t*dy-sy);
+    if(d<8&&t>.08&&t<.92&&(!best||d<best.d))best={bond:{a:b.a,b:b.b},d}});
+  return best;
+}
+/* Label of an atom: element with its hydrogens, charge and unpaired electrons. Carbon is shown only when it needs to be. */
+function skLabel(a,i,an){
+  const R=an.R[i],h=R.h||0,show=a.e!=='C'||!an.adj[i].length||a.q||a.rad||R.impossible;
+  if(!show)return null;
+  /* hydrogens go on the free side: right, left, or above/below when bonds come from both sides */
+  let pos='right';
+  if(h&&an.adj[i].length){const v=an.adj[i].map(j=>[an.atoms[j].x-a.x,an.atoms[j].y-a.y]),sx=v.reduce((s,d)=>s+d[0],0),sy=v.reduce((s,d)=>s+d[1],0);
+    pos=v.some(d=>d[0]>.3*SKL)&&v.some(d=>d[0]<-.3*SKL)?(sy>0?'down':'up'):sx>0?'left':'right'}
+  return{h,pos,q:a.q||0,rad:a.rad||0};
+}
+function drawSketch(W,H){
+  const G=SK.G,an=SK.an||(SK.an=skAnalyze()),V=SK.view;
+  if(V.fit){skFit(W,H);V.fit=false}
+  const{S}=skGeo(),fs=Math.max(11,Math.min(20,V.sc*.42)),now=performance.now();
+  if(!G.atoms.length){
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=VT.ink;ctx.font='600 16px "IBM Plex Sans",sans-serif';ctx.fillText('Draw a molecule',W/2,(H-40)/2-24);
+    ctx.fillStyle=VT.mute;ctx.font='13px "IBM Plex Sans",sans-serif';ctx.fillText('Click to place an atom, pick an example or type a SMILES in the Design tab.',W/2,(H-40)/2+2);
+    ctx.textAlign='start';ctx.textBaseline='alphabetic';skDrawDrag(S);return;
+  }
+  const P=G.atoms.map(a=>S(a.x,a.y)),L=G.atoms.map((a,i)=>skLabel(a,i,an)),rad0=fs*.62,lw=Math.max(1.3,Math.min(2.4,V.sc*.055));
+  const hov=SK.hover;
+  /* bonds */
+  ctx.lineCap='round';
+  an.bonds.forEach(([i,j,o])=>{
+    let[x1,y1]=P[i],[x2,y2]=P[j];const dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy)||1,ux=dx/l,uy=dy/l,nx=-uy,ny=ux;
+    const s1=L[i]?rad0:0,s2=L[j]?rad0:0;x1+=ux*s1;y1+=uy*s1;x2-=ux*s2;y2-=uy*s2;
+    const isH=hov&&hov.bond&&((hov.bond.a===G.atoms[i].id&&hov.bond.b===G.atoms[j].id)||(hov.bond.b===G.atoms[i].id&&hov.bond.a===G.atoms[j].id));
+    if(isH){ctx.strokeStyle=VT.sel;ctx.globalAlpha=.28;ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.globalAlpha=1}
+    ctx.strokeStyle=VT.ink;ctx.lineWidth=lw;const line=(ax,ay,bx,by)=>{ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke()};
+    const off=Math.max(3.5,V.sc*.16);
+    if(o===1)line(x1,y1,x2,y2);
+    else if(o===3){line(x1,y1,x2,y2);line(x1+nx*off,y1+ny*off,x2+nx*off,y2+ny*off);line(x1-nx*off,y1-ny*off,x2-nx*off,y2-ny*off)}
+    else{
+      const ring=an.rings.filter(r=>r.includes(i)&&r.includes(j)).sort((a,b)=>Math.abs(a.length-6)-Math.abs(b.length-6))[0];
+      if(ring){const c=ring.reduce((s,k)=>[s[0]+P[k][0]/ring.length,s[1]+P[k][1]/ring.length],[0,0]),sg=Math.sign((c[0]-x1)*nx+(c[1]-y1)*ny)||1,sh=.14*l;
+        line(x1,y1,x2,y2);line(x1+nx*off*sg*1.6+ux*(L[i]?0:sh),y1+ny*off*sg*1.6+uy*(L[i]?0:sh),x2+nx*off*sg*1.6-ux*(L[j]?0:sh),y2+ny*off*sg*1.6-uy*(L[j]?0:sh))}
+      else{const h=off*.8;line(x1+nx*h,y1+ny*h,x2+nx*h,y2+ny*h);line(x1-nx*h,y1-ny*h,x2-nx*h,y2-ny*h)}
+    }
+  });
+  /* atoms */
+  G.atoms.forEach((a,i)=>{
+    const[x,y]=P[i],lb=L[i],st=an.st[i],isHov=hov&&hov.atom===a.id;
+    if(isHov){ctx.fillStyle=VT.sel;ctx.globalAlpha=.25;ctx.beginPath();ctx.arc(x,y,fs*.95,0,7);ctx.fill();ctx.globalAlpha=1}
+    if(st){ctx.strokeStyle=st==='err'?VT.danger:VT.warn;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,fs*.95,0,7);ctx.stroke();
+      ctx.fillStyle=st==='err'?VT.danger:VT.warn;ctx.font=`500 ${Math.round(fs*.6)}px "IBM Plex Mono",monospace`;ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillText(String(i+1),x+fs*.75,y-fs*.7)}
+    if(SK.flash&&now-SK.flash.t<1200&&SK.flash.ids.includes(a.id)){ctx.strokeStyle=VT.danger;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(x,y,fs*1.15,0,7);ctx.stroke()}
+    if(!lb)return;
+    const big=`600 ${fs}px "IBM Plex Sans",sans-serif`,small=`600 ${Math.round(fs*.68)}px "IBM Plex Sans",sans-serif`;
+    ctx.font=big;const wE=ctx.measureText(a.e).width,wH=lb.h?ctx.measureText('H').width:0;ctx.font=small;const sub=lb.h>1?String(lb.h):'',wS=sub?ctx.measureText(sub).width:0;
+    ctx.fillStyle=VT.bg;ctx.beginPath();ctx.arc(x,y,fs*.62,0,7);ctx.fill();
+    ctx.textBaseline='middle';ctx.fillStyle=skInk(a.e);ctx.font=big;ctx.textAlign='center';ctx.fillText(a.e,x,y);
+    if(lb.h){
+      if(lb.pos==='left'){ctx.textAlign='right';ctx.font=small;ctx.fillText(sub,x-wE/2,y+fs*.28);ctx.font=big;ctx.fillText('H',x-wE/2-wS,y)}
+      else if(lb.pos==='right'){ctx.textAlign='left';ctx.font=big;ctx.fillText('H',x+wE/2,y);ctx.font=small;ctx.fillText(sub,x+wE/2+wH,y+fs*.28)}
+      else{const yy=y+(lb.pos==='up'?-1:1)*fs*.95;ctx.fillStyle=VT.bg;ctx.beginPath();ctx.arc(x,yy,fs*.55,0,7);ctx.fill();ctx.fillStyle=skInk(a.e);
+        ctx.textAlign='center';ctx.font=big;ctx.fillText('H',x-wS/2,yy);ctx.textAlign='left';ctx.font=small;ctx.fillText(sub,x+wH/2-wS/2,yy+fs*.28)}}
+    const right=x+wE/2+(lb.h&&lb.pos==='right'?wH+wS:0);
+    if(lb.q){ctx.font=small;ctx.textAlign='left';ctx.fillText(chgPlain(lb.q),right+1,y-fs*.45)}
+    if(lb.rad){ctx.fillStyle=skInk(a.e);for(let k=0;k<lb.rad;k++){ctx.beginPath();ctx.arc(x+(k-(lb.rad-1)/2)*fs*.32,y-fs*.78,Math.max(1.8,fs*.1),0,7);ctx.fill()}}
+    ctx.textAlign='start';ctx.textBaseline='alphabetic';
+  });
+  skDrawDrag(S);
+}
+function skDrawDrag(S){
+  const p=SK.ptr;if(!p||!p.drag||!p.end)return;const a=skAt(SK.G,p.hit.atom);if(!a)return;
+  const[x1,y1]=S(a.x,a.y),[x2,y2]=S(p.end.x,p.end.y);ctx.strokeStyle=VT.sel;ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=VT.sel;ctx.beginPath();ctx.arc(x2,y2,4,0,7);ctx.fill();
+}
+
+/* ---------- pointer and keys ---------- */
+function skDown(e){const r=fig.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;SK.ptr={x0:x,y0:y,x,y,hit:skHit(x,y),moved:0,cx:SK.view.cx,cy:SK.view.cy};fig.setPointerCapture(e.pointerId)}
+function skMove(e){
+  const r=fig.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,p=SK.ptr;
+  if(!p){const h=skHit(x,y),k=JSON.stringify(h&&(h.atom??h.bond));if(k!==JSON.stringify(SK.hover&&(SK.hover.atom??SK.hover.bond))){SK.hover=h;draw()}return}
+  p.moved=Math.max(p.moved,Math.hypot(x-p.x0,y-p.y0));p.x=x;p.y=y;if(p.moved<5)return;
+  if(!p.hit||p.hit.bond||!(SK.tool.startsWith('el:')||SK.tool[0]==='b')){if(!p.hit){fig.classList.add('drag');SK.view.cx=p.cx-(x-p.x0)/SK.view.sc;SK.view.cy=p.cy+(y-p.y0)/SK.view.sc;draw()}return}
+  p.drag=true;const{I}=skGeo(),a=skAt(SK.G,p.hit.atom),h=skHit(x,y);
+  if(h&&h.atom!=null&&h.atom!==a.id){const b=skAt(SK.G,h.atom);p.end={x:b.x,y:b.y,id:b.id}}
+  else{const[wx,wy]=I(x,y),t=Math.round(Math.atan2(wy-a.y,wx-a.x)/rad(30))*rad(30);p.end={x:a.x+SKL*Math.cos(t),y:a.y+SKL*Math.sin(t)}}
+  draw();
+}
+function skUp(e){
+  const p=SK.ptr;SK.ptr=null;fig.classList.remove('drag');if(!p)return;
+  if(p.drag&&p.end){skDragEnd(p.hit.atom,p.end);return}
+  if(p.moved<5){const{I}=skGeo(),[wx,wy]=I(p.x0,p.y0);skClick(p.hit,wx,wy)}
+  draw();
+}
+function skWheel(e){const r=fig.getBoundingClientRect(),{I}=skGeo(),sx=e.clientX-r.left,sy=e.clientY-r.top,[wx,wy]=I(sx,sy),V=SK.view;
+  V.sc=Math.max(8,Math.min(120,V.sc*Math.exp(-e.deltaY*.0015)));const[nx,ny]=skGeo().I(sx,sy);V.cx+=wx-nx;V.cy+=wy-ny;draw()}
+const SK_KEYS={c:'C',n:'N',o:'O',s:'S',p:'P',f:'F',h:'H',i:'I',l:'Cl',r:'Br',b:'B'};
+function skKey(e){
+  const h=SK.hover,k=e.key.toLowerCase(),V=SK.view;
+  if(h&&h.atom!=null&&SK_KEYS[k]&&!e.shiftKey){const id=h.atom,el2=SK_KEYS[k];e.preventDefault();
+    skEdit(G=>{if(skAt(G,id).e!==el2)return skSetElement(G,id,el2);skExtend(G,id,el2,1);return''});return}
+  if(h&&/^[123]$/.test(k)){e.preventDefault();const o=+k;
+    if(h.bond)skEdit(G=>{skBond(G,h.bond.a,h.bond.b).o=o;return`${['','Single','Double','Triple'][o]} bond.`});else skEdit(G=>{skExtend(G,h.atom,'C',o);return''});return}
+  if(h&&(k==='delete'||k==='backspace')){e.preventDefault();const t=SK.tool;SK.tool='er';skClick(h);SK.tool=t;SK.hover=null;return}
+  const pan={arrowleft:[-1,0],arrowright:[1,0],arrowup:[0,1],arrowdown:[0,-1]}[k];
+  if(pan){e.preventDefault();V.cx+=pan[0]*40/V.sc;V.cy+=pan[1]*40/V.sc;draw();return}
+  if(k==='+'||k==='='){e.preventDefault();V.sc=Math.min(120,V.sc*1.2);draw()}
+  else if(k==='-'||k==='_'){e.preventDefault();V.sc=Math.max(8,V.sc/1.2);draw()}
+  else if(k==='0'||k==='home'){e.preventDefault();V.fit=true;draw()}
+}
+
+/* ---------- panel ---------- */
+const SK_EXAMPLES=[['Ethanol','CCO'],['Acetone','CC(C)=O'],['Acetic acid','CC(=O)O'],['Lactic acid','CC(O)C(=O)O'],['Alanine','CC(N)C(=O)O'],['Glycerol','OCC(O)CO'],
+  ['Ethyl acetate','CCOC(C)=O'],['Isooctane','CC(C)CC(C)(C)C'],['Acrylic acid','C=CC(=O)O'],['Toluene','Cc1ccccc1'],['4-Hydroxybenzoic acid','OC(=O)c1ccc(O)cc1'],['Styrene','C=Cc1ccccc1'],
+  ['Cyclohexanol','OC1CCCCC1'],['Aspirin','CC(=O)Oc1ccccc1C(=O)O'],['Naphthalene','c1ccc2ccccc2c1'],['Pyridine','c1ccncc1'],['Caffeine','Cn1cnc2c1c(=O)n(C)c(=O)n2C'],
+  ['Benzene','c1ccccc1'],['Alloxan','O=C1NC(=O)C(=O)C(=O)N1'],['Uracil','O=c1cc[nH]c(=O)[nH]1'],['Pyrene','c1cc2ccc3cccc4ccc(c1)c2c34'],['Nitrobenzene','O=[N+]([O-])c1ccccc1'],
+  ['Dimethyl sulfoxide','CS(C)=O'],['Ammonium','[NH4+]']];
+function skPanel(){
+  if(tab!=='design')return;
+  [...$('dMode').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===D.mode));
+  $('dm2d').hidden=D.mode!=='2d';$('dm3d').hidden=D.mode!=='3d';
+  if(D.mode!=='2d')return;
+  const an=SK.an||(SK.an=skAnalyze()),rd=SK.rd;
+  [...$('skEl').children].forEach(b=>b.setAttribute('aria-pressed',SK.tool==='el:'+b.dataset.e));
+  [...$('skTools').querySelectorAll('button')].forEach(b=>b.setAttribute('aria-pressed',SK.tool===b.dataset.t));
+  $('skUndo').disabled=!SK.undo.length;$('skRedo').disabled=!SK.redo.length;
+  const n=an.atoms.length;$('skBuild').disabled=!n;$('skTidy').disabled=!n||RDK.st==='failed';$('skCopy').disabled=!n;
+  const items=n?an.issues.slice():[{lvl:'info',text:'Nothing drawn yet.'}];
+  if(rd&&!rd.ok)items.push({lvl:'warn',text:`RDKit does not accept this structure: ${rd.error}`});
+  $('skCheck').innerHTML=items.map(x=>`<li class="${x.lvl}">${esc(x.text)}</li>`).join('');
+  const kv=[['Formula',skFormula(an)],['Molar mass',an.mw!=null?fmt(an.mw,2)+' g/mol':'—'],['Atoms',n?`${n+an.nH} (${an.nH} H)`:'—'],['Net charge',n?(an.q>0?'+':'')+an.q:'—'],['Multiplicity',n?String(an.mult):'—']];
+  if(rd&&rd.ok){kv.push(['SMILES',rd.smiles]);if(rd.inchikey)kv.push(['InChIKey',rd.inchikey])}
+  $('skInfo').innerHTML=kv.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
+  if(document.activeElement!==$('skSmi')){if(!n||(rd&&!rd.ok))$('skSmi').value='';else if(rd)$('skSmi').value=rd.smiles}
+}
+function setMode(m){D.mode=m==='3d'?'3d':'2d';if(D.mode==='2d'){rdkLoad();SK.an=SK.an||skAnalyze()}legend();vbar();render()}
+/* Replace the drawing (one undo step, no blocking: the check list shows what is wrong). */
+function skReplace(atoms,bonds,nm){
+  const before=JSON.stringify(SK.G),G={atoms:[],bonds:[]};
+  const ids=atoms.map(a=>{const b=skNewAtom(G,a.e,a.x,a.y);b.q=a.q||0;b.rad=a.rad||0;return b.id});
+  bonds.forEach(([i,j,o])=>G.bonds.push({a:ids[i],b:ids[j],o}));
+  SK.undo.push(before);SK.redo=[];SK.G=G;SK.name=nm||'';SK.view.fit=true;skChanged();
+}
+async function skLoadSmiles(smi,nm){
+  smi=(smi||'').trim();if(!smi){skMsg('Type a SMILES first.',true);return false}
+  skMsg(RDK.st==='ready'?'Reading the SMILES…':'Loading RDKit.js…');
+  const r=await rdk('smiles',{smiles:smi});
+  if(!r.ok){skMsg(`Could not read that SMILES: ${r.error}`,true);return false}
+  const M=parseMolblock(r.molblock),F=foldHydrogens(M.atoms,M.bonds,false);
+  skReplace(F.atoms,F.bonds,nm||'');skMsg(`Loaded ${nm||(smi.length>40?smi.slice(0,40)+'…':smi)}.`);return true;
+}
+async function skTidy(){
+  const{atoms,bonds}=skArrays(SK.G);if(!atoms.length)return;
+  skMsg('Laying out the drawing…');const r=await rdk('layout',{molblock:molblock(atoms,bonds)});
+  if(!r.ok){skMsg(`Tidy up needs RDKit: ${r.error}`,true);return}
+  const M=parseMolblock(r.molblock);if(M.atoms.length!==atoms.length){skMsg('Tidy up failed.',true);return}
+  const G=JSON.parse(JSON.stringify(SK.G));G.atoms.forEach((a,i)=>{a.x=M.atoms[i].x;a.y=M.atoms[i].y});SK.view.fit=true;skCommit(G,'Tidied up the 2D layout.');
+}
+/* Molecule A → drawing: bond orders and charges from the 2D build, or guessed from the geometry; projected on A's plane, then laid out by RDKit. */
+async function skFromA(){
+  if(!mol){skMsg('There is no molecule A yet.',true);return}
+  const A=mol.atoms,K=chemKnown(A,frame.bonds),{ord,chg}=assignOrders(A,frame.bonds,K);
+  const atoms=A.map((a,i)=>({e:a.e,q:chg[i]||0,rad:a.rad||0,x:frame.local[i][0],y:frame.local[i][1]})),bonds=frame.bonds.map(([i,j],k)=>[i,j,ord[k]]);
+  const F=foldHydrogens(atoms,bonds);
+  const bl=F.bonds.length?F.bonds.reduce((s,[i,j])=>s+Math.hypot(F.atoms[i].x-F.atoms[j].x,F.atoms[i].y-F.atoms[j].y),0)/F.bonds.length:SKL;
+  F.atoms.forEach(a=>{a.x*=SKL/(bl||SKL);a.y*=SKL/(bl||SKL)});
+  skReplace(F.atoms,F.bonds,name);skMsg(`Molecule A (${formula(A.map(a=>a.e))}) is now the drawing.`);
+  if(RDK.st!=='failed'){const v=SK.ver,{atoms:aa,bonds:bb}=skArrays(SK.G),r=await rdk('layout',{molblock:molblock(aa,bb)});
+    if(r.ok&&v===SK.ver){const M=parseMolblock(r.molblock);if(M.atoms.length===SK.G.atoms.length){SK.G.atoms.forEach((a,i)=>{a.x=M.atoms[i].x;a.y=M.atoms[i].y});SK.view.fit=true;draw();save()}}}
+}
+/* Build 3D: explicit hydrogens, UFF optimisation, then molecule A with its bond orders and charges. */
+function skBuild(){
+  const an=SK.an||skAnalyze();if(!an.atoms.length){skBMsg('Draw something first.',true);return}
+  if(an.issues.some(x=>x.lvl==='err')){skBMsg('Fix the atoms marked in red first.',true);return}
+  skBMsg('Building and optimising…');$('skBuild').disabled=true;
+  setTimeout(()=>{
+    try{
+      const B3=build3D(an.atoms,an.bonds),M=B3.M,res=B3.res,before=mol?snap():null,f=formula(M.atoms.map(a=>a.e));
+      const nm=SK.name||f;
+      cryst=null;setMol(M.atoms,nm,'Built from the 2D sketch.');
+      M.bonds.forEach(([i,j,o])=>{const a=mol.atoms[i],b=mol.atoms[j];(a.bo||(a.bo={}))[b.id]=o;(b.bo||(b.bo={}))[a.id]=o});
+      if(before)D.undo=[before];
+      EXP.qA=EXP.qB=an.q;EXP.mA=EXP.mB=an.mult;syncExp();
+      const K=chemKnown(mol.atoms,frame.bonds),odd=frame.bonds.length!==M.bonds.length||!K||K.ord.some(o=>o==null);
+      const t=`Molecule A is ${f}${chgText(an.q)}: ${M.atoms.length} atoms, UFF energy ${fmt(res.E,2)} kcal/mol after ${res.it} steps${res.conv?'':' (not fully converged)'}.`+
+        (res.ff.approx.length?` Approximate UFF parameters for ${[...new Set(res.ff.approx)].join(', ')}.`:'')+(odd?' Some bonds in the 3D geometry are perceived differently from the drawing.':'');
+      skBMsg(t);setMode('3d');dmsg(t);
+    }catch(err){skBMsg('Build failed: '+err.message,true)}
+    $('skBuild').disabled=false;
+  },20);
+}
+$('skEl').innerHTML=SK_ELEMS.map(e=>`<button data-e="${e}">${e}</button>`).join('');
+$('skEl').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SK.tool='el:'+b.dataset.e;$('skOther').value='';skPanel()}});
+$('skOther').addEventListener('input',e=>{const v=e.target.value.trim();if(!v)return;const s=elementOf(v);if(s&&el(v.replace(/[^A-Za-z]/g,''))===s){SK.tool='el:'+s;skMsg(`Drawing ${s}.`);skPanel()}else skMsg(`"${v}" is not an element symbol.`,true)});
+$('skTools').innerHTML=SK_TOOLS.map(t=>t?`<button data-t="${t[0]}" title="${t[2]}" aria-label="${t[2]}">${t[1]}</button>`:'<span class="gap"></span>').join('');
+$('skTools').addEventListener('click',e=>{const b=e.target.closest('button');if(b){SK.tool=b.dataset.t;skPanel()}});
+$('skUndo').onclick=skUndo;$('skRedo').onclick=skRedo;$('skTidy').onclick=skTidy;
+$('skClear').onclick=()=>{if(!SK.G.atoms.length)return;SK.undo.push(JSON.stringify(SK.G));SK.redo=[];SK.G={atoms:[],bonds:[]};SK.name='';skChanged();skMsg('Cleared. Undo brings the drawing back.')};
+$('skLoad').onclick=()=>skLoadSmiles($('skSmi').value);
+$('skSmi').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();skLoadSmiles($('skSmi').value)}});
+$('skCopy').onclick=async()=>{const t=SK.rd&&SK.rd.ok?SK.rd.smiles:$('skSmi').value;if(!t)return;try{await navigator.clipboard.writeText(t);skMsg('SMILES copied.')}catch{$('skSmi').select();skMsg('SMILES selected: press Ctrl+C or Cmd+C.')}};
+$('skEx').innerHTML='<option value="">Examples…</option>'+SK_EXAMPLES.map(([k],i)=>`<option value="${i}">${k}</option>`).join('');
+$('skEx').addEventListener('change',e=>{const v=e.target.value;e.target.value='';if(v!=='')skLoadSmiles(SK_EXAMPLES[+v][1],SK_EXAMPLES[+v][0])});
+$('skFromA').onclick=skFromA;$('skBuild').onclick=skBuild;
+$('dMode').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.m)});
+
+/* ============================== 3D designer: valence rules ============================== */
+/* Bonds already used by atom i: the drawn bond orders when molecule A came from the sketch, else the number of bonded atoms. */
+function usedBonds(i,K=chemKnown(mol.atoms,frame.bonds)){
+  if(K){let s=0,ok=true;frame.bonds.forEach(([a,b],k)=>{if(a!==i&&b!==i)return;if(K.ord[k]==null)ok=false;else s+=K.ord[k]});if(ok)return s}
+  return frame.adj[i].length;
+}
+function guard3D(i,extra){
+  const a=mol.atoms[i],q=a.q||0,m=maxValence(a.e,q,a.rad||0),u=usedBonds(i),sig=frame.adj[i].length;
+  if(u+extra<=m)return null;
+  const hs=frame.adj[i].filter(j=>mol.atoms[j].e==='H').length;
+  return`${a.e}${i+1} already has ${u} bond${u===1?'':'s'}${u>sig?' (counting multiple bonds)':''}; ${a.e}${chgText(q)} allows at most ${m}.`+(hs?' Select one of its hydrogens to replace it instead.':'');
+}
+/* Chemistry check of molecule A: bond orders (known or guessed), formal charges, unfilled and expanded valences. */
+function check3D(){
+  const A=mol.atoms,bonds=frame.bonds,K=chemKnown(A,bonds),{ord,chg}=assignOrders(A,bonds,K);
+  const atoms=A.map((a,i)=>({e:a.e,q:chg[i]||0,rad:a.rad||0})),R=valenceReport(atoms,bonds.map(([i,j],k)=>[i,j,ord[k]]),false);
+  const lab=i=>A[i].e+(i+1),idx=[...A.keys()],list=ix=>{const L=ix.map(lab);return L.length>8?L.slice(0,8).join(', ')+` and ${L.length-8} more`:L.join(', ')},issues=[];
+  const imp=idx.filter(i=>R[i].impossible);if(imp.length)issues.push({lvl:'err',text:`More bonds than the valence allows: ${imp.map(i=>`${lab(i)} (${R[i].bs})`).join(', ')}.`});
+  const mis=idx.filter(i=>R[i].missing>0);if(mis.length)issues.push({lvl:'warn',text:`Unfilled valence on ${list(mis)}: a missing hydrogen, or a radical site. Add missing H fills them.`});
+  const ex=idx.filter(i=>R[i].expanded);if(ex.length)issues.push({lvl:'warn',text:`Expanded valence (hypervalent): ${list(ex)}.`});
+  const nr=[...new Set(idx.filter(i=>R[i].norules).map(i=>A[i].e))];if(nr.length)issues.push({lvl:'info',text:`No valence rules for ${nr.join(', ')}.`});
+  const ch=idx.filter(i=>chg[i]),q=chg.reduce((s,c)=>s+(c||0),0);
+  if(ch.length)issues.push({lvl:'info',text:`Formal charges: ${ch.slice(0,8).map(i=>lab(i)+chgText(chg[i])).join(', ')}${ch.length>8?' …':''} (net ${q>0?'+':''}${q}).`});
+  issues.push({lvl:'info',text:K&&K.ord.every(o=>o!=null)?'Bond orders and charges come from the 2D sketch.':K?'Bond orders come partly from the 2D sketch, the rest are guessed from the geometry.':'Bond orders are guessed from the geometry.'});
+  if(!issues.some(x=>x.lvl==='err'||x.lvl==='warn'))issues.unshift({lvl:'ok',text:'Every atom satisfies its valence.'});
+  return{issues,missing:mis.map(i=>[i,R[i].missing]),q,R};
+}
+function fillH(){
+  if(needMol())return;
+  const c=check3D();if(!c.missing.length){dmsg('No atom is missing hydrogens.');return}
+  let added=0;
+  edit(()=>{for(const[i,k]of c.missing)for(let t=0;t<k;t++){frame=frameOf(mol.atoms);const P=mol.atoms[i].p,h=newAtom('H',add(P,scale(freeDir(i),rs(mol.atoms[i].e)+rs('H'))),{dirty:true});mol.atoms.push(h);added++}
+    dmsg(`Added ${added} hydrogen${added>1?'s':''} to ${c.missing.map(([i])=>mol.atoms[i].e+(i+1)).join(', ')}. Tidy or Optimise improves their positions.`)});
+}
+function optimise3D(){
+  if(needMol())return;
+  const A=mol.atoms,K=chemKnown(A,frame.bonds),{ord,chg}=assignOrders(A,frame.bonds,K);
+  const atoms=A.map((a,i)=>({e:a.e,q:chg[i]||0,rad:a.rad||0,p:a.p.slice()})),bonds=frame.bonds.map(([i,j],k)=>[i,j,ord[k]]);
+  dmsg('Optimising…');
+  setTimeout(()=>{const res=uffOptimise(atoms,bonds);
+    edit(()=>{A.forEach((a,i)=>a.p=atoms[i].p);dmsg(`UFF energy ${fmt(res.E,2)} kcal/mol after ${res.it} steps${res.conv?'':' (not fully converged)'}`+(res.ff.approx.length?`; approximate parameters for ${[...new Set(res.ff.approx)].join(', ')}`:'')+'.')})},20);
+}
+$('dFillH').onclick=fillH;$('dUff').onclick=optimise3D;
+function skStats(){
+  const an=SK.an||(SK.an=skAnalyze()),n=an.atoms.length,bad=an.issues.filter(x=>x.lvl==='err'||x.lvl==='warn').length;
+  if(!n)return[['—','2D sketch: nothing drawn yet']];
+  return[[skFormula(an),'Formula of the sketch'],[an.mw!=null?fmt(an.mw,2)+' g/mol':'—','Molar mass'],[String(n+an.nH),`Atoms (${an.nH} implicit H)`],
+    [(an.q>0?'+':'')+an.q,'Net charge'],[String(an.mult),'Spin multiplicity'],[bad?`${bad} to check`:'OK','Chemistry check',an.issues.some(x=>x.lvl==='err')]];
+}
+
 /* ============================== persistence ============================== */
 const molXYZ=atoms=>[atoms.length,'',...atoms.map(a=>xyzLine(a.e,a.p))].join('\n');
 let ready=false;
@@ -2454,12 +3420,17 @@ function save(){
   if(!ready)return;
   try{localStorage.setItem('dimer-builder',JSON.stringify({v:2,state,src:$('src').value,name,tab,pairInfo,
     opts:{frame:$('optFrame').checked,heavy:$('optHeavy').checked,swap:$('optSwap').checked,labels:$('optLabels').checked},
-    exp:EXP,scan:SCAN,empty:!mol,mol:mol?molXYZ(mol.atoms):null,partner:mol&&partner?molXYZ(partner.atoms):null}))}catch{}
+    exp:EXP,scan:SCAN,empty:!mol,mol:mol?molXYZ(mol.atoms):null,partner:mol&&partner?molXYZ(partner.atoms):null,
+    chem:mol&&mol.atoms.some(a=>a.q!=null||a.bo)?mol.atoms.map(a=>[a.q??null,a.rad||0,a.bo?Object.entries(a.bo).map(([id,o])=>[idxOf(+id),o]).filter(x=>x[0]>=0):null]):null,
+    mode:D.mode,sk:SK.G.atoms.length?{atoms:SK.G.atoms.map(a=>[a.e,+a.x.toFixed(3),+a.y.toFixed(3),a.q||0,a.rad||0]),bonds:SK.G.bonds.map(b=>[SK.G.atoms.findIndex(a=>a.id===b.a),SK.G.atoms.findIndex(a=>a.id===b.b),b.o]),name:SK.name}:null}))}catch{}
 }
 function restore(){
   let s=null;try{s=JSON.parse(localStorage.getItem('dimer-builder')||'null')}catch{}
   if(!s||(!s.src&&!s.empty))return false;
   try{
+    if(s.mode==='3d'||s.mode==='2d')D.mode=s.mode;
+    if(s.sk&&Array.isArray(s.sk.atoms)){const G={atoms:[],bonds:[]};s.sk.atoms.forEach(([e,x,y,q,r])=>{const a=skNewAtom(G,elementOf(e)||'C',+x||0,+y||0);a.q=q|0;a.rad=r|0});
+      (s.sk.bonds||[]).forEach(([i,j,o])=>{if(G.atoms[i]&&G.atoms[j])G.bonds.push({a:G.atoms[i].id,b:G.atoms[j].id,o:Math.min(3,Math.max(1,o|0))})});SK.G=G;SK.name=s.sk.name||'';SK.an=null;SK.view.fit=true}
     if(s.opts){$('optFrame').checked=s.opts.frame!==false;$('optHeavy').checked=s.opts.heavy!==false;$('optSwap').checked=!!s.opts.swap;$('optLabels').checked=s.opts.labels!==false}
     if(s.exp)Object.assign(EXP,s.exp);
     if(s.scan){const{rows,...rest}=s.scan;Object.assign(SCAN,rest);if(rows)PARAMS.forEach(p=>{if(rows[p.id])Object.assign(SCAN.rows[p.id],rows[p.id])})}
@@ -2469,6 +3440,7 @@ function restore(){
     else{
       if(looksLikeCIF(s.src)){try{cryst=parseCIF(s.src,s.name);cryst.pairs=neighbours(cryst,cryst.S)}catch{cryst=null}}
       setMol(parseXYZ(s.mol).atoms,s.name);
+      if(Array.isArray(s.chem)&&s.chem.length===mol.atoms.length)s.chem.forEach(([q,r,bo],i)=>{const a=mol.atoms[i];if(q!=null){a.q=q;a.rad=r||0}if(bo){a.bo={};bo.forEach(([j,o])=>{if(mol.atoms[j])a.bo[mol.atoms[j].id]=o})}});
       if(s.partner){partner={atoms:parseXYZ(s.partner).atoms.map(a=>newAtom(a.e,a.p))};partner.fr=frameOf(partner.atoms)}
     }
     Object.assign(state,s.state||{});pairInfo=s.pairInfo||'';
@@ -2483,7 +3455,10 @@ syncExp();ready=true;render();
 window.dimerforge={parseXYZ,parseCIF,elementOf,euler,neighbours,load,setTab,tidy,attach,placeB,poseM,toPDB,toSDF,toGJF,toORCA,exportSet,bondOrders,TEMPLATES,
   get picks(){return picks},get mol(){return mol},get frame(){return frame},get cryst(){return cryst},get partner(){return partner},state,EXP,D,render,select:ids=>{D.sel=ids.map(i=>mol.atoms[i].id);render()},
   loadPair:i=>{cryst.pairSel=i;loadPair()},selectCrystalMol,get out(){return outText},
-  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll,applyTheme,setDock,setDockH,openHelp,helpSearch};
+  SCAN,scanDef,buildMap,generateScan,syncScan,get mapData(){return mapData},resetAll,applyTheme,setDock,setDockH,openHelp,helpSearch,
+  valences,valenceReport,assignOrders,chemKnown,perceive,uffSetup,uffMinimize,uffOptimise,drawingTo3D,build3D,dgEmbed,drawnEZ,molblock,parseMolblock,foldHydrogens,
+  SK,RDK,rdk,skAnalyze,skClick,skKey,skEdit,skUndo,skRedo,skLoadSmiles,skTidy,skFromA,skBuild,setMode,check3D,fillH,optimise3D,guard3D,
+  skScreen:(x,y)=>skGeo().S(x,y)};
 }
 </script>
 </body>
