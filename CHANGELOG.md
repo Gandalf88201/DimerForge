@@ -5,7 +5,16 @@ All notable changes to DimerForge. Versions follow [Semantic Versioning](https:/
 ## [Unreleased]
 
 ### Added
+- **Molecular builder** in the Design tab, which now has two modes. **2D sketch** draws a structural formula, like the builder on moleculesfriends.eu: atoms C, N, O, S, P, F, Cl, Br, I, H, B, Si (and any other symbol), single, double and triple bonds, 3- to 6-membered and benzene rings (free, grown or fused), formal charges, unpaired electrons and an eraser, with implicit hydrogens, undo and redo, keyboard shortcuts, SMILES in and out, examples, and **Sketch molecule A** to turn the current molecule into a drawing. **3D edit** is the previous designer.
+- **Valence rules.** Edits that give an atom more bonds than it can form (allowed valences from the valence electrons and the formal charge, with expanded valences from period 3) are blocked, with the reason and the charge that would make them legal; changing a four-bonded carbon to N makes it N⁺. A **Chemistry check** flags expanded valences, carbocations and carbanions, large or like charges, unpaired electrons, strained sp atoms in small rings, separate fragments and elements without rules, and gives the formula, molar mass, net charge, spin multiplicity, SMILES and InChIKey. In 3D edit, adding to a full atom is blocked, and **Add missing H** fills open valences.
+- **Build 3D as molecule A**: hydrogens, a start from the drawing (or a distance-geometry embedding for bridged and caged rings) and a **UFF** optimisation (Rappé et al. 1992; typing as in RDKit, energies agree with RDKit's UFF). Molecule A keeps the drawn bond orders and formal charges, which the MOL/SDF export writes, and the Export tab's charges and multiplicities follow the drawing. **Optimise (UFF)** relaxes molecule A in 3D edit.
+- **RDKit.js** 2026.9.2 vendored in `vendor/rdkit/` (BSD licence) for SMILES, InChI, sanitisation and 2D layout. It runs offline, in a hidden frame with its own Content-Security-Policy.
+- Manual sections on the valence rules, 3D structures and UFF, and RDKit.js.
 - **Built-in manual** in English: **Help** in the top bar (or <kbd>F1</kbd>, or <kbd>?</kbd>) opens it over the workspace, with a contents list and a search box that highlights matches; a **?** button on each tool tab, and on the dock, opens its own section. It covers how to use every tool and the science and conventions behind them (molecular frame, placement of B, contacts and clashes, bonds and elements, crystal handling, Tidy, file formats, scan conventions, references), with diagrams that follow the light and dark themes.
+
+### Changed
+- The MOL/SDF export takes an atom with more bonds than the neutral element allows as the matching ion (ammonium N⁺, borate B⁻) when it guesses charges.
+- The Content-Security-Policy allows frames from the same folder (`frame-src 'self'`), for RDKit.js.
 
 ## [2.4.0] - 2026-11-25
 

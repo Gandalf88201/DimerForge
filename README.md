@@ -1,12 +1,12 @@
 # DimerForge
 
-DimerForge builds stacked molecular dimers from a single structure, with control over interplanar distance, slippage and tilt. It reads `.xyz` and `.cif` files. It can take a molecule, or a real neighbouring pair, from a crystal, and it includes a small 3D molecular designer.
+DimerForge builds stacked molecular dimers from a single structure, with control over interplanar distance, slippage and tilt. It reads `.xyz` and `.cif` files. It can take a molecule, or a real neighbouring pair, from a crystal. It includes a molecular builder: draw a structure in 2D (or type its SMILES) under the valence rules, build it in 3D with the UFF force field, and edit it in 3D.
 
 It fits the molecular plane to define a frame with long, short and normal axes. You place the copy by setting the interplanar distance, the slip along each in-plane axis, the tilt about each in-plane axis and the twist about the normal. A live 3D view shows the dimer, and the tool reports the centroid distance, the angle between planes and the closest contacts, with a warning when atoms clash. It exports the dimer, or either molecule, as `.xyz`, PDB, MOL/SDF, a Gaussian input or an ORCA input, ready for calculations on π-stacking and other dimer interactions.
 
 ## Usage
 
-DimerForge is a single HTML file, plus the `fonts/` folder it uses, with no install and no build step. It makes no requests to other sites: the IBM Plex fonts are served from this repository, and a Content-Security-Policy blocks scripts, styles, fonts and connections from anywhere else. Structures you load stay in your browser.
+DimerForge is a single HTML file, plus the `fonts/` and `vendor/rdkit/` folders it uses, with no install and no build step. It makes no requests to other sites: the IBM Plex fonts and RDKit.js are served from this repository, and a Content-Security-Policy blocks scripts, styles, fonts and connections from anywhere else. Structures you load stay in your browser.
 
 - Open `index.html` in any modern browser, or
 - serve it with GitHub Pages (Settings → Pages → deploy from the `main` branch, root folder).
@@ -71,15 +71,46 @@ The CIF needs the cell (`_cell_length_*`, `_cell_angle_*`), the symmetry operati
 
 ## Molecular designer
 
-The Design tab edits molecule A in the 3D viewer.
+The Design tab has two modes: **2D sketch**, to draw a molecule and build it in 3D, and **3D edit**, to change molecule A in place. Both apply the valence rules: an edit that would give an atom more bonds than it can form is **blocked**, with the reason, and possible but unusual chemistry is **flagged** in the **Chemistry check**.
+
+### 2D sketch
+
+The sketcher works like the molecule builder on [moleculesfriends.eu](https://moleculesfriends.eu/en/molecules).
+
+- **Draw.** Click the canvas to add an atom; click an atom to extend the chain, or to change its element; drag from an atom to draw a bond (to empty space in 30° steps, or to another atom); click a bond to change its order. Drag the background to pan and scroll to zoom.
+- **Tools.** Atoms C, N, O, S, P, F, Cl, Br, I, H, B, Si or any symbol under *Other*; single, double and triple bonds; 3- to 6-membered rings and benzene (free, grown from an atom, or fused onto a bond); formal charges (+, −); unpaired electrons (•); eraser. **Tidy up** redraws the layout, **Clear** empties the canvas, and Undo and Redo cover every edit.
+- **Hydrogens** are implicit: they fill each atom's valence and appear in the labels (OH, NH₂).
+- **SMILES.** Load a SMILES, copy the canonical SMILES of the drawing, or pick one of the examples. **Sketch molecule A** turns the current molecule A (from a file, a crystal or a template) into a drawing.
+- **Chemistry check.** The formula, molar mass, atom count, net charge, spin multiplicity, SMILES and InChIKey, and a list of anything unusual, with the atoms by element and number.
+- **Build 3D as molecule A** adds the hydrogens, builds a 3D structure and optimises it with UFF. It becomes molecule A, with its bond orders and formal charges (used by the MOL/SDF export), and the Export tab's charges and multiplicities are set from the drawing.
+
+Valence rules:
+
+- The allowed valences follow from the valence electrons, shifted by the formal charge: C 4; N 3 (N⁺ 4, N⁻ 2); O 2 (O⁺ 3, O⁻ 1); B 3 (B⁻ 4); halogens 1. Period 2 keeps the octet. From period 3, expanded valences in steps of 2 are allowed (S 2, 4, 6; P 3, 5; Cl, Br, I 1, 3, 5, 7). Unpaired electrons use up valence.
+- **Blocked:** more bonds than the largest allowed valence (a carbon with five bonds, an oxygen with three), or a charge the element cannot carry. The message suggests the charge that would make it legal. Changing a four-bonded carbon to N makes it N⁺ automatically.
+- **Flagged:** expanded valences, carbocations and carbanions, charges of 2 or more, like charges on bonded atoms, unpaired electrons, sp atoms in small rings, separate fragments, and elements without rules (transition metals), which get no hydrogens.
+- RDKit.js reads every drawing too; if it refuses one, the check says why.
+
+### 3D structures and UFF
+
+- **Build 3D** starts from the drawing (so double bonds keep the cis/trans geometry you drew), adds hydrogens in ideal directions, and minimises the Universal Force Field (Rappé et al., 1992: bonds, angles, torsions, inversions and van der Waals, no electrostatics) with L-BFGS. Atom typing follows RDKit, and the energies agree with RDKit's UFF.
+- Bridged and caged ring systems (norbornane, camphor, adamantane, cubane), and strained results, are also embedded by distance geometry; the lowest-energy result that keeps the drawn double-bond geometry wins.
+- The drawing has no wedges, so stereocentres come out as the optimisation leaves them. UFF finds the nearest minimum, not necessarily the global one: optimise the monomer with your quantum-chemistry method before production runs.
+
+### 3D edit
 
 - **Select.** Click an atom. Shift-click adds an atom to the selection, or removes it. Esc clears.
-- **Elements.** Choose from the palette, or type any symbol under *Other*. **Add atom** bonds a new atom to the selected atom in a free direction. **Set element** changes the selected atoms. **Delete** removes them.
+- **Elements.** Choose from the palette, or type any symbol under *Other*. **Add atom** bonds a new atom to the selected atom in a free direction. **Set element** changes the selected atoms. **Delete** removes them. Adding to an atom with no bond left, or giving an atom more neighbours than its new element allows, is blocked.
 - **Groups.** Choose CH₃, CF₃, OH, OCH₃, SH, NH₂, NO₂, CN, CHO, COOH, C₆H₅, F, Cl, Br or I. A selected H or halogen is replaced by the group along the same bond. On any other atom the group goes in a free position. Planar groups are laid in the plane of the parent's neighbours.
 - **Measure and set.** With 2, 3 or 4 atoms selected, the panel shows the distance, angle or dihedral, and you can type a new value. The side of the last selected atom moves. A dihedral cannot be set about a bond that is in a ring.
-- **Tidy geometry.** This relaxes the atoms you added or re-elemented, their neighbours, and any atoms you select. It moves them towards typical bond lengths (single-bond covalent radii, shortened for multiple bonds), typical angles (from the coordination number) and away from clashes. All other atoms keep their geometry. Bonds inside a group you attached keep the group's lengths.
+- **Tidy geometry.** This relaxes the atoms you added or re-elemented, their neighbours, and any atoms you select. It moves them towards typical bond lengths (single-bond covalent radii, shortened for multiple bonds), typical angles (from the coordination number) and away from clashes. All other atoms keep their geometry. Bonds inside a group you attached keep the group's lengths. **Optimise (UFF)** relaxes the whole molecule with UFF.
+- **Chemistry check.** Bond orders (from the sketch, or guessed from the geometry), formal charges, open valences and expanded valences. **Add missing H** fills open valences with hydrogens.
 - **Templates.** Benzene, naphthalene, anthracene, tetracene, phenanthrene, pyrene, triphenylene, coronene, pyridine, pyrimidine, pyrazine, 1,3,5-triazine, thiophene, furan, pyrrole, methane, water or a single carbon atom.
 - Undo and Redo (Ctrl+Z, Ctrl+Y) cover every edit.
+
+### RDKit.js
+
+The sketcher uses [RDKit.js](https://github.com/rdkit/rdkit-js) 2026.9.2 (BSD licence) for SMILES, InChI, sanitisation and 2D layout. It is vendored in `vendor/rdkit/` (the WebAssembly is stored gzip-compressed and base64-encoded, about 3 MB, so that `index.html` also works when opened from disk), and it runs in a hidden frame with its own Content-Security-Policy, because its JavaScript glue needs `eval`. The main page's policy only gains `frame-src 'self'`. If RDKit cannot load, the sketcher keeps working with DimerForge's own valence rules; only SMILES, InChI and Tidy up are unavailable. See `vendor/rdkit/README.md`.
 
 ## Parameter scans
 
